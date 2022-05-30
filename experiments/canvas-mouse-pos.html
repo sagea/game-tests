@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+    }
+  </style>
+  <canvas width="1920" height="1080" style="max-width: 800px; margin: 50px;border: 1px solid #ccc;"></canvas>
+  <script type="module">
+    const c = document.querySelector('canvas');
+    const ctx = c.getContext('2d');
+
+    const get = (key, event) => {
+      const isXY = Boolean(key)
+      const kt = key.trim();
+      const xProp = isXY ? `${key}X`: 'x';
+      const yProp = isXY ? `${key}Y` : 'y';
+      return [event[xProp], event[yProp]];
+    }
+    function* keyIn(e) {
+      for (let key in e) {
+        yield key;
+      }
+    }
+    c.addEventListener('mousemove', (e) => {
+      const off = [e.offsetX, e.offsetY];
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+      let size = 10
+      let increment = 5
+      renderPoints(get('offset', e), 'green', size += increment)
+      renderPoints(get('', e), 'red', size += increment)
+      renderPoints(get('screen', e), 'blue', size += increment)
+      renderPoints(get('client', e), 'black', size += increment)
+      renderPoints(get('page', e), 'purple', size += increment)
+      renderPoints(get('layer', e), 'pink', size += increment)
+    })
+    const scale = ([x, y], mult) => [x * mult, y * mult];
+    const add = ([x1, y1], [x2, y2]) => [x1 + x2, y1 + y2];
+
+    const renderPoints = (pos, color, size) => {
+      ctx.save();
+      const canvasSize = [ctx.canvas.width, ctx.canvas.height];
+      const midpoint = scale(canvasSize, .5);
+      ctx.translate(...midpoint)
+      {
+      
+        ctx.save();
+        ctx.beginPath()
+        ctx.arc(0, 0, 3, 0, 2 * Math.PI)
+        ctx.fill()
+        ctx.closePath();
+        ctx.restore();
+    // =====================================================
+    // =====================================================
+    // =====================================================
+    // =====================================================
+        ctx.save()
+        ctx.beginPath()
+        const canvasScale = ctx.canvas.offsetWidth / ctx.canvas.width;
+        const pointToCanvasScale = scale(pos, 1 / canvasScale)
+        const point = add(pointToCanvasScale, scale(midpoint, -1))
+        ctx.arc(...point, size, 0, 2 * Math.PI);
+        ctx.strokeStyle = color;
+        ctx.stroke();
+        ctx.closePath()
+        ctx.restore();
+      }
+      ctx.restore();
+    }
+  </script>
+</body>
+</html>
