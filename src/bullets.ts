@@ -1,15 +1,13 @@
 import { removal, render, timeDiffS, timeMS, update } from './animate'
 import { addHitbox, attachHitboxToObject, createHitBox, getInteractionsForHitboxId, moveHitbox, removeHitbox } from './hitbox'
 import { isKeyDown } from './keys'
-import { allPass, curry } from 'ramda'
+import { allPass } from 'ramda'
 import { uid } from './uid'
 import { pos } from './user'
-import { filterValues, mapValues, p, values } from './util'
-import { add, from, right, Vector, x, y } from './Vector'
+import { add, from, right, Vector, x } from './Vector'
 import { damageEnemy, enemies } from './enemy'
-import { SExtendValue, SFilterValues, SMapExtendValues, State, StateImmer, SValue } from './State/State';
-import { fill, fillStyle, restore, save, rect, beginPath } from './draw2'
-import { castDraft } from 'immer'
+import { State, StateImmer } from './State/State';
+import { fill, fillStyle, restore, save, rect, beginPath } from './draw'
 
 interface Bullet {
     id: string;

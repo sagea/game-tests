@@ -8,2896 +8,270 @@ var __export = (target, all2) => {
     __defProp(target, name, { get: all2[name], enumerable: true });
 };
 
-// node_modules/.pnpm/baconjs@3.0.17/node_modules/baconjs/dist/Bacon.mjs
-function nop() {
-}
-function isObservable(x3) {
-  return x3 && x3._isObservable;
-}
-function all(xs, f2) {
-  for (var i2 = 0, x3; i2 < xs.length; i2++) {
-    x3 = xs[i2];
-    if (!f2(x3)) {
-      return false;
+// node_modules/.pnpm/comlink@4.3.1/node_modules/comlink/dist/esm/comlink.mjs
+function expose(obj, ep = self) {
+  ep.addEventListener("message", function callback(ev) {
+    if (!ev || !ev.data) {
+      return;
     }
-  }
-  return true;
-}
-function always(x3) {
-  return () => x3;
-}
-function any(xs, f2) {
-  for (var i2 = 0, x3; i2 < xs.length; i2++) {
-    x3 = xs[i2];
-    if (f2(x3)) {
-      return true;
-    }
-  }
-  return false;
-}
-function bind(fn2, me) {
-  return function() {
-    return fn2.apply(me, arguments);
-  };
-}
-function contains(xs, x3) {
-  return indexOf(xs, x3) !== -1;
-}
-function each(xs, f2) {
-  for (var key in xs) {
-    if (Object.prototype.hasOwnProperty.call(xs, key)) {
-      var value = xs[key];
-      f2(key, value);
-    }
-  }
-}
-function empty(xs) {
-  return xs.length === 0;
-}
-function filter(f2, xs) {
-  var filtered = [];
-  for (var i2 = 0, x3; i2 < xs.length; i2++) {
-    x3 = xs[i2];
-    if (f2(x3)) {
-      filtered.push(x3);
-    }
-  }
-  return filtered;
-}
-function flatMap(f2, xs) {
-  return fold(xs, [], function(ys, x3) {
-    return ys.concat(f2(x3));
-  });
-}
-function flip(f2) {
-  return (a2, b2) => f2(b2, a2);
-}
-function fold(xs, seed, f2) {
-  for (var i2 = 0, x3; i2 < xs.length; i2++) {
-    x3 = xs[i2];
-    seed = f2(seed, x3);
-  }
-  return seed;
-}
-function head(xs) {
-  return xs[0];
-}
-function id(x3) {
-  return x3;
-}
-function indexOfDefault(xs, x3) {
-  return xs.indexOf(x3);
-}
-function indexOfFallback(xs, x3) {
-  for (var i2 = 0, y4; i2 < xs.length; i2++) {
-    y4 = xs[i2];
-    if (x3 === y4) {
-      return i2;
-    }
-  }
-  return -1;
-}
-function indexWhere(xs, f2) {
-  for (var i2 = 0, y4; i2 < xs.length; i2++) {
-    y4 = xs[i2];
-    if (f2(y4)) {
-      return i2;
-    }
-  }
-  return -1;
-}
-function isFunction(f2) {
-  return typeof f2 === "function";
-}
-function last(xs) {
-  return xs[xs.length - 1];
-}
-function map(f2, xs) {
-  var result = [];
-  for (var i2 = 0, x3; i2 < xs.length; i2++) {
-    x3 = xs[i2];
-    result.push(f2(x3));
-  }
-  return result;
-}
-function negate(f2) {
-  return function(x3) {
-    return !f2(x3);
-  };
-}
-function remove(x3, xs) {
-  var i2 = indexOf(xs, x3);
-  if (i2 >= 0) {
-    return xs.splice(i2, 1);
-  }
-}
-function tail(xs) {
-  return xs.slice(1, xs.length);
-}
-function toArray(xs) {
-  return isArray(xs) ? xs : [xs];
-}
-function toFunction(f2) {
-  if (typeof f2 == "function") {
-    return f2;
-  }
-  return (x3) => f2;
-}
-function toString(obj) {
-  var hasProp = {}.hasOwnProperty;
-  try {
-    recursionDepth++;
-    if (obj == null) {
-      return "undefined";
-    } else if (isFunction(obj)) {
-      return "function";
-    } else if (isArray(obj)) {
-      if (recursionDepth > 5) {
-        return "[..]";
-      }
-      return "[" + map(toString, obj).toString() + "]";
-    } else if ((obj != null ? obj.toString : void 0) != null && obj.toString !== Object.prototype.toString) {
-      return obj.toString();
-    } else if (typeof obj === "object") {
-      if (recursionDepth > 5) {
-        return "{..}";
-      }
-      var results = [];
-      for (var key in obj) {
-        if (!hasProp.call(obj, key))
-          continue;
-        let value = function() {
-          try {
-            return obj[key];
-          } catch (error) {
-            return error;
-          }
-        }();
-        results.push(toString(key) + ":" + toString(value));
-      }
-      return "{" + results + "}";
-    } else {
-      return obj;
-    }
-  } finally {
-    recursionDepth--;
-  }
-}
-function without(x3, xs) {
-  return filter(function(y4) {
-    return y4 !== x3;
-  }, xs);
-}
-function assert(message, condition) {
-  if (!condition) {
-    throw new Error(message);
-  }
-}
-function assertEventStream(event) {
-  if (!(event != null ? event._isEventStream : void 0)) {
-    throw new Error("not an EventStream : " + event);
-  }
-}
-function assertFunction(f2) {
-  return assert("not a function : " + f2, _.isFunction(f2));
-}
-function assertNoArguments(args) {
-  return assert("no arguments supported", args.length === 0);
-}
-function toString$1() {
-  return _.toString({ rootEvent, processingAfters, waiterObs, waiters, aftersStack, aftersStackHeight, flushed });
-}
-function ensureStackHeight(h2) {
-  if (h2 <= aftersStackHeight)
-    return;
-  if (!aftersStack[h2 - 1]) {
-    aftersStack[h2 - 1] = [[], 0];
-  }
-  aftersStackHeight = h2;
-}
-function isInTransaction() {
-  return rootEvent !== void 0;
-}
-function soonButNotYet(obs, f2) {
-  if (rootEvent) {
-    whenDoneWith(obs, f2);
-  } else {
-    GlobalScheduler.scheduler.setTimeout(f2, 0);
-  }
-}
-function afterTransaction(obs, f2) {
-  if (rootEvent || processingAfters) {
-    ensureStackHeight(1);
-    var stackIndexForThisObs = 0;
-    while (stackIndexForThisObs < aftersStackHeight - 1) {
-      if (containsObs(obs, aftersStack[stackIndexForThisObs][0])) {
-        break;
-      }
-      stackIndexForThisObs++;
-    }
-    var listFromStack = aftersStack[stackIndexForThisObs][0];
-    listFromStack.push([obs, f2]);
-    if (!rootEvent) {
-      processAfters();
-    }
-  } else {
-    return f2();
-  }
-}
-function containsObs(obs, aftersList) {
-  for (var i2 = 0; i2 < aftersList.length; i2++) {
-    if (aftersList[i2][0].id == obs.id)
-      return true;
-  }
-  return false;
-}
-function processAfters() {
-  let stackSizeAtStart = aftersStackHeight;
-  if (!stackSizeAtStart)
-    return;
-  let isRoot = !processingAfters;
-  processingAfters = true;
-  try {
-    while (aftersStackHeight >= stackSizeAtStart) {
-      var topOfStack = aftersStack[aftersStackHeight - 1];
-      if (!topOfStack)
-        throw new Error("Unexpected stack top: " + topOfStack);
-      var [topAfters, index] = topOfStack;
-      if (index < topAfters.length) {
-        var [, after] = topAfters[index];
-        topOfStack[1]++;
-        ensureStackHeight(aftersStackHeight + 1);
-        var callSuccess = false;
-        try {
-          after();
-          callSuccess = true;
-          while (aftersStackHeight > stackSizeAtStart && aftersStack[aftersStackHeight - 1][0].length == 0) {
-            aftersStackHeight--;
-          }
-        } finally {
-          if (!callSuccess) {
-            aftersStack = [];
-            aftersStackHeight = 0;
-          }
-        }
-      } else {
-        topOfStack[0] = [];
-        topOfStack[1] = 0;
-        break;
-      }
-    }
-  } finally {
-    if (isRoot)
-      processingAfters = false;
-  }
-}
-function whenDoneWith(obs, f2) {
-  if (rootEvent) {
-    var obsWaiters = waiters[obs.id];
-    if (obsWaiters === void 0) {
-      obsWaiters = waiters[obs.id] = [f2];
-      return waiterObs.push(obs);
-    } else {
-      return obsWaiters.push(f2);
-    }
-  } else {
-    return f2();
-  }
-}
-function flush() {
-  while (waiterObs.length > 0) {
-    flushWaiters(0, true);
-  }
-  flushed = {};
-}
-function flushWaiters(index, deps) {
-  var obs = waiterObs[index];
-  var obsId = obs.id;
-  var obsWaiters = waiters[obsId];
-  waiterObs.splice(index, 1);
-  delete waiters[obsId];
-  if (deps && waiterObs.length > 0) {
-    flushDepsOf(obs);
-  }
-  for (var i2 = 0, f2; i2 < obsWaiters.length; i2++) {
-    f2 = obsWaiters[i2];
-    f2();
-  }
-}
-function flushDepsOf(obs) {
-  if (flushed[obs.id])
-    return;
-  var deps = obs.internalDeps();
-  for (var i2 = 0, dep; i2 < deps.length; i2++) {
-    dep = deps[i2];
-    flushDepsOf(dep);
-    if (waiters[dep.id]) {
-      var index = _.indexOf(waiterObs, dep);
-      flushWaiters(index, false);
-    }
-  }
-  flushed[obs.id] = true;
-}
-function inTransaction(event, context, f2, args) {
-  if (rootEvent) {
-    return f2.apply(context, args);
-  } else {
-    rootEvent = event;
+    const { id: id2, type, path } = Object.assign({ path: [] }, ev.data);
+    const argumentList = (ev.data.argumentList || []).map(fromWireValue);
+    let returnValue;
     try {
-      var result = f2.apply(context, args);
-      flush();
-    } finally {
-      rootEvent = void 0;
-      processAfters();
+      const parent = path.slice(0, -1).reduce((obj2, prop3) => obj2[prop3], obj);
+      const rawValue = path.reduce((obj2, prop3) => obj2[prop3], obj);
+      switch (type) {
+        case "GET":
+          {
+            returnValue = rawValue;
+          }
+          break;
+        case "SET":
+          {
+            parent[path.slice(-1)[0]] = fromWireValue(ev.data.value);
+            returnValue = true;
+          }
+          break;
+        case "APPLY":
+          {
+            returnValue = rawValue.apply(parent, argumentList);
+          }
+          break;
+        case "CONSTRUCT":
+          {
+            const value = new rawValue(...argumentList);
+            returnValue = proxy(value);
+          }
+          break;
+        case "ENDPOINT":
+          {
+            const { port1, port2 } = new MessageChannel();
+            expose(obj, port2);
+            returnValue = transfer(port1, [port1]);
+          }
+          break;
+        case "RELEASE":
+          {
+            returnValue = void 0;
+          }
+          break;
+        default:
+          return;
+      }
+    } catch (value) {
+      returnValue = { value, [throwMarker]: 0 };
     }
-    return result;
-  }
-}
-function currentEventId() {
-  return rootEvent ? rootEvent.id : void 0;
-}
-function wrappedSubscribe(obs, subscribe, sink) {
-  assertFunction(sink);
-  let unsubd = false;
-  let shouldUnsub = false;
-  let doUnsub = () => {
-    shouldUnsub = true;
-  };
-  let unsub = () => {
-    unsubd = true;
-    doUnsub();
-  };
-  doUnsub = subscribe(function(event) {
-    afterTransaction(obs, function() {
-      if (!unsubd) {
-        var reply = sink(event);
-        if (reply === noMore) {
-          unsub();
-        }
+    Promise.resolve(returnValue).catch((value) => {
+      return { value, [throwMarker]: 0 };
+    }).then((returnValue2) => {
+      const [wireValue, transferables] = toWireValue(returnValue2);
+      ep.postMessage(Object.assign(Object.assign({}, wireValue), { id: id2 }), transferables);
+      if (type === "RELEASE") {
+        ep.removeEventListener("message", callback);
+        closeEndPoint(ep);
       }
     });
-    return more;
   });
-  if (shouldUnsub) {
-    doUnsub();
-  }
-  return unsub;
-}
-function hasWaiters() {
-  return waiterObs.length > 0;
-}
-function describe(context, method, ...args) {
-  const ref = context || method;
-  if (ref && ref._isDesc) {
-    return context || method;
-  } else {
-    return new Desc(context, method, args);
+  if (ep.start) {
+    ep.start();
   }
 }
-function findDeps(x3) {
-  if (isArray(x3)) {
-    return _.flatMap(findDeps, x3);
-  } else if (isObservable(x3)) {
-    return [x3];
-  } else if (typeof x3 !== "undefined" && x3 !== null ? x3._isSource : void 0) {
-    return [x3.obs];
-  } else {
-    return [];
+function isMessagePort(endpoint) {
+  return endpoint.constructor.name === "MessagePort";
+}
+function closeEndPoint(endpoint) {
+  if (isMessagePort(endpoint))
+    endpoint.close();
+}
+function wrap(ep, target) {
+  return createProxy(ep, [], target);
+}
+function throwIfProxyReleased(isReleased) {
+  if (isReleased) {
+    throw new Error("Proxy has been released and is not useable");
   }
 }
-function withStateMachine(initState, f2, src) {
-  return src.transform(withStateMachineT(initState, f2), new Desc(src, "withStateMachine", [initState, f2]));
-}
-function withStateMachineT(initState, f2) {
-  let state = initState;
-  return (event, sink) => {
-    var fromF = f2(state, event);
-    var [newState, outputs] = fromF;
-    state = newState;
-    var reply = more;
-    for (var i2 = 0; i2 < outputs.length; i2++) {
-      let output = outputs[i2];
-      reply = sink(output);
-      if (reply === noMore) {
-        return reply;
-      }
-    }
-    return reply;
-  };
-}
-function none() {
-  return None;
-}
-function toOption(v2) {
-  if (v2 && (v2._isSome || v2._isNone)) {
-    return v2;
-  } else {
-    return new Some(v2);
-  }
-}
-function isNone(object) {
-  return typeof object !== "undefined" && object !== null ? object._isNone : false;
-}
-function initialEvent(value) {
-  return new Initial(value);
-}
-function nextEvent(value) {
-  return new Next(value);
-}
-function endEvent() {
-  return new End();
-}
-function toEvent(x3) {
-  if (x3 && x3._isEvent) {
-    return x3;
-  } else {
-    return nextEvent(x3);
-  }
-}
-function isEvent(e2) {
-  return e2 && e2._isEvent;
-}
-function isInitial(e2) {
-  return e2 && e2._isInitial;
-}
-function isError(e2) {
-  return e2.isError;
-}
-function hasValue(e2) {
-  return e2.hasValue;
-}
-function isEnd(e2) {
-  return e2.isEnd;
-}
-function equals(a2, b2) {
-  return a2 === b2;
-}
-function skipDuplicates(src, isEqual = equals) {
-  let desc = new Desc(src, "skipDuplicates", []);
-  return withStateMachine(none(), function(prev, event) {
-    if (!hasValue(event)) {
-      return [prev, [event]];
-    } else if (event.isInitial || isNone(prev) || !isEqual(prev.get(), event.value)) {
-      return [new Some(event.value), [event]];
-    } else {
-      return [prev, []];
-    }
-  }, src).withDesc(desc);
-}
-function take(count, src, desc) {
-  return src.transform(takeT(count), desc || new Desc(src, "take", [count]));
-}
-function takeT(count) {
-  return (e2, sink) => {
-    if (!e2.hasValue) {
-      return sink(e2);
-    } else {
-      count--;
-      if (count > 0) {
-        return sink(e2);
-      } else {
-        if (count === 0) {
-          sink(e2);
-        }
-        sink(endEvent());
-        return noMore;
-      }
-    }
-  };
-}
-function log(args, src) {
-  src.subscribe(function(event) {
-    if (typeof console !== "undefined" && typeof console.log === "function") {
-      console.log(...args.concat([event.log()]));
-    }
-    return more;
-  });
-}
-function doLogT(args) {
-  return (event, sink) => {
-    if (typeof console !== "undefined" && console !== null && typeof console.log === "function") {
-      console.log(...args.concat([event.log()]));
-    }
-    return sink(event);
-  };
-}
-function doErrorT(f2) {
-  return (event, sink) => {
-    if (isError(event)) {
-      f2(event.error);
-    }
-    return sink(event);
-  };
-}
-function doActionT(f2) {
-  return (event, sink) => {
-    if (hasValue(event)) {
-      f2(event.value);
-    }
-    return sink(event);
-  };
-}
-function doEndT(f2) {
-  return (event, sink) => {
-    if (isEnd(event)) {
-      f2();
-    }
-    return sink(event);
-  };
-}
-function scan(src, seed, f2) {
-  let resultProperty;
-  let acc = seed;
-  let initHandled = false;
-  const subscribe = (sink) => {
-    var initSent = false;
-    var unsub = nop;
-    var reply = more;
-    const sendInit = function() {
-      if (!initSent) {
-        initSent = initHandled = true;
-        reply = sink(new Initial(acc));
-        if (reply === noMore) {
-          unsub();
-          unsub = nop;
-        }
-      }
-      return reply;
-    };
-    unsub = src.subscribeInternal(function(event) {
-      if (hasValue(event)) {
-        if (initHandled && event.isInitial) {
-          return more;
-        } else {
-          if (!event.isInitial) {
-            sendInit();
-          }
-          initSent = initHandled = true;
-          var prev = acc;
-          var next = f2(prev, event.value);
-          acc = next;
-          return sink(event.apply(next));
-        }
-      } else {
-        if (event.isEnd) {
-          reply = sendInit();
-        }
-        if (reply !== noMore) {
-          return sink(event);
-        }
-        return reply;
-      }
-    });
-    UpdateBarrier.whenDoneWith(resultProperty, sendInit);
-    return unsub;
-  };
-  return resultProperty = new Property(new Desc(src, "scan", [seed, f2]), subscribe);
-}
-function mapEndT(f2) {
-  let theF = _.toFunction(f2);
-  return function(event, sink) {
-    if (isEnd(event)) {
-      sink(nextEvent(theF(event)));
-      sink(endEvent());
-      return noMore;
-    } else {
-      return sink(event);
-    }
-  };
-}
-function mapErrorT(f2) {
-  let theF = _.toFunction(f2);
-  return function(event, sink) {
-    if (isError(event)) {
-      return sink(nextEvent(theF(event.error)));
-    } else {
-      return sink(event);
-    }
-  };
-}
-function skipErrors(src) {
-  return src.transform(function(event, sink) {
-    if (isError(event)) {
-      return more;
-    } else {
-      return sink(event);
-    }
-  }, new Desc(src, "skipErrors", []));
-}
-function last$1(src) {
-  var lastEvent;
-  return src.transform(function(event, sink) {
-    if (isEnd(event)) {
-      if (lastEvent) {
-        sink(lastEvent);
-      }
-      sink(endEvent());
-      return noMore;
-    } else if (hasValue(event)) {
-      lastEvent = event;
-      return more;
-    } else {
-      return sink(event);
-    }
-  }).withDesc(new Desc(src, "last", []));
-}
-function streamSubscribeToPropertySubscribe(initValue, streamSubscribe) {
-  return function(sink) {
-    var initSent = false;
-    var subbed = false;
-    var unsub = nop;
-    var reply = more;
-    var sendInit = function() {
-      if (!initSent) {
-        return initValue.forEach(function(value) {
-          initSent = true;
-          reply = sink(new Initial(value));
-          if (reply === noMore) {
-            unsub();
-            unsub = nop;
-            return nop;
-          }
-        });
-      }
-    };
-    unsub = streamSubscribe(function(event) {
-      if (event instanceof Value) {
-        if (event.isInitial && !subbed) {
-          initValue = new Some(event.value);
-          return more;
-        } else {
-          if (!event.isInitial) {
-            sendInit();
-          }
-          initSent = true;
-          initValue = new Some(event.value);
-          return sink(event);
-        }
-      } else {
-        if (event.isEnd) {
-          reply = sendInit();
-        }
-        if (reply !== noMore) {
-          return sink(event);
-        }
-        return reply;
-      }
-    });
-    subbed = true;
-    sendInit();
-    return unsub;
-  };
-}
-function propertyFromStreamSubscribe(desc, subscribe) {
-  assertFunction(subscribe);
-  return new Property(desc, streamSubscribeToPropertySubscribe(none(), subscribe));
-}
-function once(value) {
-  const s2 = new EventStream(new Desc("Bacon", "once", [value]), function(sink) {
-    UpdateBarrier.soonButNotYet(s2, function() {
-      sink(toEvent(value));
-      sink(endEvent());
-    });
-    return nop;
-  });
-  return s2;
-}
-function flatMap_(spawner, src, params = {}) {
-  const root = src;
-  const rootDep = [root];
-  const childDeps = [];
-  const isProperty2 = src._isProperty;
-  const ctor = isProperty2 ? propertyFromStreamSubscribe : newEventStreamAllowSync;
-  let initialSpawned = false;
-  const desc = params.desc || new Desc(src, "flatMap_", [spawner]);
-  const result = ctor(desc, function(sink) {
-    const composite = new CompositeUnsubscribe();
-    const queue = [];
-    function spawn(event) {
-      if (isProperty2 && event.isInitial) {
-        if (initialSpawned) {
-          return more;
-        }
-        initialSpawned = true;
-      }
-      const child = makeObservable(spawner(event));
-      childDeps.push(child);
-      return composite.add(function(unsubAll, unsubMe) {
-        return child.subscribeInternal(function(event2) {
-          if (event2.isEnd) {
-            _.remove(child, childDeps);
-            checkQueue();
-            checkEnd(unsubMe);
-            return noMore;
-          } else {
-            event2 = event2.toNext();
-            const reply = sink(event2);
-            if (reply === noMore) {
-              unsubAll();
-            }
-            return reply;
-          }
-        });
-      });
-    }
-    function checkQueue() {
-      const event = queue.shift();
-      if (event) {
-        spawn(event);
-      }
-    }
-    function checkEnd(unsub) {
-      unsub();
-      if (composite.empty()) {
-        return sink(endEvent());
-      }
-      return more;
-    }
-    composite.add(function(__, unsubRoot) {
-      return root.subscribeInternal(function(event) {
-        if (event.isEnd) {
-          return checkEnd(unsubRoot);
-        } else if (event.isError && !params.mapError) {
-          return sink(event);
-        } else if (params.firstOnly && composite.count() > 1) {
-          return more;
-        } else {
-          if (composite.unsubscribed) {
-            return noMore;
-          }
-          if (params.limit && composite.count() > params.limit) {
-            queue.push(event);
-          } else {
-            spawn(event);
-          }
-          return more;
-        }
-      });
-    });
-    return composite.unsubscribe;
-  });
-  result.internalDeps = function() {
-    if (childDeps.length) {
-      return rootDep.concat(childDeps);
-    } else {
-      return rootDep;
-    }
-  };
-  return result;
-}
-function handleEventValueWith(f2) {
-  if (typeof f2 == "function") {
-    return (event) => {
-      if (hasValue(event)) {
-        return f2(event.value);
-      }
-      return event;
-    };
-  }
-  return (event) => f2;
-}
-function makeObservable(x3) {
-  if (isObservable(x3)) {
-    return x3;
-  } else {
-    return once(x3);
-  }
-}
-function flatMapEvent(src, f2) {
-  return flatMap_(f2, src, {
-    mapError: true,
-    desc: new Desc(src, "flatMapEvent", [f2])
-  });
-}
-function endAsValue(src) {
-  return src.transform((event, sink) => {
-    if (isEnd(event)) {
-      sink(nextEvent({}));
-      sink(endEvent());
-      return noMore;
-    }
-    return more;
-  });
-}
-function endOnError(src, predicate = (x3) => true) {
-  return src.transform((event, sink) => {
-    if (isError(event) && predicate(event.error)) {
-      sink(event);
-      return sink(endEvent());
-    } else {
-      return sink(event);
-    }
-  }, new Desc(src, "endOnError", []));
-}
-function isTrigger(s2) {
-  if (s2 == null)
-    return false;
-  if (s2._isSource) {
-    return s2.sync;
-  } else {
-    return s2._isEventStream;
-  }
-}
-function fromObservable(s2) {
-  if (s2 != null && s2._isSource) {
-    return s2;
-  } else if (s2 != null && s2._isProperty) {
-    return new DefaultSource(s2, false);
-  } else {
-    return new ConsumingSource(s2, true);
-  }
-}
-function never() {
-  return new EventStream(describe("Bacon", "never"), (sink) => {
-    sink(endEvent());
-    return nop;
-  });
-}
-function when(...patterns) {
-  return when_(newEventStream, patterns);
-}
-function whenP(...patterns) {
-  return when_(propertyFromStreamSubscribe, patterns);
-}
-function when_(ctor, patterns) {
-  if (patterns.length === 0) {
-    return never();
-  }
-  var [sources, ixPats] = processRawPatterns(extractRawPatterns(patterns));
-  if (!sources.length) {
-    return never();
-  }
-  var needsBarrier = any(sources, (s2) => s2.flatten) && containsDuplicateDeps(map((s2) => s2.obs, sources));
-  var desc = new Desc("Bacon", "when", Array.prototype.slice.call(patterns));
-  var resultStream = ctor(desc, function(sink) {
-    var triggers = [];
-    var ends = false;
-    function match(p2) {
-      for (var i2 = 0; i2 < p2.ixs.length; i2++) {
-        let ix = p2.ixs[i2];
-        if (!sources[ix.index].hasAtLeast(ix.count)) {
-          return false;
-        }
-      }
-      return true;
-    }
-    function cannotMatch(p2) {
-      for (var i2 = 0; i2 < p2.ixs.length; i2++) {
-        let ix = p2.ixs[i2];
-        if (!sources[ix.index].mayHave(ix.count)) {
-          return true;
-        }
-      }
-      return false;
-    }
-    function nonFlattened(trigger) {
-      return !trigger.source.flatten;
-    }
-    function part(source) {
-      return function(unsubAll) {
-        function flushLater() {
-          return UpdateBarrier.whenDoneWith(resultStream, flush2);
-        }
-        function flushWhileTriggers() {
-          var trigger;
-          if ((trigger = triggers.pop()) !== void 0) {
-            var reply = more;
-            for (var i2 = 0, p2; i2 < ixPats.length; i2++) {
-              p2 = ixPats[i2];
-              if (match(p2)) {
-                const values4 = [];
-                for (var j2 = 0; j2 < p2.ixs.length; j2++) {
-                  let event = sources[p2.ixs[j2].index].consume();
-                  if (!event)
-                    throw new Error("Event was undefined");
-                  values4.push(event.value);
-                }
-                let applied = p2.f.apply(null, values4);
-                reply = sink(trigger.e.apply(applied));
-                if (triggers.length) {
-                  triggers = filter(nonFlattened, triggers);
-                }
-                if (reply === noMore) {
-                  return reply;
-                } else {
-                  return flushWhileTriggers();
-                }
-              }
-            }
-          }
-          return more;
-        }
-        function flush2() {
-          var reply = flushWhileTriggers();
-          if (ends) {
-            if (all(sources, cannotSync) || all(ixPats, cannotMatch)) {
-              reply = noMore;
-              sink(endEvent());
-            }
-          }
-          if (reply === noMore) {
-            unsubAll();
-          }
-        }
-        return source.subscribe(function(e2) {
-          var reply = more;
-          if (e2.isEnd) {
-            ends = true;
-            source.markEnded();
-            flushLater();
-          } else if (e2.isError) {
-            reply = sink(e2);
-          } else {
-            let valueEvent = e2;
-            source.push(valueEvent);
-            if (source.sync) {
-              triggers.push({ source, e: valueEvent });
-              if (needsBarrier || UpdateBarrier.hasWaiters()) {
-                flushLater();
-              } else {
-                flush2();
-              }
-            }
-          }
-          if (reply === noMore) {
-            unsubAll();
-          }
-          return reply;
-        });
-      };
-    }
-    return new CompositeUnsubscribe(map(part, sources)).unsubscribe;
-  });
-  return resultStream;
-}
-function processRawPatterns(rawPatterns) {
-  var sources = [];
-  var pats = [];
-  for (let i2 = 0; i2 < rawPatterns.length; i2++) {
-    let [patSources, f2] = rawPatterns[i2];
-    var pat = { f: f2, ixs: [] };
-    var triggerFound = false;
-    for (var j2 = 0, s2; j2 < patSources.length; j2++) {
-      s2 = patSources[j2];
-      var index = indexOf(sources, s2);
-      if (!triggerFound) {
-        triggerFound = isTrigger(s2);
-      }
-      if (index < 0) {
-        sources.push(s2);
-        index = sources.length - 1;
-      }
-      for (var k2 = 0; k2 < pat.ixs.length; k2++) {
-        let ix = pat.ixs[k2];
-        if (ix.index === index) {
-          ix.count++;
-        }
-      }
-      pat.ixs.push({ index, count: 1 });
-    }
-    if (patSources.length > 0 && !triggerFound) {
-      throw new Error("At least one EventStream required, none found in " + patSources);
-    }
-    if (patSources.length > 0) {
-      pats.push(pat);
-    }
-  }
-  return [map(fromObservable, sources), pats];
-}
-function extractLegacyPatterns(sourceArgs) {
-  var i2 = 0;
-  var len = sourceArgs.length;
-  var rawPatterns = [];
-  while (i2 < len) {
-    let patSources = toArray(sourceArgs[i2++]);
-    let f2 = toFunction(sourceArgs[i2++]);
-    rawPatterns.push([patSources, f2]);
-  }
-  var usage = "when: expecting arguments in the form (Observable+,function)+";
-  assert(usage, len % 2 === 0);
-  return rawPatterns;
-}
-function isTypedOrRawPattern(pattern) {
-  return pattern instanceof Array && !isObservable(pattern[pattern.length - 1]);
-}
-function isRawPattern(pattern) {
-  return pattern[0] instanceof Array;
-}
-function extractRawPatterns(patterns) {
-  let rawPatterns = [];
-  for (let i2 = 0; i2 < patterns.length; i2++) {
-    let pattern = patterns[i2];
-    if (!isTypedOrRawPattern(pattern)) {
-      return extractLegacyPatterns(patterns);
-    }
-    if (isRawPattern(pattern)) {
-      rawPatterns.push([pattern[0], toFunction(pattern[1])]);
-    } else {
-      let sources = pattern.slice(0, pattern.length - 1);
-      let f2 = toFunction(pattern[pattern.length - 1]);
-      rawPatterns.push([sources, f2]);
-    }
-  }
-  return rawPatterns;
-}
-function containsDuplicateDeps(observables, state = []) {
-  function checkObservable(obs) {
-    if (contains(state, obs)) {
-      return true;
-    } else {
-      var deps = obs.internalDeps();
-      if (deps.length) {
-        state.push(obs);
-        return any(deps, checkObservable);
-      } else {
-        state.push(obs);
-        return false;
-      }
-    }
-  }
-  return any(observables, checkObservable);
-}
-function cannotSync(source) {
-  return !source.sync || source.ended;
-}
-function withLatestFromE(sampler, samplee, f2) {
-  var result = when([new DefaultSource(samplee.toProperty(), false), new DefaultSource(sampler, true), flip(f2)]);
-  return result.withDesc(new Desc(sampler, "withLatestFrom", [samplee, f2]));
-}
-function withLatestFromP(sampler, samplee, f2) {
-  var result = whenP([new DefaultSource(samplee.toProperty(), false), new DefaultSource(sampler, true), flip(f2)]);
-  return result.withDesc(new Desc(sampler, "withLatestFrom", [samplee, f2]));
-}
-function withLatestFrom(sampler, samplee, f2) {
-  if (sampler instanceof Property) {
-    return withLatestFromP(sampler, samplee, f2);
-  } else if (sampler instanceof EventStream) {
-    return withLatestFromE(sampler, samplee, f2);
-  } else {
-    throw new Error("Unknown observable: " + sampler);
-  }
-}
-function map$1(src, f2) {
-  if (f2 instanceof Property) {
-    return withLatestFrom(src, f2, (a2, b2) => b2);
-  }
-  return src.transform(mapT(f2), new Desc(src, "map", [f2]));
-}
-function mapT(f2) {
-  let theF = _.toFunction(f2);
-  return (e2, sink) => {
-    return sink(e2.fmap(theF));
-  };
-}
-function constant(x3) {
-  return new Property(new Desc("Bacon", "constant", [x3]), function(sink) {
-    sink(initialEvent(x3));
-    sink(endEvent());
-    return nop;
-  });
-}
-function argumentsToObservables(args) {
-  args = Array.prototype.slice.call(args);
-  return _.flatMap(singleToObservables, args);
-}
-function singleToObservables(x3) {
-  if (isObservable(x3)) {
-    return [x3];
-  } else if (isArray(x3)) {
-    return argumentsToObservables(x3);
-  } else {
-    return [constant(x3)];
-  }
-}
-function argumentsToObservablesAndFunction(args) {
-  if (_.isFunction(args[0])) {
-    return [argumentsToObservables(Array.prototype.slice.call(args, 1)), args[0]];
-  } else {
-    return [argumentsToObservables(Array.prototype.slice.call(args, 0, args.length - 1)), _.last(args)];
-  }
-}
-function groupSimultaneous_(streams, options) {
-  let sources = _.map((stream) => new BufferingSource(stream), streams);
-  let ctor = (desc, subscribe) => new EventStream(desc, subscribe, void 0, options);
-  return when_(ctor, [sources, function(...xs) {
-    return xs;
-  }]).withDesc(new Desc("Bacon", "groupSimultaneous", streams));
-}
-function awaiting(src, other) {
-  return groupSimultaneous_([src, other], allowSync).map((values4) => values4[1].length === 0).toProperty(false).skipDuplicates().withDesc(new Desc(src, "awaiting", [other]));
-}
-function combineAsArray(...streams) {
-  streams = argumentsToObservables(streams);
-  if (streams.length) {
-    var sources = [];
-    for (var i2 = 0; i2 < streams.length; i2++) {
-      let stream = isObservable(streams[i2]) ? streams[i2] : constant(streams[i2]);
-      sources.push(wrap(stream));
-    }
-    return whenP([sources, (...xs) => xs]).withDesc(new Desc("Bacon", "combineAsArray", streams));
-  } else {
-    return constant([]);
-  }
-}
-function combineTwo(left2, right2, f2) {
-  return whenP([[wrap(left2), wrap(right2)], f2]).withDesc(new Desc(left2, "combine", [right2, f2]));
-}
-function wrap(obs) {
-  return new DefaultSource(obs, true);
-}
-function skip(src, count) {
-  return src.transform((event, sink) => {
-    if (!event.hasValue) {
-      return sink(event);
-    } else if (count > 0) {
-      count--;
-      return more;
-    } else {
-      return sink(event);
-    }
-  }, new Desc(src, "skip", [count]));
-}
-function flatMapConcat(src, f2) {
-  return flatMap_(handleEventValueWith(f2), src, {
-    desc: new Desc(src, "flatMapConcat", [f2]),
-    limit: 1
-  });
-}
-function fromBinder(binder, eventTransformer = _.id) {
-  var desc = new Desc("Bacon", "fromBinder", [binder, eventTransformer]);
-  return new EventStream(desc, function(sink) {
-    var unbound = false;
-    var shouldUnbind = false;
-    var unbind = function() {
-      if (!unbound) {
-        if (typeof unbinder !== "undefined" && unbinder !== null) {
-          unbinder();
-          return unbound = true;
-        } else {
-          return shouldUnbind = true;
-        }
-      }
-    };
-    var unbinder = binder(function(...args) {
-      var value_ = eventTransformer(...args);
-      let valueArray = isArray(value_) && isEvent(_.last(value_)) ? value_ : [value_];
-      var reply = more;
-      for (var i2 = 0; i2 < valueArray.length; i2++) {
-        let event = toEvent(valueArray[i2]);
-        reply = sink(event);
-        if (reply === noMore || event.isEnd) {
-          unbind();
-          return reply;
-        }
-      }
-      return reply;
-    });
-    if (shouldUnbind) {
-      unbind();
-    }
-    return unbind;
-  });
-}
-function fromPoll(delay2, poll) {
-  var desc = new Desc("Bacon", "fromPoll", [delay2, poll]);
-  return fromBinder(function(handler) {
-    var id2 = GlobalScheduler.scheduler.setInterval(handler, delay2);
-    return function() {
-      return GlobalScheduler.scheduler.clearInterval(id2);
-    };
-  }, poll).withDesc(desc);
-}
-function interval(delay2, value) {
-  return fromPoll(delay2, function() {
-    return nextEvent(value);
-  }).withDesc(new Desc("Bacon", "interval", [delay2, value]));
-}
-function makeCombinator(combinator) {
-  if (typeof combinator == "function") {
-    return combinator;
-  } else {
-    return _.id;
-  }
-}
-function sampledBy(samplee, sampler, f2) {
-  if (samplee instanceof EventStream) {
-    return sampledByE(samplee, sampler, f2);
-  } else {
-    return sampledByP(samplee, sampler, f2);
-  }
-}
-function sampledByP(samplee, sampler, f2) {
-  let combinator = makeCombinator(f2);
-  var result = withLatestFrom(sampler, samplee, flip(combinator));
-  return result.withDesc(new Desc(samplee, "sampledBy", [sampler]));
-}
-function sampledByE(samplee, sampler, f2) {
-  return sampledByP(samplee.toProperty(), sampler, f2).withDesc(new Desc(samplee, "sampledBy", [sampler]));
-}
-function sampleP(samplee, samplingInterval) {
-  return sampledByP(samplee, interval(samplingInterval, {}), (a2, b2) => a2).withDesc(new Desc(samplee, "sample", [samplingInterval]));
-}
-function transformP(src, transformer, desc) {
-  return new Property(new Desc(src, "transform", [transformer]), (sink) => src.subscribeInternal((e2) => transformer(e2, sink))).withDesc(desc);
-}
-function transformE(src, transformer, desc) {
-  return new EventStream(new Desc(src, "transform", [transformer]), (sink) => src.subscribeInternal((e2) => transformer(e2, sink)), void 0, allowSync).withDesc(desc);
-}
-function composeT(t1, t2) {
-  let finalSink;
-  const sink2 = (event) => {
-    return t2(event, finalSink);
-  };
-  return (event, sink) => {
-    finalSink = sink;
-    return t1(event, sink2);
-  };
-}
-function toPredicate(f2) {
-  if (typeof f2 == "boolean") {
-    return _.always(f2);
-  } else if (typeof f2 != "function") {
-    throw new Error("Not a function: " + f2);
-  } else {
-    return f2;
-  }
-}
-function withPredicate(src, f2, predicateTransformer, desc) {
-  if (f2 instanceof Property) {
-    return withLatestFrom(src, f2, (p2, v2) => [p2, v2]).transform(composeT(predicateTransformer((tuple) => tuple[1]), mapT((tuple) => tuple[0])), desc);
-  }
-  return src.transform(predicateTransformer(toPredicate(f2)), desc);
-}
-function filter$1(src, f2) {
-  return withPredicate(src, f2, filterT, new Desc(src, "filter", [f2]));
-}
-function filterT(f2) {
-  return (e2, sink) => {
-    if (e2.filter(f2)) {
-      return sink(e2);
-    } else {
-      return more;
-    }
-  };
-}
-function not(src) {
-  return src.map((x3) => !x3).withDesc(new Desc(src, "not", []));
-}
-function and(left2, right2) {
-  return left2.combine(toProperty(right2), (x3, y4) => !!(x3 && y4)).withDesc(new Desc(left2, "and", [right2]));
-}
-function or(left2, right2) {
-  return left2.combine(toProperty(right2), (x3, y4) => x3 || y4).withDesc(new Desc(left2, "or", [right2]));
-}
-function toProperty(x3) {
-  if (isProperty(x3)) {
-    return x3;
-  }
-  return constant(x3);
-}
-function flatMapFirst(src, f2) {
-  return flatMap_(handleEventValueWith(f2), src, {
-    firstOnly: true,
-    desc: new Desc(src, "flatMapFirst", [f2])
-  });
-}
-function concatE(left2, right2, options) {
-  return new EventStream(new Desc(left2, "concat", [right2]), function(sink) {
-    var unsubRight = nop;
-    var unsubLeft = left2.dispatcher.subscribe(function(e2) {
-      if (e2.isEnd) {
-        unsubRight = right2.toEventStream().dispatcher.subscribe(sink);
-        return more;
-      } else {
-        return sink(e2);
-      }
-    });
-    return function() {
-      return unsubLeft(), unsubRight();
-    };
-  }, void 0, options);
-}
-function transformPropertyChanges(property, f2, desc) {
-  let initValue;
-  let comboSink;
-  const changes = new EventStream(describe(property, "changes", []), (sink) => property.dispatcher.subscribe(function(event) {
-    if (!initValue && isInitial(event)) {
-      initValue = event;
-      UpdateBarrier.whenDoneWith(combo, function() {
-        if (!comboSink) {
-          throw new Error("Init sequence fail");
-        }
-        comboSink(initValue);
-      });
-    }
-    if (!event.isInitial) {
-      return sink(event);
-    }
-    return more;
-  }), void 0, allowSync);
-  const transformedChanges = f2(changes);
-  const combo = propertyFromStreamSubscribe(desc, (sink) => {
-    comboSink = sink;
-    return transformedChanges.dispatcher.subscribe(function(event) {
-      sink(event);
-    });
-  });
-  return combo;
-}
-function fold$1(src, seed, f2) {
-  return src.scan(seed, f2).last().withDesc(new Desc(src, "fold", [seed, f2]));
-}
-function startWithE(src, seed) {
-  return once(seed).concat(src).withDesc(new Desc(src, "startWith", [seed]));
-}
-function startWithP(src, seed) {
-  return src.scan(seed, (prev, next) => next).withDesc(new Desc(src, "startWith", [seed]));
-}
-function takeUntil(src, stopper) {
-  let endMapped = src.mapEnd(endMarker);
-  let withEndMarker = groupSimultaneous_([endMapped, stopper.skipErrors()], allowSync);
-  if (src instanceof Property)
-    withEndMarker = withEndMarker.toProperty();
-  return withEndMarker.transform(function(event, sink) {
-    if (hasValue(event)) {
-      var [data, stopper2] = event.value;
-      if (stopper2.length) {
-        return sink(endEvent());
-      } else {
-        var reply = more;
-        for (var i2 = 0; i2 < data.length; i2++) {
-          let value = data[i2];
-          if (value === endMarker) {
-            return sink(endEvent());
-          } else {
-            reply = sink(nextEvent(value));
-          }
-        }
-        return reply;
-      }
-    } else {
-      return sink(event);
-    }
-  }, new Desc(src, "takeUntil", [stopper]));
-}
-function flatMap$1(src, f2) {
-  return flatMap_(handleEventValueWith(f2), src, { desc: new Desc(src, "flatMap", [f2]) });
-}
-function flatMapError(src, f2) {
-  return flatMap_((x3) => {
-    if (x3 instanceof Error$1) {
-      let error = x3.error;
-      return f2(error);
-    } else {
-      return x3;
-    }
-  }, src, {
-    mapError: true,
-    desc: new Desc(src, "flatMapError", [f2])
-  });
-}
-function registerObs(obs) {
-  if (spies.length) {
-    if (!running) {
-      try {
-        running = true;
-        spies.forEach(function(spy) {
-          spy(obs);
-        });
-      } finally {
-        running = false;
-      }
-    }
-  }
-}
-function flatMapLatest(src, f_) {
-  let f2 = _.toFunction(f_);
-  var stream = isProperty(src) ? src.toEventStream(allowSync) : src;
-  let flatMapped = flatMap$1(stream, (value) => makeObservable(f2(value)).takeUntil(stream));
-  if (isProperty(src))
-    flatMapped = flatMapped.toProperty();
-  return flatMapped.withDesc(new Desc(src, "flatMapLatest", [f2]));
-}
-function flatMapWithConcurrencyLimit(src, limit, f2) {
-  return flatMap_(handleEventValueWith(f2), src, {
-    desc: new Desc(src, "flatMapWithConcurrencyLimit", [limit, f2]),
-    limit
-  });
-}
-function bufferWithTime(src, delay2) {
-  return bufferWithTimeOrCount(src, delay2, Number.MAX_VALUE).withDesc(new Desc(src, "bufferWithTime", [delay2]));
-}
-function bufferWithCount(src, count) {
-  return bufferWithTimeOrCount(src, void 0, count).withDesc(new Desc(src, "bufferWithCount", [count]));
-}
-function bufferWithTimeOrCount(src, delay2, count) {
-  const delayFunc = toDelayFunction(delay2);
-  function flushOrSchedule(buffer2) {
-    if (buffer2.values.length === count) {
-      return buffer2.flush();
-    } else if (delayFunc !== void 0) {
-      return buffer2.schedule(delayFunc);
-    }
-  }
-  var desc = new Desc(src, "bufferWithTimeOrCount", [delay2, count]);
-  return buffer(src, flushOrSchedule, flushOrSchedule).withDesc(desc);
-}
-function toDelayFunction(delay2) {
-  if (delay2 === void 0) {
-    return void 0;
-  }
-  if (typeof delay2 === "number") {
-    var delayMs = delay2;
-    return function(f2) {
-      return GlobalScheduler.scheduler.setTimeout(f2, delayMs);
-    };
-  }
-  return delay2;
-}
-function buffer(src, onInput = nop, onFlush = nop) {
-  var reply = more;
-  var buffer2 = new Buffer2(onFlush, onInput);
-  return src.transform((event, sink) => {
-    buffer2.push = sink;
-    if (hasValue(event)) {
-      buffer2.values.push(event.value);
-      onInput(buffer2);
-    } else if (isError(event)) {
-      reply = sink(event);
-    } else if (isEnd(event)) {
-      buffer2.end = event;
-      if (!buffer2.scheduled) {
-        buffer2.flush();
-      }
-    }
-    return reply;
-  }).withDesc(new Desc(src, "buffer", []));
-}
-function asyncWrapSubscribe(obs, subscribe) {
-  var subscribing = false;
-  return function wrappedSubscribe2(sink) {
-    const inTransaction2 = UpdateBarrier.isInTransaction();
-    subscribing = true;
-    var asyncDeliveries;
-    function deliverAsync() {
-      var toDeliverNow = asyncDeliveries || [];
-      asyncDeliveries = void 0;
-      for (var i2 = 0; i2 < toDeliverNow.length; i2++) {
-        var event = toDeliverNow[i2];
-        sink(event);
-      }
-    }
-    try {
-      return subscribe(function wrappedSink(event) {
-        if (subscribing || asyncDeliveries) {
-          if (!asyncDeliveries) {
-            asyncDeliveries = [event];
-            if (inTransaction2) {
-              UpdateBarrier.soonButNotYet(obs, deliverAsync);
-            } else {
-              GlobalScheduler.scheduler.setTimeout(deliverAsync, 0);
-            }
-          } else {
-            asyncDeliveries.push(event);
-          }
-          return more;
-        } else {
-          return sink(event);
-        }
-      });
-    } finally {
-      subscribing = false;
-    }
-  };
-}
-function mergeAll(...streams) {
-  let flattenedStreams = argumentsToObservables(streams);
-  if (flattenedStreams.length) {
-    return new EventStream(new Desc("Bacon", "mergeAll", flattenedStreams), function(sink) {
-      var ends = 0;
-      var smartSink = function(obs) {
-        return function(unsubBoth) {
-          return obs.subscribeInternal(function(event) {
-            if (event.isEnd) {
-              ends++;
-              if (ends === flattenedStreams.length) {
-                return sink(endEvent());
-              } else {
-                return more;
-              }
-            } else {
-              event = event.toNext();
-              var reply = sink(event);
-              if (reply === noMore) {
-                unsubBoth();
-              }
-              return reply;
-            }
+function createProxy(ep, path = [], target = function() {
+}) {
+  let isProxyReleased = false;
+  const proxy2 = new Proxy(target, {
+    get(_target, prop3) {
+      throwIfProxyReleased(isProxyReleased);
+      if (prop3 === releaseProxy) {
+        return () => {
+          return requestResponseMessage(ep, {
+            type: "RELEASE",
+            path: path.map((p2) => p2.toString())
+          }).then(() => {
+            closeEndPoint(ep);
+            isProxyReleased = true;
           });
         };
-      };
-      var sinks = map(smartSink, flattenedStreams);
-      return new CompositeUnsubscribe(sinks).unsubscribe;
-    });
-  } else {
-    return never();
+      }
+      if (prop3 === "then") {
+        if (path.length === 0) {
+          return { then: () => proxy2 };
+        }
+        const r2 = requestResponseMessage(ep, {
+          type: "GET",
+          path: path.map((p2) => p2.toString())
+        }).then(fromWireValue);
+        return r2.then.bind(r2);
+      }
+      return createProxy(ep, [...path, prop3]);
+    },
+    set(_target, prop3, rawValue) {
+      throwIfProxyReleased(isProxyReleased);
+      const [value, transferables] = toWireValue(rawValue);
+      return requestResponseMessage(ep, {
+        type: "SET",
+        path: [...path, prop3].map((p2) => p2.toString()),
+        value
+      }, transferables).then(fromWireValue);
+    },
+    apply(_target, _thisArg, rawArgumentList) {
+      throwIfProxyReleased(isProxyReleased);
+      const last2 = path[path.length - 1];
+      if (last2 === createEndpoint) {
+        return requestResponseMessage(ep, {
+          type: "ENDPOINT"
+        }).then(fromWireValue);
+      }
+      if (last2 === "bind") {
+        return createProxy(ep, path.slice(0, -1));
+      }
+      const [argumentList, transferables] = processArguments(rawArgumentList);
+      return requestResponseMessage(ep, {
+        type: "APPLY",
+        path: path.map((p2) => p2.toString()),
+        argumentList
+      }, transferables).then(fromWireValue);
+    },
+    construct(_target, rawArgumentList) {
+      throwIfProxyReleased(isProxyReleased);
+      const [argumentList, transferables] = processArguments(rawArgumentList);
+      return requestResponseMessage(ep, {
+        type: "CONSTRUCT",
+        path: path.map((p2) => p2.toString()),
+        argumentList
+      }, transferables).then(fromWireValue);
+    }
+  });
+  return proxy2;
+}
+function myFlat(arr) {
+  return Array.prototype.concat.apply([], arr);
+}
+function processArguments(argumentList) {
+  const processed = argumentList.map(toWireValue);
+  return [processed.map((v2) => v2[0]), myFlat(processed.map((v2) => v2[1]))];
+}
+function transfer(obj, transfers) {
+  transferCache.set(obj, transfers);
+  return obj;
+}
+function proxy(obj) {
+  return Object.assign(obj, { [proxyMarker]: true });
+}
+function toWireValue(value) {
+  for (const [name, handler] of transferHandlers) {
+    if (handler.canHandle(value)) {
+      const [serializedValue, transferables] = handler.serialize(value);
+      return [
+        {
+          type: "HANDLER",
+          name,
+          value: serializedValue
+        },
+        transferables
+      ];
+    }
+  }
+  return [
+    {
+      type: "RAW",
+      value
+    },
+    transferCache.get(value) || []
+  ];
+}
+function fromWireValue(value) {
+  switch (value.type) {
+    case "HANDLER":
+      return transferHandlers.get(value.name).deserialize(value.value);
+    case "RAW":
+      return value.value;
   }
 }
-function later(delay2, value) {
-  return fromBinder(function(sink) {
-    var sender = function() {
-      return sink([toEvent(value), endEvent()]);
-    };
-    var id2 = GlobalScheduler.scheduler.setTimeout(sender, delay2);
-    return function() {
-      return GlobalScheduler.scheduler.clearTimeout(id2);
-    };
-  }).withDesc(new Desc("Bacon", "later", [delay2, value]));
-}
-function delay(src, delay2) {
-  return src.transformChanges(new Desc(src, "delay", [delay2]), function(changes) {
-    return changes.flatMap(function(value) {
-      return later(delay2, value);
+function requestResponseMessage(ep, msg, transfers) {
+  return new Promise((resolve) => {
+    const id2 = generateUUID();
+    ep.addEventListener("message", function l2(ev) {
+      if (!ev.data || !ev.data.id || ev.data.id !== id2) {
+        return;
+      }
+      ep.removeEventListener("message", l2);
+      resolve(ev.data);
     });
+    if (ep.start) {
+      ep.start();
+    }
+    ep.postMessage(Object.assign({ id: id2 }, msg), transfers);
   });
 }
-function debounce(src, delay2) {
-  return src.transformChanges(new Desc(src, "debounce", [delay2]), function(changes) {
-    return changes.flatMapLatest(function(value) {
-      return later(delay2, value);
-    });
-  });
+function generateUUID() {
+  return new Array(4).fill(0).map(() => Math.floor(Math.random() * Number.MAX_SAFE_INTEGER).toString(16)).join("-");
 }
-function debounceImmediate(src, delay2) {
-  return src.transformChanges(new Desc(src, "debounceImmediate", [delay2]), function(changes) {
-    return changes.flatMapFirst(function(value) {
-      return once(value).concat(later(delay2, value).errors());
-    });
-  });
-}
-function throttle(src, delay2) {
-  return src.transformChanges(new Desc(src, "throttle", [delay2]), (changes) => changes.bufferWithTime(delay2).map((values4) => values4[values4.length - 1]));
-}
-function bufferingThrottle(src, minimumInterval) {
-  var desc = new Desc(src, "bufferingThrottle", [minimumInterval]);
-  return src.transformChanges(desc, (changes) => changes.flatMapConcat((x3) => {
-    return once(x3).concat(later(minimumInterval, x3).errors());
-  }));
-}
-function takeWhile(src, f2) {
-  return withPredicate(src, f2, takeWhileT, new Desc(src, "takeWhile", [f2]));
-}
-function takeWhileT(f2) {
-  return (event, sink) => {
-    if (event.filter(f2)) {
-      return sink(event);
-    } else {
-      sink(endEvent());
-      return noMore;
-    }
-  };
-}
-function skipUntil(src, starter) {
-  var started = starter.transform(composeT(takeT(1), mapT(true))).toProperty().startWith(false);
-  return src.filter(started).withDesc(new Desc(src, "skipUntil", [starter]));
-}
-function skipWhile(src, f2) {
-  return withPredicate(src, f2, skipWhileT, new Desc(src, "skipWhile", [f2]));
-}
-function skipWhileT(f2) {
-  var started = false;
-  return function(event, sink) {
-    if (started || !hasValue(event) || !f2(event.value)) {
-      if (event.hasValue) {
-        started = true;
-      }
-      return sink(event);
-    } else {
-      return more;
-    }
-  };
-}
-function groupBy(src, keyF, limitF = _.id) {
-  var streams = {};
-  return src.transform(composeT(filterT((x3) => !streams[keyF(x3)]), mapT(function(firstValue) {
-    var key = keyF(firstValue);
-    var similarValues = src.changes().filter((x3) => keyF(x3) === key);
-    var data = once(firstValue).concat(similarValues);
-    var limited = limitF(data, firstValue).toEventStream().transform((event, sink) => {
-      let reply = sink(event);
-      if (event.isEnd) {
-        delete streams[key];
-      }
-      return reply;
-    });
-    streams[key] = limited;
-    return limited;
-  })));
-}
-function slidingWindow(src, maxValues, minValues = 0) {
-  return src.scan([], function(window2, value) {
-    return window2.concat([value]).slice(-maxValues);
-  }).filter(function(values4) {
-    return values4.length >= minValues;
-  }).withDesc(new Desc(src, "slidingWindow", [maxValues, minValues]));
-}
-function diff(src, start, f2) {
-  return transformP(scan(src, [start, nullMarker], (prevTuple, next) => [next, f2(prevTuple[0], next)]), composeT(filterT((tuple) => tuple[1] !== nullMarker), mapT((tuple) => tuple[1])), new Desc(src, "diff", [start, f2]));
-}
-function flatScan(src, seed, f2) {
-  let current = seed;
-  return src.flatMapConcat((next) => makeObservable(f2(current, next)).doAction((updated) => current = updated)).toProperty().startWith(seed).withDesc(new Desc(src, "flatScan", [seed, f2]));
-}
-function holdWhen(src, valve) {
-  var onHold = false;
-  var bufferedValues = [];
-  var srcIsEnded = false;
-  return new EventStream(new Desc(src, "holdWhen", [valve]), function(sink) {
-    var composite = new CompositeUnsubscribe();
-    var subscribed = false;
-    var endIfBothEnded = function(unsub) {
-      if (unsub) {
-        unsub();
-      }
-      if (composite.empty() && subscribed) {
-        return sink(endEvent());
-      }
-      return more;
-    };
-    composite.add(function(unsubAll, unsubMe) {
-      return valve.subscribeInternal(function(event) {
-        if (hasValue(event)) {
-          onHold = event.value;
-          var result = more;
-          if (!onHold) {
-            var toSend = bufferedValues;
-            bufferedValues = [];
-            for (var i2 = 0; i2 < toSend.length; i2++) {
-              result = sink(nextEvent(toSend[i2]));
-            }
-            if (srcIsEnded) {
-              sink(endEvent());
-              unsubMe();
-              result = noMore;
-            }
-          }
-          return result;
-        } else if (event.isEnd) {
-          return endIfBothEnded(unsubMe);
-        } else {
-          return sink(event);
-        }
-      });
-    });
-    composite.add(function(unsubAll, unsubMe) {
-      return src.subscribeInternal(function(event) {
-        if (onHold && hasValue(event)) {
-          bufferedValues.push(event.value);
-          return more;
-        } else if (event.isEnd && bufferedValues.length) {
-          srcIsEnded = true;
-          return endIfBothEnded(unsubMe);
-        } else {
-          return sink(event);
-        }
-      });
-    });
-    subscribed = true;
-    endIfBothEnded();
-    return composite.unsubscribe;
-  });
-}
-function zipWith(f2, ...streams) {
-  var [streams, f2] = argumentsToObservablesAndFunction(arguments);
-  streams = _.map((s2) => s2.toEventStream(), streams);
-  return when([streams, f2]).withDesc(new Desc("Bacon", "zipWith", [f2].concat(streams)));
-}
-function zip(left2, right2, f2) {
-  return zipWith(f2 || Array, left2, right2).withDesc(new Desc(left2, "zip", [right2]));
-}
-function combineTemplate(template) {
-  function current(ctxStack) {
-    return ctxStack[ctxStack.length - 1];
-  }
-  function setValue(ctxStack, key, value) {
-    current(ctxStack)[key] = value;
-    return value;
-  }
-  function applyStreamValue(key, index) {
-    return function(ctxStack, values4) {
-      setValue(ctxStack, key, values4[index]);
-    };
-  }
-  function constantValue(key, value) {
-    return function(ctxStack) {
-      setValue(ctxStack, key, value);
-    };
-  }
-  function mkContext(template2) {
-    return isArray(template2) ? [] : {};
-  }
-  function pushContext(key, value) {
-    return function(ctxStack) {
-      const newContext = mkContext(value);
-      setValue(ctxStack, key, newContext);
-      ctxStack.push(newContext);
-    };
-  }
-  function containsObservables(value) {
-    if (isObservable(value)) {
-      return true;
-    } else if (value && (value.constructor == Object || value.constructor == Array)) {
-      for (var key in value) {
-        if (Object.prototype.hasOwnProperty.call(value, key)) {
-          const child = value[key];
-          if (containsObservables(child))
-            return true;
-        }
-      }
-    }
-  }
-  function compile(key, value) {
-    if (isObservable(value)) {
-      streams.push(value);
-      funcs.push(applyStreamValue(key, streams.length - 1));
-    } else if (containsObservables(value)) {
-      const popContext = function(ctxStack) {
-        ctxStack.pop();
-      };
-      funcs.push(pushContext(key, value));
-      compileTemplate(value);
-      funcs.push(popContext);
-    } else {
-      funcs.push(constantValue(key, value));
-    }
-  }
-  function combinator(values4) {
-    const rootContext = mkContext(template);
-    const ctxStack = [rootContext];
-    for (var i2 = 0, f2; i2 < funcs.length; i2++) {
-      f2 = funcs[i2];
-      f2(ctxStack, values4);
-    }
-    return rootContext;
-  }
-  function compileTemplate(template2) {
-    _.each(template2, compile);
-  }
-  const funcs = [];
-  const streams = [];
-  const resultProperty = containsObservables(template) ? (compileTemplate(template), combineAsArray(streams).map(combinator)) : constant(template);
-  return resultProperty.withDesc(new Desc("Bacon", "combineTemplate", [template]));
-}
-function decode(src, cases) {
-  return src.combine(combineTemplate(cases), (key, values4) => values4[key]).withDesc(new Desc(src, "decode", [cases]));
-}
-function firstToPromise(src, PromiseCtr) {
-  const generator = (resolve, reject) => src.subscribe((event) => {
-    if (hasValue(event)) {
-      resolve(event.value);
-    }
-    if (isError(event)) {
-      reject(event.error);
-    }
-    return noMore;
-  });
-  if (typeof PromiseCtr === "function") {
-    return new PromiseCtr(generator);
-  } else if (typeof Promise === "function") {
-    return new Promise(generator);
-  } else {
-    throw new Error("There isn't default Promise, use shim or parameter");
-  }
-}
-function toPromise(src, PromiseCtr) {
-  return src.last().firstToPromise(PromiseCtr);
-}
-function isProperty(x3) {
-  return !!x3._isProperty;
-}
-function newEventStream(description, subscribe) {
-  return new EventStream(description, subscribe);
-}
-function newEventStreamAllowSync(description, subscribe) {
-  return new EventStream(description, subscribe, void 0, allowSync);
-}
-function symbol(key) {
-  if (typeof Symbol !== "undefined" && Symbol[key]) {
-    return Symbol[key];
-  } else if (typeof Symbol !== "undefined" && typeof Symbol.for === "function") {
-    return Symbol[key] = Symbol.for(key);
-  } else {
-    return "@@" + key;
-  }
-}
-function isEventSourceFn(x3) {
-  return _.isFunction(x3);
-}
-function fromEvent(target, eventSource, eventTransformer) {
-  var [sub, unsub] = findHandlerMethods(target);
-  var desc = new Desc("Bacon", "fromEvent", [target, eventSource]);
-  return fromBinder(function(handler) {
-    if (isEventSourceFn(eventSource)) {
-      eventSource(sub.bind(target), handler);
-      return function() {
-        return eventSource(unsub.bind(target), handler);
-      };
-    } else {
-      sub.call(target, eventSource, handler);
-      return function() {
-        return unsub.call(target, eventSource, handler);
-      };
-    }
-  }, eventTransformer).withDesc(desc);
-}
-function withMethodCallSupport(wrapped) {
-  return function(f2, ...args) {
-    if (typeof f2 === "object" && args.length) {
-      var context = f2;
-      var methodName = args[0];
-      f2 = function(...args2) {
-        return context[methodName](...args2);
-      };
-      args = args.slice(1);
-    }
-    return wrapped(f2, ...args);
-  };
-}
-function partiallyApplied(f2, applied) {
-  return function(...args) {
-    return f2(...applied.concat(args));
-  };
-}
-var isArray, indexOf, _, recursionDepth, more, noMore, defaultScheduler, GlobalScheduler, rootEvent, waiterObs, waiters, aftersStack, aftersStackHeight, flushed, processingAfters, UpdateBarrier, Desc, nullSink, nullVoidSink, Some, None, eventIdCounter, Event, Value, Next, Initial, NoValue, End, Error$1, CompositeUnsubscribe, Source, DefaultSource, ConsumingSource, BufferingSource, endMarker, spies, running, Dispatcher, PropertyDispatcher, Buffer2, nullMarker, idCounter, Observable, Property, allowSync, EventStream, ESObservable, eventMethods, findHandlerMethods, makeFunction_;
-var init_Bacon = __esm({
-  "node_modules/.pnpm/baconjs@3.0.17/node_modules/baconjs/dist/Bacon.mjs"() {
-    isArray = Array.isArray || function(xs) {
-      return xs instanceof Array;
-    };
-    indexOf = Array.prototype.indexOf ? indexOfDefault : indexOfFallback;
-    _ = {
-      indexOf,
-      indexWhere,
-      head,
-      always,
-      negate,
-      empty,
-      tail,
-      filter,
-      map,
-      each,
-      toArray,
-      contains,
-      id,
-      last,
-      all,
-      any,
-      without,
-      remove,
-      fold,
-      flatMap,
-      bind,
-      isFunction,
-      toFunction,
-      toString
-    };
-    recursionDepth = 0;
-    more = void 0;
-    noMore = "<no-more>";
-    defaultScheduler = {
-      setTimeout(f2, d2) {
-        return setTimeout(f2, d2);
+var proxyMarker, createEndpoint, releaseProxy, throwMarker, isObject, proxyTransferHandler, throwTransferHandler, transferHandlers, transferCache;
+var init_comlink = __esm({
+  "node_modules/.pnpm/comlink@4.3.1/node_modules/comlink/dist/esm/comlink.mjs"() {
+    proxyMarker = Symbol("Comlink.proxy");
+    createEndpoint = Symbol("Comlink.endpoint");
+    releaseProxy = Symbol("Comlink.releaseProxy");
+    throwMarker = Symbol("Comlink.thrown");
+    isObject = (val) => typeof val === "object" && val !== null || typeof val === "function";
+    proxyTransferHandler = {
+      canHandle: (val) => isObject(val) && val[proxyMarker],
+      serialize(obj) {
+        const { port1, port2 } = new MessageChannel();
+        expose(obj, port1);
+        return [port2, [port2]];
       },
-      setInterval(f2, i2) {
-        return setInterval(f2, i2);
-      },
-      clearInterval(id2) {
-        return clearInterval(id2);
-      },
-      clearTimeout(id2) {
-        return clearTimeout(id2);
-      },
-      now() {
-        return new Date().getTime();
+      deserialize(port) {
+        port.start();
+        return wrap(port);
       }
     };
-    GlobalScheduler = {
-      scheduler: defaultScheduler
-    };
-    rootEvent = void 0;
-    waiterObs = [];
-    waiters = {};
-    aftersStack = [];
-    aftersStackHeight = 0;
-    flushed = {};
-    processingAfters = false;
-    UpdateBarrier = { toString: toString$1, whenDoneWith, hasWaiters, inTransaction, currentEventId, wrappedSubscribe, afterTransaction, soonButNotYet, isInTransaction };
-    Desc = class {
-      constructor(context, method, args = []) {
-        this._isDesc = true;
-        this.context = context;
-        this.method = method;
-        this.args = args;
-      }
-      deps() {
-        if (!this.cachedDeps) {
-          this.cachedDeps = findDeps([this.context].concat(this.args));
-        }
-        return this.cachedDeps;
-      }
-      toString() {
-        let args = _.map(_.toString, this.args);
-        return _.toString(this.context) + "." + _.toString(this.method) + "(" + args + ")";
-      }
-    };
-    nullSink = () => more;
-    nullVoidSink = () => more;
-    Some = class {
-      constructor(value) {
-        this._isSome = true;
-        this.isDefined = true;
-        this.value = value;
-      }
-      getOrElse(arg) {
-        return this.value;
-      }
-      get() {
-        return this.value;
-      }
-      filter(f2) {
-        if (f2(this.value)) {
-          return new Some(this.value);
-        } else {
-          return None;
-        }
-      }
-      map(f2) {
-        return new Some(f2(this.value));
-      }
-      forEach(f2) {
-        f2(this.value);
-      }
-      toArray() {
-        return [this.value];
-      }
-      inspect() {
-        return "Some(" + this.value + ")";
-      }
-      toString() {
-        return this.inspect();
-      }
-    };
-    None = {
-      _isNone: true,
-      getOrElse(value) {
-        return value;
-      },
-      get() {
-        throw new Error("None.get()");
-      },
-      filter() {
-        return None;
-      },
-      map() {
-        return None;
-      },
-      forEach() {
-      },
-      isDefined: false,
-      toArray() {
-        return [];
-      },
-      inspect() {
-        return "None";
-      },
-      toString() {
-        return this.inspect();
-      }
-    };
-    eventIdCounter = 0;
-    Event = class {
-      constructor() {
-        this.id = ++eventIdCounter;
-        this.isEvent = true;
-        this._isEvent = true;
-        this.isEnd = false;
-        this.isInitial = false;
-        this.isNext = false;
-        this.isError = false;
-        this.hasValue = false;
-      }
-      filter(f2) {
-        return true;
-      }
-      inspect() {
-        return this.toString();
-      }
-      log() {
-        return this.toString();
-      }
-      toNext() {
-        return this;
-      }
-    };
-    Value = class extends Event {
-      constructor(value) {
-        super();
-        this.hasValue = true;
-        if (value instanceof Event) {
-          throw new Error$1("Wrapping an event inside other event");
-        }
-        this.value = value;
-      }
-      fmap(f2) {
-        return this.apply(f2(this.value));
-      }
-      filter(f2) {
-        return f2(this.value);
-      }
-      toString() {
-        return _.toString(this.value);
-      }
-      log() {
-        return this.value;
-      }
-    };
-    Next = class extends Value {
-      constructor(value) {
-        super(value);
-        this.isNext = true;
-        this._isNext = true;
-      }
-      apply(value) {
-        return new Next(value);
-      }
-    };
-    Initial = class extends Value {
-      constructor(value) {
-        super(value);
-        this.isInitial = true;
-        this._isInitial = true;
-      }
-      apply(value) {
-        return new Initial(value);
-      }
-      toNext() {
-        return new Next(this.value);
-      }
-    };
-    NoValue = class extends Event {
-      constructor() {
-        super(...arguments);
-        this.hasValue = false;
-      }
-      fmap(f2) {
-        return this;
-      }
-    };
-    End = class extends NoValue {
-      constructor() {
-        super(...arguments);
-        this.isEnd = true;
-      }
-      toString() {
-        return "<end>";
-      }
-    };
-    Error$1 = class extends NoValue {
-      constructor(error) {
-        super();
-        this.isError = true;
-        this.error = error;
-      }
-      toString() {
-        return "<error> " + _.toString(this.error);
-      }
-    };
-    CompositeUnsubscribe = class {
-      constructor(ss = []) {
-        this.unsubscribed = false;
-        this.unsubscribe = _.bind(this.unsubscribe, this);
-        this.unsubscribed = false;
-        this.subscriptions = [];
-        this.starting = [];
-        for (var i2 = 0, s2; i2 < ss.length; i2++) {
-          s2 = ss[i2];
-          this.add(s2);
-        }
-      }
-      add(subscription) {
-        if (!this.unsubscribed) {
-          var ended = false;
-          var unsub = nop;
-          this.starting.push(subscription);
-          var unsubMe = () => {
-            if (this.unsubscribed) {
-              return;
-            }
-            ended = true;
-            this.remove(unsub);
-            _.remove(subscription, this.starting);
-          };
-          unsub = subscription(this.unsubscribe, unsubMe);
-          if (!(this.unsubscribed || ended)) {
-            this.subscriptions.push(unsub);
-          } else {
-            unsub();
-          }
-          _.remove(subscription, this.starting);
-        }
-      }
-      remove(unsub) {
-        if (this.unsubscribed) {
-          return;
-        }
-        if (_.remove(unsub, this.subscriptions) !== void 0) {
-          return unsub();
-        }
-      }
-      unsubscribe() {
-        if (this.unsubscribed) {
-          return;
-        }
-        this.unsubscribed = true;
-        var iterable = this.subscriptions;
-        for (var i2 = 0; i2 < iterable.length; i2++) {
-          iterable[i2]();
-        }
-        this.subscriptions = [];
-        this.starting = [];
-      }
-      count() {
-        if (this.unsubscribed) {
-          return 0;
-        }
-        return this.subscriptions.length + this.starting.length;
-      }
-      empty() {
-        return this.count() === 0;
-      }
-    };
-    Source = class {
-      constructor(obs, sync) {
-        this._isSource = true;
-        this.flatten = true;
-        this.ended = false;
-        this.obs = obs;
-        this.sync = sync;
-      }
-      subscribe(sink) {
-        return this.obs.subscribeInternal(sink);
-      }
-      toString() {
-        return this.obs.toString();
-      }
-      markEnded() {
-        this.ended = true;
-      }
-      mayHave(count) {
-        return true;
-      }
-    };
-    DefaultSource = class extends Source {
-      consume() {
-        return this.value;
-      }
-      push(x3) {
-        this.value = x3;
-      }
-      hasAtLeast(c3) {
-        return !!this.value;
-      }
-    };
-    ConsumingSource = class extends Source {
-      constructor(obs, sync) {
-        super(obs, sync);
-        this.flatten = false;
-        this.queue = [];
-      }
-      consume() {
-        return this.queue.shift();
-      }
-      push(x3) {
-        this.queue.push(x3);
-      }
-      mayHave(count) {
-        return !this.ended || this.queue.length >= count;
-      }
-      hasAtLeast(count) {
-        return this.queue.length >= count;
-      }
-    };
-    BufferingSource = class extends Source {
-      constructor(obs) {
-        super(obs, true);
-        this.queue = [];
-      }
-      consume() {
-        const values4 = this.queue;
-        this.queue = [];
-        return {
-          value: values4
-        };
-      }
-      push(x3) {
-        return this.queue.push(x3.value);
-      }
-      hasAtLeast(count) {
-        return true;
-      }
-    };
-    endMarker = {};
-    spies = [];
-    running = false;
-    Dispatcher = class {
-      constructor(observable, _subscribe, _handleEvent) {
-        this.pushing = false;
-        this.ended = false;
-        this.prevError = void 0;
-        this.unsubSrc = void 0;
-        this._subscribe = _subscribe;
-        this._handleEvent = _handleEvent;
-        this.subscribe = _.bind(this.subscribe, this);
-        this.handleEvent = _.bind(this.handleEvent, this);
-        this.subscriptions = [];
-        this.observable = observable;
-        this.queue = [];
-      }
-      hasSubscribers() {
-        return this.subscriptions.length > 0;
-      }
-      removeSub(subscription) {
-        this.subscriptions = _.without(subscription, this.subscriptions);
-        return this.subscriptions;
-      }
-      push(event) {
-        if (event.isEnd) {
-          this.ended = true;
-        }
-        return UpdateBarrier.inTransaction(event, this, this.pushIt, [event]);
-      }
-      pushToSubscriptions(event) {
-        try {
-          let tmp = this.subscriptions;
-          const len = tmp.length;
-          for (let i2 = 0; i2 < len; i2++) {
-            const sub = tmp[i2];
-            let reply = sub.sink(event);
-            if (reply === noMore || event.isEnd) {
-              this.removeSub(sub);
-            }
-          }
-          return true;
-        } catch (error) {
-          this.pushing = false;
-          this.queue = [];
-          throw error;
-        }
-      }
-      pushIt(event) {
-        if (!this.pushing) {
-          if (event === this.prevError) {
-            return;
-          }
-          if (event.isError) {
-            this.prevError = event;
-          }
-          this.pushing = true;
-          this.pushToSubscriptions(event);
-          this.pushing = false;
-          while (true) {
-            let e2 = this.queue.shift();
-            if (e2) {
-              this.push(e2);
-            } else {
-              break;
-            }
-          }
-          if (this.hasSubscribers()) {
-            return more;
-          } else {
-            this.unsubscribeFromSource();
-            return noMore;
-          }
-        } else {
-          this.queue.push(event);
-          return more;
-        }
-      }
-      handleEvent(event) {
-        if (this._handleEvent) {
-          return this._handleEvent(event);
-        } else {
-          return this.push(event);
-        }
-      }
-      unsubscribeFromSource() {
-        if (this.unsubSrc) {
-          this.unsubSrc();
-        }
-        this.unsubSrc = void 0;
-      }
-      subscribe(sink) {
-        if (this.ended) {
-          sink(endEvent());
-          return nop;
-        } else {
-          assertFunction(sink);
-          let subscription = {
-            sink
-          };
-          this.subscriptions.push(subscription);
-          if (this.subscriptions.length === 1) {
-            this.unsubSrc = this._subscribe(this.handleEvent);
-            assertFunction(this.unsubSrc);
-          }
-          return () => {
-            this.removeSub(subscription);
-            if (!this.hasSubscribers()) {
-              return this.unsubscribeFromSource();
+    throwTransferHandler = {
+      canHandle: (value) => isObject(value) && throwMarker in value,
+      serialize({ value }) {
+        let serialized;
+        if (value instanceof Error) {
+          serialized = {
+            isError: true,
+            value: {
+              message: value.message,
+              name: value.name,
+              stack: value.stack
             }
           };
-        }
-      }
-      inspect() {
-        return this.observable.toString();
-      }
-    };
-    PropertyDispatcher = class extends Dispatcher {
-      constructor(property, subscribe, handleEvent) {
-        super(property, subscribe, handleEvent);
-        this.current = none();
-        this.propertyEnded = false;
-        this.subscribe = _.bind(this.subscribe, this);
-      }
-      push(event) {
-        if (event.isEnd) {
-          this.propertyEnded = true;
-        }
-        if (event instanceof Value) {
-          this.current = new Some(event);
-          this.currentValueRootId = UpdateBarrier.currentEventId();
-        } else if (event.hasValue) {
-          console.error("Unknown event, two Bacons loaded?", event.constructor);
-        }
-        return super.push(event);
-      }
-      maybeSubSource(sink, reply) {
-        if (reply === noMore) {
-          return nop;
-        } else if (this.propertyEnded) {
-          sink(endEvent());
-          return nop;
         } else {
-          return super.subscribe(sink);
+          serialized = { isError: false, value };
         }
-      }
-      subscribe(sink) {
-        var reply = more;
-        if (this.current.isDefined && (this.hasSubscribers() || this.propertyEnded)) {
-          var dispatchingId = UpdateBarrier.currentEventId();
-          var valId = this.currentValueRootId;
-          if (!this.propertyEnded && valId && dispatchingId && dispatchingId !== valId) {
-            UpdateBarrier.whenDoneWith(this.observable, () => {
-              if (this.currentValueRootId === valId) {
-                return sink(initialEvent(this.current.get().value));
-              }
-            });
-            return this.maybeSubSource(sink, reply);
-          } else {
-            UpdateBarrier.inTransaction(void 0, this, () => {
-              reply = sink(initialEvent(this.current.get().value));
-              return reply;
-            }, []);
-            return this.maybeSubSource(sink, reply);
-          }
-        } else {
-          return this.maybeSubSource(sink, reply);
+        return [serialized, []];
+      },
+      deserialize(serialized) {
+        if (serialized.isError) {
+          throw Object.assign(new Error(serialized.value.message), serialized.value);
         }
-      }
-      inspect() {
-        return this.observable + " current= " + this.current;
+        throw serialized.value;
       }
     };
-    Buffer2 = class {
-      constructor(onFlush, onInput) {
-        this.push = (e2) => more;
-        this.scheduled = null;
-        this.end = void 0;
-        this.values = [];
-        this.onFlush = onFlush;
-        this.onInput = onInput;
-      }
-      flush() {
-        if (this.scheduled) {
-          GlobalScheduler.scheduler.clearTimeout(this.scheduled);
-          this.scheduled = null;
-        }
-        if (this.values.length > 0) {
-          var valuesToPush = this.values;
-          this.values = [];
-          var reply = this.push(nextEvent(valuesToPush));
-          if (this.end != null) {
-            return this.push(this.end);
-          } else if (reply !== noMore) {
-            return this.onFlush(this);
-          }
-        } else {
-          if (this.end != null) {
-            return this.push(this.end);
-          }
-        }
-      }
-      schedule(delay2) {
-        if (!this.scheduled) {
-          return this.scheduled = delay2(() => {
-            return this.flush();
-          });
-        }
-      }
-    };
-    nullMarker = {};
-    idCounter = 0;
-    Observable = class {
-      constructor(desc) {
-        this.id = ++idCounter;
-        this._isObservable = true;
-        this.desc = desc;
-        this.initialDesc = desc;
-      }
-      awaiting(other) {
-        return awaiting(this, other);
-      }
-      bufferingThrottle(minimumInterval) {
-        return bufferingThrottle(this, minimumInterval);
-      }
-      combine(right2, f2) {
-        return combineTwo(this, right2, f2).withDesc(new Desc(this, "combine", [right2, f2]));
-      }
-      debounce(minimumInterval) {
-        return debounce(this, minimumInterval);
-      }
-      debounceImmediate(minimumInterval) {
-        return debounceImmediate(this, minimumInterval);
-      }
-      decode(cases) {
-        return decode(this, cases);
-      }
-      delay(delayMs) {
-        return delay(this, delayMs);
-      }
-      deps() {
-        return this.desc.deps();
-      }
-      diff(start, f2) {
-        return diff(this, start, f2);
-      }
-      doAction(f2) {
-        return this.transform(doActionT(f2), new Desc(this, "doAction", [f2]));
-      }
-      doEnd(f2) {
-        return this.transform(doEndT(f2), new Desc(this, "doEnd", [f2]));
-      }
-      doError(f2) {
-        return this.transform(doErrorT(f2), new Desc(this, "doError", [f2]));
-      }
-      doLog(...args) {
-        return this.transform(doLogT(args), new Desc(this, "doLog", args));
-      }
-      endAsValue() {
-        return endAsValue(this);
-      }
-      endOnError(predicate = (x3) => true) {
-        return endOnError(this, predicate);
-      }
-      errors() {
-        return this.filter((x3) => false).withDesc(new Desc(this, "errors"));
-      }
-      filter(f2) {
-        return filter$1(this, f2);
-      }
-      first() {
-        return take(1, this, new Desc(this, "first"));
-      }
-      firstToPromise(PromiseCtr) {
-        return firstToPromise(this, PromiseCtr);
-      }
-      fold(seed, f2) {
-        return fold$1(this, seed, f2);
-      }
-      forEach(f2 = nullSink) {
-        return this.onValue(f2);
-      }
-      holdWhen(valve) {
-        return holdWhen(this, valve);
-      }
-      inspect() {
-        return this.toString();
-      }
-      internalDeps() {
-        return this.initialDesc.deps();
-      }
-      last() {
-        return last$1(this);
-      }
-      log(...args) {
-        log(args, this);
-        return this;
-      }
-      mapEnd(f2) {
-        return this.transform(mapEndT(f2), new Desc(this, "mapEnd", [f2]));
-      }
-      mapError(f2) {
-        return this.transform(mapErrorT(f2), new Desc(this, "mapError", [f2]));
-      }
-      name(name) {
-        this._name = name;
-        return this;
-      }
-      onEnd(f2 = nullVoidSink) {
-        return this.subscribe(function(event) {
-          if (event.isEnd) {
-            return f2();
-          }
-          return more;
-        });
-      }
-      onError(f2 = nullSink) {
-        return this.subscribe(function(event) {
-          if (isError(event)) {
-            return f2(event.error);
-          }
-          return more;
-        });
-      }
-      onValue(f2 = nullSink) {
-        return this.subscribe(function(event) {
-          if (hasValue(event)) {
-            return f2(event.value);
-          }
-          return more;
-        });
-      }
-      onValues(f2) {
-        return this.onValue(function(args) {
-          return f2(...args);
-        });
-      }
-      reduce(seed, f2) {
-        return fold$1(this, seed, f2);
-      }
-      sampledBy(sampler) {
-        return sampledBy(this, sampler, arguments[1]);
-      }
-      scan(seed, f2) {
-        return scan(this, seed, f2);
-      }
-      skip(count) {
-        return skip(this, count);
-      }
-      skipDuplicates(isEqual) {
-        return skipDuplicates(this, isEqual);
-      }
-      skipErrors() {
-        return skipErrors(this);
-      }
-      skipUntil(starter) {
-        return skipUntil(this, starter);
-      }
-      skipWhile(f2) {
-        return skipWhile(this, f2);
-      }
-      slidingWindow(maxValues, minValues = 0) {
-        return slidingWindow(this, maxValues, minValues);
-      }
-      subscribe(sink = nullSink) {
-        return UpdateBarrier.wrappedSubscribe(this, (sink2) => this.subscribeInternal(sink2), sink);
-      }
-      take(count) {
-        return take(count, this);
-      }
-      takeUntil(stopper) {
-        return takeUntil(this, stopper);
-      }
-      takeWhile(f2) {
-        return takeWhile(this, f2);
-      }
-      throttle(minimumInterval) {
-        return throttle(this, minimumInterval);
-      }
-      toPromise(PromiseCtr) {
-        return toPromise(this, PromiseCtr);
-      }
-      toString() {
-        if (this._name) {
-          return this._name;
-        } else {
-          return this.desc.toString();
-        }
-      }
-      withDesc(desc) {
-        if (desc)
-          this.desc = desc;
-        return this;
-      }
-      withDescription(context, method, ...args) {
-        this.desc = describe(context, method, ...args);
-        return this;
-      }
-      zip(other, f2) {
-        return zip(this, other, f2);
-      }
-    };
-    Property = class extends Observable {
-      constructor(desc, subscribe, handler) {
-        super(desc);
-        this._isProperty = true;
-        assertFunction(subscribe);
-        this.dispatcher = new PropertyDispatcher(this, subscribe, handler);
-        registerObs(this);
-      }
-      and(other) {
-        return and(this, other);
-      }
-      changes() {
-        return new EventStream(new Desc(this, "changes", []), (sink) => this.dispatcher.subscribe(function(event) {
-          if (!event.isInitial) {
-            return sink(event);
-          }
-          return more;
-        }));
-      }
-      concat(other) {
-        return this.transformChanges(describe(this, "concat", other), (changes) => changes.concat(other));
-      }
-      transformChanges(desc, f2) {
-        return transformPropertyChanges(this, f2, desc);
-      }
-      flatMap(f2) {
-        return flatMap$1(this, f2);
-      }
-      flatMapConcat(f2) {
-        return flatMapConcat(this, f2);
-      }
-      flatMapError(f2) {
-        return flatMapError(this, f2);
-      }
-      flatMapEvent(f2) {
-        return flatMapEvent(this, f2);
-      }
-      flatMapFirst(f2) {
-        return flatMapFirst(this, f2);
-      }
-      flatMapLatest(f2) {
-        return flatMapLatest(this, f2);
-      }
-      flatMapWithConcurrencyLimit(limit, f2) {
-        return flatMapWithConcurrencyLimit(this, limit, f2);
-      }
-      groupBy(keyF, limitF) {
-        return groupBy(this, keyF, limitF);
-      }
-      map(f2) {
-        return map$1(this, f2);
-      }
-      not() {
-        return not(this);
-      }
-      or(other) {
-        return or(this, other);
-      }
-      sample(interval2) {
-        return sampleP(this, interval2);
-      }
-      startWith(seed) {
-        return startWithP(this, seed);
-      }
-      subscribeInternal(sink = nullSink) {
-        return this.dispatcher.subscribe(sink);
-      }
-      toEventStream(options) {
-        return new EventStream(new Desc(this, "toEventStream", []), (sink) => this.subscribeInternal(function(event) {
-          return sink(event.toNext());
-        }), void 0, options);
-      }
-      toProperty() {
-        assertNoArguments(arguments);
-        return this;
-      }
-      transform(transformer, desc) {
-        return transformP(this, transformer, desc);
-      }
-      withLatestFrom(samplee, f2) {
-        return withLatestFromP(this, samplee, f2);
-      }
-      withStateMachine(initState, f2) {
-        return withStateMachine(initState, f2, this);
-      }
-    };
-    allowSync = { forceAsync: false };
-    EventStream = class extends Observable {
-      constructor(desc, subscribe, handler, options) {
-        super(desc);
-        this._isEventStream = true;
-        if (options !== allowSync) {
-          subscribe = asyncWrapSubscribe(this, subscribe);
-        }
-        this.dispatcher = new Dispatcher(this, subscribe, handler);
-        registerObs(this);
-      }
-      bufferWithTime(delay2) {
-        return bufferWithTime(this, delay2);
-      }
-      bufferWithCount(count) {
-        return bufferWithCount(this, count);
-      }
-      bufferWithTimeOrCount(delay2, count) {
-        return bufferWithTimeOrCount(this, delay2, count);
-      }
-      changes() {
-        return this;
-      }
-      concat(other, options) {
-        return concatE(this, other, options);
-      }
-      transformChanges(desc, f2) {
-        return f2(this).withDesc(desc);
-      }
-      flatMap(f2) {
-        return flatMap$1(this, f2);
-      }
-      flatMapConcat(f2) {
-        return flatMapConcat(this, f2);
-      }
-      flatMapError(f2) {
-        return flatMapError(this, f2);
-      }
-      flatMapFirst(f2) {
-        return flatMapFirst(this, f2);
-      }
-      flatMapLatest(f2) {
-        return flatMapLatest(this, f2);
-      }
-      flatMapWithConcurrencyLimit(limit, f2) {
-        return flatMapWithConcurrencyLimit(this, limit, f2);
-      }
-      flatMapEvent(f2) {
-        return flatMapEvent(this, f2);
-      }
-      flatScan(seed, f2) {
-        return flatScan(this, seed, f2);
-      }
-      groupBy(keyF, limitF) {
-        return groupBy(this, keyF, limitF);
-      }
-      map(f2) {
-        return map$1(this, f2);
-      }
-      merge(other) {
-        assertEventStream(other);
-        return mergeAll(this, other).withDesc(new Desc(this, "merge", [other]));
-      }
-      not() {
-        return not(this);
-      }
-      startWith(seed) {
-        return startWithE(this, seed);
-      }
-      subscribeInternal(sink = nullSink) {
-        return this.dispatcher.subscribe(sink);
-      }
-      toEventStream() {
-        return this;
-      }
-      toProperty(initValue) {
-        let usedInitValue = arguments.length ? toOption(initValue) : none();
-        let disp = this.dispatcher;
-        let desc = new Desc(this, "toProperty", Array.prototype.slice.apply(arguments));
-        let streamSubscribe = disp.subscribe;
-        return new Property(desc, streamSubscribeToPropertySubscribe(usedInitValue, streamSubscribe));
-      }
-      transform(transformer, desc) {
-        return transformE(this, transformer, desc);
-      }
-      withLatestFrom(samplee, f2) {
-        return withLatestFromE(this, samplee, f2);
-      }
-      withStateMachine(initState, f2) {
-        return withStateMachine(initState, f2, this);
-      }
-    };
-    ESObservable = class {
-      constructor(observable) {
-        this.observable = observable;
-      }
-      subscribe(observerOrOnNext, onError, onComplete) {
-        const observer = typeof observerOrOnNext === "function" ? { next: observerOrOnNext, error: onError, complete: onComplete } : observerOrOnNext;
-        const subscription = {
-          closed: false,
-          unsubscribe: function() {
-            subscription.closed = true;
-            cancel();
-          }
-        };
-        const cancel = this.observable.subscribe(function(event) {
-          if (hasValue(event) && observer.next) {
-            observer.next(event.value);
-          } else if (isError(event)) {
-            if (observer.error)
-              observer.error(event.error);
-            subscription.unsubscribe();
-          } else if (event.isEnd) {
-            subscription.closed = true;
-            if (observer.complete)
-              observer.complete();
-          }
-        });
-        return subscription;
-      }
-    };
-    ESObservable.prototype[symbol("observable")] = function() {
-      return this;
-    };
-    Observable.prototype.toESObservable = function() {
-      return new ESObservable(this);
-    };
-    Observable.prototype[symbol("observable")] = Observable.prototype.toESObservable;
-    eventMethods = [
-      ["addEventListener", "removeEventListener"],
-      ["addListener", "removeListener"],
-      ["on", "off"],
-      ["bind", "unbind"]
-    ];
-    findHandlerMethods = function(target) {
-      var pair;
-      for (var i2 = 0; i2 < eventMethods.length; i2++) {
-        pair = eventMethods[i2];
-        var methodPair = [target[pair[0]], target[pair[1]]];
-        if (methodPair[0] && methodPair[1]) {
-          return methodPair;
-        }
-      }
-      for (var j2 = 0; j2 < eventMethods.length; j2++) {
-        pair = eventMethods[j2];
-        var addListener = target[pair[0]];
-        if (addListener) {
-          return [addListener, function() {
-          }];
-        }
-      }
-      throw new Error("No suitable event methods in " + target);
-    };
-    makeFunction_ = withMethodCallSupport(function(f2, ...args) {
-      if (_.isFunction(f2)) {
-        if (args.length) {
-          return partiallyApplied(f2, args);
-        } else {
-          return f2;
-        }
-      } else {
-        return _.always(f2);
-      }
-    });
+    transferHandlers = /* @__PURE__ */ new Map([
+      ["proxy", proxyTransferHandler],
+      ["throw", throwTransferHandler]
+    ]);
+    transferCache = /* @__PURE__ */ new WeakMap();
   }
 });
 
@@ -3008,12 +382,12 @@ var init_add = __esm({
 });
 
 // node_modules/.pnpm/ramda@0.28.0/node_modules/ramda/es/internal/_concat.js
-function _concat(set1, set22) {
+function _concat(set1, set2) {
   set1 = set1 || [];
-  set22 = set22 || [];
+  set2 = set2 || [];
   var idx;
   var len1 = set1.length;
-  var len2 = set22.length;
+  var len2 = set2.length;
   var result = [];
   idx = 0;
   while (idx < len1) {
@@ -3022,7 +396,7 @@ function _concat(set1, set22) {
   }
   idx = 0;
   while (idx < len2) {
-    result[result.length] = set22[idx];
+    result[result.length] = set2[idx];
     idx += 1;
   }
   return result;
@@ -3380,17 +754,17 @@ var init_xwrap = __esm({
 });
 
 // node_modules/.pnpm/ramda@0.28.0/node_modules/ramda/es/bind.js
-var bind2, bind_default;
+var bind, bind_default;
 var init_bind = __esm({
   "node_modules/.pnpm/ramda@0.28.0/node_modules/ramda/es/bind.js"() {
     init_arity();
     init_curry2();
-    bind2 = /* @__PURE__ */ _curry2(function bind3(fn2, thisObj) {
+    bind = /* @__PURE__ */ _curry2(function bind2(fn2, thisObj) {
       return _arity(fn2.length, function() {
         return fn2.apply(thisObj, arguments);
       });
     });
-    bind_default = bind2;
+    bind_default = bind;
   }
 });
 
@@ -3489,14 +863,14 @@ var init_has = __esm({
 });
 
 // node_modules/.pnpm/ramda@0.28.0/node_modules/ramda/es/internal/_isArguments.js
-var toString2, _isArguments, isArguments_default;
+var toString, _isArguments, isArguments_default;
 var init_isArguments = __esm({
   "node_modules/.pnpm/ramda@0.28.0/node_modules/ramda/es/internal/_isArguments.js"() {
     init_has();
-    toString2 = Object.prototype.toString;
+    toString = Object.prototype.toString;
     _isArguments = /* @__PURE__ */ function() {
-      return toString2.call(arguments) === "[object Arguments]" ? function _isArguments2(x3) {
-        return toString2.call(x3) === "[object Arguments]";
+      return toString.call(arguments) === "[object Arguments]" ? function _isArguments2(x3) {
+        return toString.call(x3) === "[object Arguments]";
       } : function _isArguments2(x3) {
         return _has("callee", x3);
       };
@@ -3506,7 +880,7 @@ var init_isArguments = __esm({
 });
 
 // node_modules/.pnpm/ramda@0.28.0/node_modules/ramda/es/keys.js
-var hasEnumBug, nonEnumerableProps, hasArgsEnumBug, contains2, keys, keys_default;
+var hasEnumBug, nonEnumerableProps, hasArgsEnumBug, contains, keys, keys_default;
 var init_keys = __esm({
   "node_modules/.pnpm/ramda@0.28.0/node_modules/ramda/es/keys.js"() {
     init_curry1();
@@ -3520,7 +894,7 @@ var init_keys = __esm({
       "use strict";
       return arguments.propertyIsEnumerable("length");
     }();
-    contains2 = function contains3(list, item) {
+    contains = function contains2(list, item) {
       var idx = 0;
       while (idx < list.length) {
         if (list[idx] === item) {
@@ -3548,7 +922,7 @@ var init_keys = __esm({
         nIdx = nonEnumerableProps.length - 1;
         while (nIdx >= 0) {
           prop3 = nonEnumerableProps[nIdx];
-          if (_has(prop3, obj) && !contains2(ks, prop3)) {
+          if (_has(prop3, obj) && !contains(ks, prop3)) {
             ks[ks.length] = prop3;
           }
           nIdx -= 1;
@@ -3561,7 +935,7 @@ var init_keys = __esm({
 });
 
 // node_modules/.pnpm/ramda@0.28.0/node_modules/ramda/es/map.js
-var map2, map_default;
+var map, map_default;
 var init_map2 = __esm({
   "node_modules/.pnpm/ramda@0.28.0/node_modules/ramda/es/map.js"() {
     init_curry2();
@@ -3571,7 +945,7 @@ var init_map2 = __esm({
     init_xmap();
     init_curryN2();
     init_keys();
-    map2 = /* @__PURE__ */ _curry2(/* @__PURE__ */ _dispatchable(["fantasy-land/map", "map"], xmap_default, function map3(fn2, functor) {
+    map = /* @__PURE__ */ _curry2(/* @__PURE__ */ _dispatchable(["fantasy-land/map", "map"], xmap_default, function map2(fn2, functor) {
       switch (Object.prototype.toString.call(functor)) {
         case "[object Function]":
           return curryN_default(functor.length, function() {
@@ -3586,7 +960,7 @@ var init_map2 = __esm({
           return _map(fn2, functor);
       }
     }));
-    map_default = map2;
+    map_default = map;
   }
 });
 
@@ -4038,14 +1412,14 @@ var init_comparator = __esm({
 });
 
 // node_modules/.pnpm/ramda@0.28.0/node_modules/ramda/es/not.js
-var not2, not_default;
+var not, not_default;
 var init_not = __esm({
   "node_modules/.pnpm/ramda@0.28.0/node_modules/ramda/es/not.js"() {
     init_curry1();
-    not2 = /* @__PURE__ */ _curry1(function not3(a2) {
+    not = /* @__PURE__ */ _curry1(function not2(a2) {
       return !a2;
     });
-    not_default = not2;
+    not_default = not;
   }
 });
 
@@ -6486,20 +3860,16 @@ var init_es = __esm({
   }
 });
 
-// src/util.ts
-var isFunction2, isNotNil, timeDifference, random, createEnum, values3;
-var init_util = __esm({
-  "src/util.ts"() {
+// src/utilities/generic.ts
+var isFunction, isNotNil, random, createEnum;
+var init_generic = __esm({
+  "src/utilities/generic.ts"() {
     init_es();
-    init_GlobalState();
-    isFunction2 = (item) => typeof item === "function";
+    isFunction = (item) => typeof item === "function";
     isNotNil = complement_default(isNil_default);
-    timeDifference = curry_default((timeSince, lastTime) => {
-      return Date.now() - lastTime >= timeSince;
-    });
-    random = (from3, to = 0) => {
-      const min = Math.min(from3, to);
-      const max3 = Math.max(from3, to);
+    random = (from2, to = 0) => {
+      const min = Math.min(from2, to);
+      const max3 = Math.max(from2, to);
       return Math.random() * (max3 - min) + min;
     };
     createEnum = (...args) => {
@@ -6508,18 +3878,6 @@ var init_util = __esm({
         [index, enumName]
       ]).flat());
     };
-    values3 = (obj) => Object.values(obj);
-  }
-});
-
-// src/State/GlobalState.ts
-var GameStateSymbol, createGlobalStateArray;
-var init_GlobalState = __esm({
-  "src/State/GlobalState.ts"() {
-    init_es();
-    init_util();
-    GameStateSymbol = Symbol("GameState");
-    createGlobalStateArray = () => ["isGlobalState"];
   }
 });
 
@@ -6611,7 +3969,7 @@ function b(r2) {
 function m(n2, r2) {
   tn[n2] || (tn[n2] = r2);
 }
-function _2() {
+function _() {
   return U || n(0), U;
 }
 function j(n2, r2) {
@@ -6693,12 +4051,12 @@ function E(n2) {
 }
 function R(n2, r2, t2) {
   var e2 = s(r2) ? b("MapSet").N(r2, t2) : v(r2) ? b("MapSet").T(r2, t2) : n2.g ? function(n3, r3) {
-    var t3 = Array.isArray(n3), e3 = { i: t3 ? 1 : 0, A: r3 ? r3.A : _2(), P: false, I: false, D: {}, l: r3, t: n3, k: null, o: null, j: null, C: false }, i2 = e3, o2 = en;
+    var t3 = Array.isArray(n3), e3 = { i: t3 ? 1 : 0, A: r3 ? r3.A : _(), P: false, I: false, D: {}, l: r3, t: n3, k: null, o: null, j: null, C: false }, i2 = e3, o2 = en;
     t3 && (i2 = [e3], o2 = on);
     var u2 = Proxy.revocable(i2, o2), a2 = u2.revoke, f2 = u2.proxy;
     return e3.k = f2, e3.j = a2, f2;
   }(r2, t2) : b("ES5").J(r2, t2);
-  return (t2 ? t2.A : _2()).p.push(e2), e2;
+  return (t2 ? t2.A : _()).p.push(e2), e2;
 }
 function D(e2) {
   return r(e2) || n(22, e2), function n2(r2) {
@@ -6794,7 +4152,7 @@ function N() {
         o4[f3] = t2(f3, n3 || !!o4[f3].enumerable);
       }
       return Object.create(Object.getPrototypeOf(r3), o4);
-    }(e3, n2), o3 = { i: e3 ? 5 : 4, A: r2 ? r2.A : _2(), P: false, I: false, D: {}, l: r2, t: n2, k: i2, o: null, O: false, C: false };
+    }(e3, n2), o3 = { i: e3 ? 5 : 4, A: r2 ? r2.A : _(), P: false, I: false, D: {}, l: r2, t: n2, k: i2, o: null, O: false, C: false };
     return Object.defineProperty(i2, Q, { value: o3, writable: true }), i2;
   }, S: function(n2, t3, o3) {
     o3 ? r(t3) && t3[Q].A === n2 && e2(n2.p) : (n2.u && function n3(r2) {
@@ -6978,7 +4336,7 @@ function C() {
     })(n2, r3);
   }, f2 = function() {
     function n2(n3, r3) {
-      return this[Q] = { i: 2, l: r3, A: r3 ? r3.A : _2(), P: false, I: false, o: void 0, D: void 0, t: n3, k: this, C: false, O: false }, this;
+      return this[Q] = { i: 2, l: r3, A: r3 ? r3.A : _(), P: false, I: false, o: void 0, D: void 0, t: n3, k: this, C: false, O: false }, this;
     }
     r2(n2, Map);
     var o3 = n2.prototype;
@@ -7040,7 +4398,7 @@ function C() {
     }, n2;
   }(), c3 = function() {
     function n2(n3, r3) {
-      return this[Q] = { i: 3, l: r3, A: r3 ? r3.A : _2(), P: false, I: false, o: void 0, t: n3, k: this, p: /* @__PURE__ */ new Map(), O: false, C: false }, this;
+      return this[Q] = { i: 3, l: r3, A: r3 ? r3.A : _(), P: false, I: false, o: void 0, t: n3, k: this, p: /* @__PURE__ */ new Map(), O: false, C: false }, this;
     }
     r2(n2, Set);
     var t2 = n2.prototype;
@@ -7275,14 +4633,14 @@ var init_immer_esm = __esm({
 var State, StateImmer, SValue, SExtendValue, SExtend, SMapValues, SFilterValues, SMapExtendValues;
 var init_State = __esm({
   "src/State/State.ts"() {
-    init_util();
+    init_generic();
     init_immer_esm();
     J();
     State = (initialState) => {
       let internalState = initialState;
       return (handler) => {
         if (handler) {
-          internalState = isFunction2(handler) ? handler(internalState) : handler;
+          internalState = isFunction(handler) ? handler(internalState) : handler;
         }
         return internalState;
       };
@@ -7301,16 +4659,16 @@ var init_State = __esm({
     SValue = (key, handler) => (internalState) => {
       return {
         ...internalState,
-        [key]: isFunction2(handler) ? handler(internalState[key]) : handler
+        [key]: isFunction(handler) ? handler(internalState[key]) : handler
       };
     };
     SExtendValue = (key, handler) => SValue(key, (item) => ({
       ...item,
-      ...isFunction2(handler) ? handler(item) : handler
+      ...isFunction(handler) ? handler(item) : handler
     }));
     SExtend = (changes) => (original) => ({
       ...original,
-      ...isFunction2(changes) ? changes(original) : changes
+      ...isFunction(changes) ? changes(original) : changes
     });
     SMapValues = (handler) => (items) => {
       const r2 = Object.entries(items).map(([prop3, value]) => [prop3, handler(value, prop3)]);
@@ -7329,11 +4687,11 @@ var init_State = __esm({
   }
 });
 
-// src/draw2.ts
-var activeContext, renderContext, sendToContext, e, c2, hf, hs, drawHandlers, arcTo, beginPath, bezierCurveTo, clearRect, clip, closePath, createConicGradient, createImageData, createLinearGradient, createPattern, createRadialGradient, drawFocusIfNeeded, drawImage, ellipse, fill, fillRect, fillText, getContextAttributes, getImageData, getLineDash, getTransform, isContextLost, isPointInPath, isPointInStroke, lineTo, measureText, moveTo, putImageData, quadraticCurveTo, rect, reset, resetTransform, restore, rotate, roundRect, save, scale, setLineDash, setTransform, stroke, strokeRect, strokeText, transform, translate, direction, fillStyle, filter2, font, fontKerning, fontStretch, fontVariantCaps, globalAlpha, globalCompositeOperation, imageSmoothingEnabled, imageSmoothingQuality, letterSpacing, lineCap, lineDashOffset, lineJoin, lineWidth, miterLimit, shadowBlur, shadowColor, shadowOffsetX, shadowOffsetY, strokeStyle, textAlign, textBaseline, textRendering, wordSpacing;
-var init_draw2 = __esm({
-  "src/draw2.ts"() {
-    init_util();
+// src/draw.ts
+var activeContext, renderContext, sendToContext, e, c2, hf, hs, drawHandlers, arcTo, beginPath, bezierCurveTo, clearRect, clip, closePath, createConicGradient, createImageData, createLinearGradient, createPattern, createRadialGradient, drawFocusIfNeeded, drawImage, ellipse, fill, fillRect, fillText, getContextAttributes, getImageData, getLineDash, getTransform, isContextLost, isPointInPath, isPointInStroke, lineTo, measureText, moveTo, putImageData, quadraticCurveTo, rect, reset, resetTransform, restore, rotate, roundRect, save, scale, setLineDash, setTransform, stroke, strokeRect, strokeText, transform, translate, direction, fillStyle, filter, font, fontKerning, fontStretch, fontVariantCaps, globalAlpha, globalCompositeOperation, imageSmoothingEnabled, imageSmoothingQuality, letterSpacing, lineCap, lineDashOffset, lineJoin, lineWidth, miterLimit, shadowBlur, shadowColor, shadowOffsetX, shadowOffsetY, strokeStyle, textAlign, textBaseline, textRendering, wordSpacing;
+var init_draw = __esm({
+  "src/draw.ts"() {
+    init_generic();
     activeContext = null;
     renderContext = (method) => {
       activeContext = [];
@@ -7348,7 +4706,6 @@ var init_draw2 = __esm({
       activeContext.push(item);
     };
     e = createEnum("arcTo", "beginPath", "bezierCurveTo", "clearRect", "clip", "closePath", "createConicGradient", "createImageData", "createLinearGradient", "createPattern", "createRadialGradient", "drawFocusIfNeeded", "drawImage", "ellipse", "fill", "fillRect", "fillText", "getContextAttributes", "getImageData", "getLineDash", "getTransform", "isContextLost", "isPointInPath", "isPointInStroke", "lineTo", "measureText", "moveTo", "putImageData", "quadraticCurveTo", "rect", "reset", "resetTransform", "restore", "rotate", "roundRect", "save", "scale", "setLineDash", "setTransform", "stroke", "strokeRect", "strokeText", "transform", "translate", "direction", "fillStyle", "filter", "font", "fontKerning", "fontStretch", "fontVariantCaps", "globalAlpha", "globalCompositeOperation", "imageSmoothingEnabled", "imageSmoothingQuality", "letterSpacing", "lineCap", "lineDashOffset", "lineJoin", "lineWidth", "miterLimit", "shadowBlur", "shadowColor", "shadowOffsetX", "shadowOffsetY", "strokeStyle", "textAlign", "textBaseline", "textRendering", "wordSpacing");
-    console.log(e);
     c2 = (e2) => {
       return (...args) => sendToContext([e2, args]);
     };
@@ -7449,7 +4806,7 @@ var init_draw2 = __esm({
     drawHandlers.set(e.translate, hf());
     direction = c2(e.direction);
     fillStyle = c2(e.fillStyle);
-    filter2 = c2(e.filter);
+    filter = c2(e.filter);
     font = c2(e.font);
     fontKerning = c2(e.fontKerning);
     fontStretch = c2(e.fontStretch);
@@ -7503,29 +4860,47 @@ var init_draw2 = __esm({
 });
 
 // src/animate.ts
-function activate([canvasWorker, canvas]) {
-  function animate(t2, prevRenderState) {
+var animate_exports = {};
+__export(animate_exports, {
+  $$initiate: () => $$initiate,
+  activate: () => activate,
+  final: () => final,
+  fps: () => fps,
+  inputs: () => inputs,
+  physics: () => physics,
+  preframe: () => preframe,
+  prerender: () => prerender,
+  removal: () => removal,
+  render: () => render,
+  sentTracker: () => sentTracker,
+  timeDiffMS: () => timeDiffMS,
+  timeDiffS: () => timeDiffS,
+  timeMS: () => timeMS,
+  timeS: () => timeS,
+  update: () => update
+});
+function activate(canvasWorker2) {
+  function animate(t2) {
     attachTimes(t2);
     const stateMethods = [...$$initiate, ...inputs, ...preframe, ...physics, ...update];
     const renderMethods = [...prerender, ...render];
     const endMethods = [...removal, ...final];
     stateMethods.forEach((callback) => callback());
     const renderContext2 = renderContext(() => {
-      renderMethods.forEach((callback) => callback(canvas));
+      renderMethods.forEach((callback) => callback());
     });
     endMethods.forEach((callback) => callback());
-    canvasWorker.postMessage({ type: "NewRenderer2", handlers: renderContext2 });
-    frame((t3) => animate(t3, createGlobalStateArray()));
+    canvasWorker2.newRenderer2(renderContext2);
+    frame(animate);
   }
-  frame((t2) => animate(t2, createGlobalStateArray()));
+  frame(animate);
 }
-var $$initiate, inputs, preframe, physics, update, removal, prerender, render, final, timeMS, timeDiffMS, timeS, timeDiffS, fps, calculateFpsFromDiff, attachTimes, frame;
+var $$initiate, inputs, preframe, physics, update, removal, prerender, render, final, timeMS, timeDiffMS, timeS, timeDiffS, fps, calculateFpsFromDiff, attachTimes, frame, sentTracker;
 var init_animate = __esm({
   "src/animate.ts"() {
     init_CBTracker();
-    init_GlobalState();
     init_State();
-    init_draw2();
+    init_draw();
     $$initiate = CBTracker("$$initiate2");
     inputs = CBTracker("inputs2");
     preframe = CBTracker("preframe2");
@@ -7551,41 +4926,9 @@ var init_animate = __esm({
       fps(calculateFpsFromDiff(timeDiffS()));
     };
     frame = (method) => {
-      return window.requestAnimationFrame(method);
+      return requestAnimationFrame(method);
     };
-  }
-});
-
-// src/keys.ts
-var keys_exports = {};
-__export(keys_exports, {
-  isKeyDown: () => isKeyDown
-});
-var trackedKeys, frameSnapshotKeys, setKeyDown, setKeyUp, isKeyDown;
-var init_keys2 = __esm({
-  "src/keys.ts"() {
-    init_Bacon();
-    init_animate();
-    init_State();
-    trackedKeys = State({});
-    frameSnapshotKeys = State({});
-    setKeyDown = (code) => {
-      trackedKeys((keys4) => ({ ...keys4, [code]: true }));
-    };
-    setKeyUp = (code) => {
-      trackedKeys(({ [code]: _3, ...rest }) => rest);
-    };
-    inputs.add((gs) => {
-      frameSnapshotKeys(trackedKeys());
-      return gs;
-    });
-    fromEvent(window, "keydown").onValue(({ code }) => {
-      setKeyDown(code);
-    });
-    fromEvent(window, "keyup").onValue(({ code }) => {
-      setKeyUp(code);
-    });
-    isKeyDown = (keyString) => Boolean(frameSnapshotKeys()[keyString]);
+    sentTracker = /* @__PURE__ */ new WeakSet();
   }
 });
 
@@ -7596,12 +4939,12 @@ var init_Vector = __esm({
     init_es();
     getX = ([x3]) => x3;
     setX = ([_x, _y], value) => [value, _y];
-    getY = ([_3, y4]) => y4;
+    getY = ([_3, y3]) => y3;
     setY = ([_x], value) => [_x, value];
-    from = (x3 = 0, y4 = x3) => {
+    from = (x3 = 0, y3 = x3) => {
       if (Array.isArray(x3))
         return from(x3[0], x3[1]);
-      return [x3, y4];
+      return [x3, y3];
     };
     zero = () => from(0);
     x2 = (...args) => {
@@ -7632,6 +4975,3061 @@ var init_Vector = __esm({
   }
 });
 
+// src/canvas.ts
+var canvas_exports = {};
+__export(canvas_exports, {
+  call: () => call,
+  createCanvas: () => createCanvas,
+  fillRect: () => fillRect2,
+  fillStyle: () => fillStyle2,
+  restore: () => restore2,
+  save: () => save2,
+  set: () => set
+});
+var Canvas, call, set, save2, fillRect2, restore2, fillStyle2, createCanvas;
+var init_canvas = __esm({
+  "src/canvas.ts"() {
+    init_animate();
+    init_draw();
+    init_es();
+    init_Vector();
+    init_State();
+    Canvas = State({ width: 1920, height: 1080 });
+    call = curry_default((key, args, actions) => [...actions, ["c", key, args]]);
+    set = curry_default((key, value, actions) => [...actions, ["s", key, value]]);
+    save2 = call("save");
+    fillRect2 = call("fillRect");
+    restore2 = call("restore");
+    fillStyle2 = set("fillStyle");
+    createCanvas = () => {
+      const canvas = document.createElement("canvas");
+      const { width, height } = Canvas();
+      Object.assign(canvas, { width, height });
+      Object.assign(canvas.style, { border: "1px solid #ccc", maxWidth: "100%" });
+      document.body.appendChild(canvas);
+      return canvas;
+    };
+    prerender.add(() => {
+      const { width, height } = Canvas();
+      clearRect(...zero(), width, height);
+    });
+  }
+});
+
+// node_modules/.pnpm/baconjs@3.0.17/node_modules/baconjs/dist/Bacon.mjs
+function nop() {
+}
+function isObservable(x3) {
+  return x3 && x3._isObservable;
+}
+function all(xs, f2) {
+  for (var i2 = 0, x3; i2 < xs.length; i2++) {
+    x3 = xs[i2];
+    if (!f2(x3)) {
+      return false;
+    }
+  }
+  return true;
+}
+function always(x3) {
+  return () => x3;
+}
+function any(xs, f2) {
+  for (var i2 = 0, x3; i2 < xs.length; i2++) {
+    x3 = xs[i2];
+    if (f2(x3)) {
+      return true;
+    }
+  }
+  return false;
+}
+function bind3(fn2, me) {
+  return function() {
+    return fn2.apply(me, arguments);
+  };
+}
+function contains3(xs, x3) {
+  return indexOf(xs, x3) !== -1;
+}
+function each(xs, f2) {
+  for (var key in xs) {
+    if (Object.prototype.hasOwnProperty.call(xs, key)) {
+      var value = xs[key];
+      f2(key, value);
+    }
+  }
+}
+function empty(xs) {
+  return xs.length === 0;
+}
+function filter2(f2, xs) {
+  var filtered = [];
+  for (var i2 = 0, x3; i2 < xs.length; i2++) {
+    x3 = xs[i2];
+    if (f2(x3)) {
+      filtered.push(x3);
+    }
+  }
+  return filtered;
+}
+function flatMap(f2, xs) {
+  return fold(xs, [], function(ys, x3) {
+    return ys.concat(f2(x3));
+  });
+}
+function flip(f2) {
+  return (a2, b2) => f2(b2, a2);
+}
+function fold(xs, seed, f2) {
+  for (var i2 = 0, x3; i2 < xs.length; i2++) {
+    x3 = xs[i2];
+    seed = f2(seed, x3);
+  }
+  return seed;
+}
+function head(xs) {
+  return xs[0];
+}
+function id(x3) {
+  return x3;
+}
+function indexOfDefault(xs, x3) {
+  return xs.indexOf(x3);
+}
+function indexOfFallback(xs, x3) {
+  for (var i2 = 0, y3; i2 < xs.length; i2++) {
+    y3 = xs[i2];
+    if (x3 === y3) {
+      return i2;
+    }
+  }
+  return -1;
+}
+function indexWhere(xs, f2) {
+  for (var i2 = 0, y3; i2 < xs.length; i2++) {
+    y3 = xs[i2];
+    if (f2(y3)) {
+      return i2;
+    }
+  }
+  return -1;
+}
+function isFunction2(f2) {
+  return typeof f2 === "function";
+}
+function last(xs) {
+  return xs[xs.length - 1];
+}
+function map3(f2, xs) {
+  var result = [];
+  for (var i2 = 0, x3; i2 < xs.length; i2++) {
+    x3 = xs[i2];
+    result.push(f2(x3));
+  }
+  return result;
+}
+function negate(f2) {
+  return function(x3) {
+    return !f2(x3);
+  };
+}
+function remove(x3, xs) {
+  var i2 = indexOf(xs, x3);
+  if (i2 >= 0) {
+    return xs.splice(i2, 1);
+  }
+}
+function tail(xs) {
+  return xs.slice(1, xs.length);
+}
+function toArray(xs) {
+  return isArray2(xs) ? xs : [xs];
+}
+function toFunction(f2) {
+  if (typeof f2 == "function") {
+    return f2;
+  }
+  return (x3) => f2;
+}
+function toString2(obj) {
+  var hasProp = {}.hasOwnProperty;
+  try {
+    recursionDepth++;
+    if (obj == null) {
+      return "undefined";
+    } else if (isFunction2(obj)) {
+      return "function";
+    } else if (isArray2(obj)) {
+      if (recursionDepth > 5) {
+        return "[..]";
+      }
+      return "[" + map3(toString2, obj).toString() + "]";
+    } else if ((obj != null ? obj.toString : void 0) != null && obj.toString !== Object.prototype.toString) {
+      return obj.toString();
+    } else if (typeof obj === "object") {
+      if (recursionDepth > 5) {
+        return "{..}";
+      }
+      var results = [];
+      for (var key in obj) {
+        if (!hasProp.call(obj, key))
+          continue;
+        let value = function() {
+          try {
+            return obj[key];
+          } catch (error) {
+            return error;
+          }
+        }();
+        results.push(toString2(key) + ":" + toString2(value));
+      }
+      return "{" + results + "}";
+    } else {
+      return obj;
+    }
+  } finally {
+    recursionDepth--;
+  }
+}
+function without(x3, xs) {
+  return filter2(function(y3) {
+    return y3 !== x3;
+  }, xs);
+}
+function assert(message, condition) {
+  if (!condition) {
+    throw new Error(message);
+  }
+}
+function assertEventStream(event) {
+  if (!(event != null ? event._isEventStream : void 0)) {
+    throw new Error("not an EventStream : " + event);
+  }
+}
+function assertObservable(observable) {
+  if (!(observable != null ? observable._isObservable : void 0)) {
+    throw new Error("not an Observable : " + observable);
+  }
+}
+function assertFunction(f2) {
+  return assert("not a function : " + f2, _2.isFunction(f2));
+}
+function assertNoArguments(args) {
+  return assert("no arguments supported", args.length === 0);
+}
+function toString$1() {
+  return _2.toString({ rootEvent, processingAfters, waiterObs, waiters, aftersStack, aftersStackHeight, flushed });
+}
+function ensureStackHeight(h2) {
+  if (h2 <= aftersStackHeight)
+    return;
+  if (!aftersStack[h2 - 1]) {
+    aftersStack[h2 - 1] = [[], 0];
+  }
+  aftersStackHeight = h2;
+}
+function isInTransaction() {
+  return rootEvent !== void 0;
+}
+function soonButNotYet(obs, f2) {
+  if (rootEvent) {
+    whenDoneWith(obs, f2);
+  } else {
+    GlobalScheduler.scheduler.setTimeout(f2, 0);
+  }
+}
+function afterTransaction(obs, f2) {
+  if (rootEvent || processingAfters) {
+    ensureStackHeight(1);
+    var stackIndexForThisObs = 0;
+    while (stackIndexForThisObs < aftersStackHeight - 1) {
+      if (containsObs(obs, aftersStack[stackIndexForThisObs][0])) {
+        break;
+      }
+      stackIndexForThisObs++;
+    }
+    var listFromStack = aftersStack[stackIndexForThisObs][0];
+    listFromStack.push([obs, f2]);
+    if (!rootEvent) {
+      processAfters();
+    }
+  } else {
+    return f2();
+  }
+}
+function containsObs(obs, aftersList) {
+  for (var i2 = 0; i2 < aftersList.length; i2++) {
+    if (aftersList[i2][0].id == obs.id)
+      return true;
+  }
+  return false;
+}
+function processAfters() {
+  let stackSizeAtStart = aftersStackHeight;
+  if (!stackSizeAtStart)
+    return;
+  let isRoot = !processingAfters;
+  processingAfters = true;
+  try {
+    while (aftersStackHeight >= stackSizeAtStart) {
+      var topOfStack = aftersStack[aftersStackHeight - 1];
+      if (!topOfStack)
+        throw new Error("Unexpected stack top: " + topOfStack);
+      var [topAfters, index] = topOfStack;
+      if (index < topAfters.length) {
+        var [, after] = topAfters[index];
+        topOfStack[1]++;
+        ensureStackHeight(aftersStackHeight + 1);
+        var callSuccess = false;
+        try {
+          after();
+          callSuccess = true;
+          while (aftersStackHeight > stackSizeAtStart && aftersStack[aftersStackHeight - 1][0].length == 0) {
+            aftersStackHeight--;
+          }
+        } finally {
+          if (!callSuccess) {
+            aftersStack = [];
+            aftersStackHeight = 0;
+          }
+        }
+      } else {
+        topOfStack[0] = [];
+        topOfStack[1] = 0;
+        break;
+      }
+    }
+  } finally {
+    if (isRoot)
+      processingAfters = false;
+  }
+}
+function whenDoneWith(obs, f2) {
+  if (rootEvent) {
+    var obsWaiters = waiters[obs.id];
+    if (obsWaiters === void 0) {
+      obsWaiters = waiters[obs.id] = [f2];
+      return waiterObs.push(obs);
+    } else {
+      return obsWaiters.push(f2);
+    }
+  } else {
+    return f2();
+  }
+}
+function flush() {
+  while (waiterObs.length > 0) {
+    flushWaiters(0, true);
+  }
+  flushed = {};
+}
+function flushWaiters(index, deps) {
+  var obs = waiterObs[index];
+  var obsId = obs.id;
+  var obsWaiters = waiters[obsId];
+  waiterObs.splice(index, 1);
+  delete waiters[obsId];
+  if (deps && waiterObs.length > 0) {
+    flushDepsOf(obs);
+  }
+  for (var i2 = 0, f2; i2 < obsWaiters.length; i2++) {
+    f2 = obsWaiters[i2];
+    f2();
+  }
+}
+function flushDepsOf(obs) {
+  if (flushed[obs.id])
+    return;
+  var deps = obs.internalDeps();
+  for (var i2 = 0, dep; i2 < deps.length; i2++) {
+    dep = deps[i2];
+    flushDepsOf(dep);
+    if (waiters[dep.id]) {
+      var index = _2.indexOf(waiterObs, dep);
+      flushWaiters(index, false);
+    }
+  }
+  flushed[obs.id] = true;
+}
+function inTransaction(event, context, f2, args) {
+  if (rootEvent) {
+    return f2.apply(context, args);
+  } else {
+    rootEvent = event;
+    try {
+      var result = f2.apply(context, args);
+      flush();
+    } finally {
+      rootEvent = void 0;
+      processAfters();
+    }
+    return result;
+  }
+}
+function currentEventId() {
+  return rootEvent ? rootEvent.id : void 0;
+}
+function wrappedSubscribe(obs, subscribe, sink) {
+  assertFunction(sink);
+  let unsubd = false;
+  let shouldUnsub = false;
+  let doUnsub = () => {
+    shouldUnsub = true;
+  };
+  let unsub = () => {
+    unsubd = true;
+    doUnsub();
+  };
+  doUnsub = subscribe(function(event) {
+    afterTransaction(obs, function() {
+      if (!unsubd) {
+        var reply = sink(event);
+        if (reply === noMore) {
+          unsub();
+        }
+      }
+    });
+    return more;
+  });
+  if (shouldUnsub) {
+    doUnsub();
+  }
+  return unsub;
+}
+function hasWaiters() {
+  return waiterObs.length > 0;
+}
+function describe(context, method, ...args) {
+  const ref = context || method;
+  if (ref && ref._isDesc) {
+    return context || method;
+  } else {
+    return new Desc(context, method, args);
+  }
+}
+function findDeps(x3) {
+  if (isArray2(x3)) {
+    return _2.flatMap(findDeps, x3);
+  } else if (isObservable(x3)) {
+    return [x3];
+  } else if (typeof x3 !== "undefined" && x3 !== null ? x3._isSource : void 0) {
+    return [x3.obs];
+  } else {
+    return [];
+  }
+}
+function withStateMachine(initState, f2, src) {
+  return src.transform(withStateMachineT(initState, f2), new Desc(src, "withStateMachine", [initState, f2]));
+}
+function withStateMachineT(initState, f2) {
+  let state = initState;
+  return (event, sink) => {
+    var fromF = f2(state, event);
+    var [newState, outputs] = fromF;
+    state = newState;
+    var reply = more;
+    for (var i2 = 0; i2 < outputs.length; i2++) {
+      let output = outputs[i2];
+      reply = sink(output);
+      if (reply === noMore) {
+        return reply;
+      }
+    }
+    return reply;
+  };
+}
+function none() {
+  return None;
+}
+function toOption(v2) {
+  if (v2 && (v2._isSome || v2._isNone)) {
+    return v2;
+  } else {
+    return new Some(v2);
+  }
+}
+function isNone(object) {
+  return typeof object !== "undefined" && object !== null ? object._isNone : false;
+}
+function initialEvent(value) {
+  return new Initial(value);
+}
+function nextEvent(value) {
+  return new Next(value);
+}
+function endEvent() {
+  return new End();
+}
+function toEvent(x3) {
+  if (x3 && x3._isEvent) {
+    return x3;
+  } else {
+    return nextEvent(x3);
+  }
+}
+function isEvent(e2) {
+  return e2 && e2._isEvent;
+}
+function isInitial(e2) {
+  return e2 && e2._isInitial;
+}
+function isError(e2) {
+  return e2.isError;
+}
+function hasValue(e2) {
+  return e2.hasValue;
+}
+function isEnd(e2) {
+  return e2.isEnd;
+}
+function equals(a2, b2) {
+  return a2 === b2;
+}
+function skipDuplicates(src, isEqual = equals) {
+  let desc = new Desc(src, "skipDuplicates", []);
+  return withStateMachine(none(), function(prev, event) {
+    if (!hasValue(event)) {
+      return [prev, [event]];
+    } else if (event.isInitial || isNone(prev) || !isEqual(prev.get(), event.value)) {
+      return [new Some(event.value), [event]];
+    } else {
+      return [prev, []];
+    }
+  }, src).withDesc(desc);
+}
+function take(count, src, desc) {
+  return src.transform(takeT(count), desc || new Desc(src, "take", [count]));
+}
+function takeT(count) {
+  return (e2, sink) => {
+    if (!e2.hasValue) {
+      return sink(e2);
+    } else {
+      count--;
+      if (count > 0) {
+        return sink(e2);
+      } else {
+        if (count === 0) {
+          sink(e2);
+        }
+        sink(endEvent());
+        return noMore;
+      }
+    }
+  };
+}
+function log(args, src) {
+  src.subscribe(function(event) {
+    if (typeof console !== "undefined" && typeof console.log === "function") {
+      console.log(...args.concat([event.log()]));
+    }
+    return more;
+  });
+}
+function doLogT(args) {
+  return (event, sink) => {
+    if (typeof console !== "undefined" && console !== null && typeof console.log === "function") {
+      console.log(...args.concat([event.log()]));
+    }
+    return sink(event);
+  };
+}
+function doErrorT(f2) {
+  return (event, sink) => {
+    if (isError(event)) {
+      f2(event.error);
+    }
+    return sink(event);
+  };
+}
+function doActionT(f2) {
+  return (event, sink) => {
+    if (hasValue(event)) {
+      f2(event.value);
+    }
+    return sink(event);
+  };
+}
+function doEndT(f2) {
+  return (event, sink) => {
+    if (isEnd(event)) {
+      f2();
+    }
+    return sink(event);
+  };
+}
+function scan(src, seed, f2) {
+  let resultProperty;
+  let acc = seed;
+  let initHandled = false;
+  const subscribe = (sink) => {
+    var initSent = false;
+    var unsub = nop;
+    var reply = more;
+    const sendInit = function() {
+      if (!initSent) {
+        initSent = initHandled = true;
+        reply = sink(new Initial(acc));
+        if (reply === noMore) {
+          unsub();
+          unsub = nop;
+        }
+      }
+      return reply;
+    };
+    unsub = src.subscribeInternal(function(event) {
+      if (hasValue(event)) {
+        if (initHandled && event.isInitial) {
+          return more;
+        } else {
+          if (!event.isInitial) {
+            sendInit();
+          }
+          initSent = initHandled = true;
+          var prev = acc;
+          var next = f2(prev, event.value);
+          acc = next;
+          return sink(event.apply(next));
+        }
+      } else {
+        if (event.isEnd) {
+          reply = sendInit();
+        }
+        if (reply !== noMore) {
+          return sink(event);
+        }
+        return reply;
+      }
+    });
+    UpdateBarrier.whenDoneWith(resultProperty, sendInit);
+    return unsub;
+  };
+  return resultProperty = new Property(new Desc(src, "scan", [seed, f2]), subscribe);
+}
+function mapEndT(f2) {
+  let theF = _2.toFunction(f2);
+  return function(event, sink) {
+    if (isEnd(event)) {
+      sink(nextEvent(theF(event)));
+      sink(endEvent());
+      return noMore;
+    } else {
+      return sink(event);
+    }
+  };
+}
+function mapErrorT(f2) {
+  let theF = _2.toFunction(f2);
+  return function(event, sink) {
+    if (isError(event)) {
+      return sink(nextEvent(theF(event.error)));
+    } else {
+      return sink(event);
+    }
+  };
+}
+function skipErrors(src) {
+  return src.transform(function(event, sink) {
+    if (isError(event)) {
+      return more;
+    } else {
+      return sink(event);
+    }
+  }, new Desc(src, "skipErrors", []));
+}
+function last$1(src) {
+  var lastEvent;
+  return src.transform(function(event, sink) {
+    if (isEnd(event)) {
+      if (lastEvent) {
+        sink(lastEvent);
+      }
+      sink(endEvent());
+      return noMore;
+    } else if (hasValue(event)) {
+      lastEvent = event;
+      return more;
+    } else {
+      return sink(event);
+    }
+  }).withDesc(new Desc(src, "last", []));
+}
+function streamSubscribeToPropertySubscribe(initValue, streamSubscribe) {
+  return function(sink) {
+    var initSent = false;
+    var subbed = false;
+    var unsub = nop;
+    var reply = more;
+    var sendInit = function() {
+      if (!initSent) {
+        return initValue.forEach(function(value) {
+          initSent = true;
+          reply = sink(new Initial(value));
+          if (reply === noMore) {
+            unsub();
+            unsub = nop;
+            return nop;
+          }
+        });
+      }
+    };
+    unsub = streamSubscribe(function(event) {
+      if (event instanceof Value) {
+        if (event.isInitial && !subbed) {
+          initValue = new Some(event.value);
+          return more;
+        } else {
+          if (!event.isInitial) {
+            sendInit();
+          }
+          initSent = true;
+          initValue = new Some(event.value);
+          return sink(event);
+        }
+      } else {
+        if (event.isEnd) {
+          reply = sendInit();
+        }
+        if (reply !== noMore) {
+          return sink(event);
+        }
+        return reply;
+      }
+    });
+    subbed = true;
+    sendInit();
+    return unsub;
+  };
+}
+function propertyFromStreamSubscribe(desc, subscribe) {
+  assertFunction(subscribe);
+  return new Property(desc, streamSubscribeToPropertySubscribe(none(), subscribe));
+}
+function once(value) {
+  const s2 = new EventStream(new Desc("Bacon", "once", [value]), function(sink) {
+    UpdateBarrier.soonButNotYet(s2, function() {
+      sink(toEvent(value));
+      sink(endEvent());
+    });
+    return nop;
+  });
+  return s2;
+}
+function flatMap_(spawner, src, params = {}) {
+  const root = src;
+  const rootDep = [root];
+  const childDeps = [];
+  const isProperty2 = src._isProperty;
+  const ctor = isProperty2 ? propertyFromStreamSubscribe : newEventStreamAllowSync;
+  let initialSpawned = false;
+  const desc = params.desc || new Desc(src, "flatMap_", [spawner]);
+  const result = ctor(desc, function(sink) {
+    const composite = new CompositeUnsubscribe();
+    const queue = [];
+    function spawn(event) {
+      if (isProperty2 && event.isInitial) {
+        if (initialSpawned) {
+          return more;
+        }
+        initialSpawned = true;
+      }
+      const child = makeObservable(spawner(event));
+      childDeps.push(child);
+      return composite.add(function(unsubAll, unsubMe) {
+        return child.subscribeInternal(function(event2) {
+          if (event2.isEnd) {
+            _2.remove(child, childDeps);
+            checkQueue();
+            checkEnd(unsubMe);
+            return noMore;
+          } else {
+            event2 = event2.toNext();
+            const reply = sink(event2);
+            if (reply === noMore) {
+              unsubAll();
+            }
+            return reply;
+          }
+        });
+      });
+    }
+    function checkQueue() {
+      const event = queue.shift();
+      if (event) {
+        spawn(event);
+      }
+    }
+    function checkEnd(unsub) {
+      unsub();
+      if (composite.empty()) {
+        return sink(endEvent());
+      }
+      return more;
+    }
+    composite.add(function(__, unsubRoot) {
+      return root.subscribeInternal(function(event) {
+        if (event.isEnd) {
+          return checkEnd(unsubRoot);
+        } else if (event.isError && !params.mapError) {
+          return sink(event);
+        } else if (params.firstOnly && composite.count() > 1) {
+          return more;
+        } else {
+          if (composite.unsubscribed) {
+            return noMore;
+          }
+          if (params.limit && composite.count() > params.limit) {
+            queue.push(event);
+          } else {
+            spawn(event);
+          }
+          return more;
+        }
+      });
+    });
+    return composite.unsubscribe;
+  });
+  result.internalDeps = function() {
+    if (childDeps.length) {
+      return rootDep.concat(childDeps);
+    } else {
+      return rootDep;
+    }
+  };
+  return result;
+}
+function handleEventValueWith(f2) {
+  if (typeof f2 == "function") {
+    return (event) => {
+      if (hasValue(event)) {
+        return f2(event.value);
+      }
+      return event;
+    };
+  }
+  return (event) => f2;
+}
+function makeObservable(x3) {
+  if (isObservable(x3)) {
+    return x3;
+  } else {
+    return once(x3);
+  }
+}
+function flatMapEvent(src, f2) {
+  return flatMap_(f2, src, {
+    mapError: true,
+    desc: new Desc(src, "flatMapEvent", [f2])
+  });
+}
+function endAsValue(src) {
+  return src.transform((event, sink) => {
+    if (isEnd(event)) {
+      sink(nextEvent({}));
+      sink(endEvent());
+      return noMore;
+    }
+    return more;
+  });
+}
+function endOnError(src, predicate = (x3) => true) {
+  return src.transform((event, sink) => {
+    if (isError(event) && predicate(event.error)) {
+      sink(event);
+      return sink(endEvent());
+    } else {
+      return sink(event);
+    }
+  }, new Desc(src, "endOnError", []));
+}
+function isTrigger(s2) {
+  if (s2 == null)
+    return false;
+  if (s2._isSource) {
+    return s2.sync;
+  } else {
+    return s2._isEventStream;
+  }
+}
+function fromObservable(s2) {
+  if (s2 != null && s2._isSource) {
+    return s2;
+  } else if (s2 != null && s2._isProperty) {
+    return new DefaultSource(s2, false);
+  } else {
+    return new ConsumingSource(s2, true);
+  }
+}
+function never() {
+  return new EventStream(describe("Bacon", "never"), (sink) => {
+    sink(endEvent());
+    return nop;
+  });
+}
+function when(...patterns) {
+  return when_(newEventStream, patterns);
+}
+function whenP(...patterns) {
+  return when_(propertyFromStreamSubscribe, patterns);
+}
+function when_(ctor, patterns) {
+  if (patterns.length === 0) {
+    return never();
+  }
+  var [sources, ixPats] = processRawPatterns(extractRawPatterns(patterns));
+  if (!sources.length) {
+    return never();
+  }
+  var needsBarrier = any(sources, (s2) => s2.flatten) && containsDuplicateDeps(map3((s2) => s2.obs, sources));
+  var desc = new Desc("Bacon", "when", Array.prototype.slice.call(patterns));
+  var resultStream = ctor(desc, function(sink) {
+    var triggers = [];
+    var ends = false;
+    function match(p2) {
+      for (var i2 = 0; i2 < p2.ixs.length; i2++) {
+        let ix = p2.ixs[i2];
+        if (!sources[ix.index].hasAtLeast(ix.count)) {
+          return false;
+        }
+      }
+      return true;
+    }
+    function cannotMatch(p2) {
+      for (var i2 = 0; i2 < p2.ixs.length; i2++) {
+        let ix = p2.ixs[i2];
+        if (!sources[ix.index].mayHave(ix.count)) {
+          return true;
+        }
+      }
+      return false;
+    }
+    function nonFlattened(trigger) {
+      return !trigger.source.flatten;
+    }
+    function part(source) {
+      return function(unsubAll) {
+        function flushLater() {
+          return UpdateBarrier.whenDoneWith(resultStream, flush2);
+        }
+        function flushWhileTriggers() {
+          var trigger;
+          if ((trigger = triggers.pop()) !== void 0) {
+            var reply = more;
+            for (var i2 = 0, p2; i2 < ixPats.length; i2++) {
+              p2 = ixPats[i2];
+              if (match(p2)) {
+                const values3 = [];
+                for (var j2 = 0; j2 < p2.ixs.length; j2++) {
+                  let event = sources[p2.ixs[j2].index].consume();
+                  if (!event)
+                    throw new Error("Event was undefined");
+                  values3.push(event.value);
+                }
+                let applied = p2.f.apply(null, values3);
+                reply = sink(trigger.e.apply(applied));
+                if (triggers.length) {
+                  triggers = filter2(nonFlattened, triggers);
+                }
+                if (reply === noMore) {
+                  return reply;
+                } else {
+                  return flushWhileTriggers();
+                }
+              }
+            }
+          }
+          return more;
+        }
+        function flush2() {
+          var reply = flushWhileTriggers();
+          if (ends) {
+            if (all(sources, cannotSync) || all(ixPats, cannotMatch)) {
+              reply = noMore;
+              sink(endEvent());
+            }
+          }
+          if (reply === noMore) {
+            unsubAll();
+          }
+        }
+        return source.subscribe(function(e2) {
+          var reply = more;
+          if (e2.isEnd) {
+            ends = true;
+            source.markEnded();
+            flushLater();
+          } else if (e2.isError) {
+            reply = sink(e2);
+          } else {
+            let valueEvent = e2;
+            source.push(valueEvent);
+            if (source.sync) {
+              triggers.push({ source, e: valueEvent });
+              if (needsBarrier || UpdateBarrier.hasWaiters()) {
+                flushLater();
+              } else {
+                flush2();
+              }
+            }
+          }
+          if (reply === noMore) {
+            unsubAll();
+          }
+          return reply;
+        });
+      };
+    }
+    return new CompositeUnsubscribe(map3(part, sources)).unsubscribe;
+  });
+  return resultStream;
+}
+function processRawPatterns(rawPatterns) {
+  var sources = [];
+  var pats = [];
+  for (let i2 = 0; i2 < rawPatterns.length; i2++) {
+    let [patSources, f2] = rawPatterns[i2];
+    var pat = { f: f2, ixs: [] };
+    var triggerFound = false;
+    for (var j2 = 0, s2; j2 < patSources.length; j2++) {
+      s2 = patSources[j2];
+      var index = indexOf(sources, s2);
+      if (!triggerFound) {
+        triggerFound = isTrigger(s2);
+      }
+      if (index < 0) {
+        sources.push(s2);
+        index = sources.length - 1;
+      }
+      for (var k2 = 0; k2 < pat.ixs.length; k2++) {
+        let ix = pat.ixs[k2];
+        if (ix.index === index) {
+          ix.count++;
+        }
+      }
+      pat.ixs.push({ index, count: 1 });
+    }
+    if (patSources.length > 0 && !triggerFound) {
+      throw new Error("At least one EventStream required, none found in " + patSources);
+    }
+    if (patSources.length > 0) {
+      pats.push(pat);
+    }
+  }
+  return [map3(fromObservable, sources), pats];
+}
+function extractLegacyPatterns(sourceArgs) {
+  var i2 = 0;
+  var len = sourceArgs.length;
+  var rawPatterns = [];
+  while (i2 < len) {
+    let patSources = toArray(sourceArgs[i2++]);
+    let f2 = toFunction(sourceArgs[i2++]);
+    rawPatterns.push([patSources, f2]);
+  }
+  var usage = "when: expecting arguments in the form (Observable+,function)+";
+  assert(usage, len % 2 === 0);
+  return rawPatterns;
+}
+function isTypedOrRawPattern(pattern) {
+  return pattern instanceof Array && !isObservable(pattern[pattern.length - 1]);
+}
+function isRawPattern(pattern) {
+  return pattern[0] instanceof Array;
+}
+function extractRawPatterns(patterns) {
+  let rawPatterns = [];
+  for (let i2 = 0; i2 < patterns.length; i2++) {
+    let pattern = patterns[i2];
+    if (!isTypedOrRawPattern(pattern)) {
+      return extractLegacyPatterns(patterns);
+    }
+    if (isRawPattern(pattern)) {
+      rawPatterns.push([pattern[0], toFunction(pattern[1])]);
+    } else {
+      let sources = pattern.slice(0, pattern.length - 1);
+      let f2 = toFunction(pattern[pattern.length - 1]);
+      rawPatterns.push([sources, f2]);
+    }
+  }
+  return rawPatterns;
+}
+function containsDuplicateDeps(observables, state = []) {
+  function checkObservable(obs) {
+    if (contains3(state, obs)) {
+      return true;
+    } else {
+      var deps = obs.internalDeps();
+      if (deps.length) {
+        state.push(obs);
+        return any(deps, checkObservable);
+      } else {
+        state.push(obs);
+        return false;
+      }
+    }
+  }
+  return any(observables, checkObservable);
+}
+function cannotSync(source) {
+  return !source.sync || source.ended;
+}
+function withLatestFromE(sampler, samplee, f2) {
+  var result = when([new DefaultSource(samplee.toProperty(), false), new DefaultSource(sampler, true), flip(f2)]);
+  return result.withDesc(new Desc(sampler, "withLatestFrom", [samplee, f2]));
+}
+function withLatestFromP(sampler, samplee, f2) {
+  var result = whenP([new DefaultSource(samplee.toProperty(), false), new DefaultSource(sampler, true), flip(f2)]);
+  return result.withDesc(new Desc(sampler, "withLatestFrom", [samplee, f2]));
+}
+function withLatestFrom(sampler, samplee, f2) {
+  if (sampler instanceof Property) {
+    return withLatestFromP(sampler, samplee, f2);
+  } else if (sampler instanceof EventStream) {
+    return withLatestFromE(sampler, samplee, f2);
+  } else {
+    throw new Error("Unknown observable: " + sampler);
+  }
+}
+function map$1(src, f2) {
+  if (f2 instanceof Property) {
+    return withLatestFrom(src, f2, (a2, b2) => b2);
+  }
+  return src.transform(mapT(f2), new Desc(src, "map", [f2]));
+}
+function mapT(f2) {
+  let theF = _2.toFunction(f2);
+  return (e2, sink) => {
+    return sink(e2.fmap(theF));
+  };
+}
+function constant(x3) {
+  return new Property(new Desc("Bacon", "constant", [x3]), function(sink) {
+    sink(initialEvent(x3));
+    sink(endEvent());
+    return nop;
+  });
+}
+function argumentsToObservables(args) {
+  args = Array.prototype.slice.call(args);
+  return _2.flatMap(singleToObservables, args);
+}
+function singleToObservables(x3) {
+  if (isObservable(x3)) {
+    return [x3];
+  } else if (isArray2(x3)) {
+    return argumentsToObservables(x3);
+  } else {
+    return [constant(x3)];
+  }
+}
+function argumentsToObservablesAndFunction(args) {
+  if (_2.isFunction(args[0])) {
+    return [argumentsToObservables(Array.prototype.slice.call(args, 1)), args[0]];
+  } else {
+    return [argumentsToObservables(Array.prototype.slice.call(args, 0, args.length - 1)), _2.last(args)];
+  }
+}
+function groupSimultaneous_(streams, options) {
+  let sources = _2.map((stream) => new BufferingSource(stream), streams);
+  let ctor = (desc, subscribe) => new EventStream(desc, subscribe, void 0, options);
+  return when_(ctor, [sources, function(...xs) {
+    return xs;
+  }]).withDesc(new Desc("Bacon", "groupSimultaneous", streams));
+}
+function awaiting(src, other) {
+  return groupSimultaneous_([src, other], allowSync).map((values3) => values3[1].length === 0).toProperty(false).skipDuplicates().withDesc(new Desc(src, "awaiting", [other]));
+}
+function combineAsArray(...streams) {
+  streams = argumentsToObservables(streams);
+  if (streams.length) {
+    var sources = [];
+    for (var i2 = 0; i2 < streams.length; i2++) {
+      let stream = isObservable(streams[i2]) ? streams[i2] : constant(streams[i2]);
+      sources.push(wrap2(stream));
+    }
+    return whenP([sources, (...xs) => xs]).withDesc(new Desc("Bacon", "combineAsArray", streams));
+  } else {
+    return constant([]);
+  }
+}
+function combineTwo(left2, right2, f2) {
+  return whenP([[wrap2(left2), wrap2(right2)], f2]).withDesc(new Desc(left2, "combine", [right2, f2]));
+}
+function wrap2(obs) {
+  return new DefaultSource(obs, true);
+}
+function skip(src, count) {
+  return src.transform((event, sink) => {
+    if (!event.hasValue) {
+      return sink(event);
+    } else if (count > 0) {
+      count--;
+      return more;
+    } else {
+      return sink(event);
+    }
+  }, new Desc(src, "skip", [count]));
+}
+function flatMapConcat(src, f2) {
+  return flatMap_(handleEventValueWith(f2), src, {
+    desc: new Desc(src, "flatMapConcat", [f2]),
+    limit: 1
+  });
+}
+function fromBinder(binder, eventTransformer = _2.id) {
+  var desc = new Desc("Bacon", "fromBinder", [binder, eventTransformer]);
+  return new EventStream(desc, function(sink) {
+    var unbound = false;
+    var shouldUnbind = false;
+    var unbind = function() {
+      if (!unbound) {
+        if (typeof unbinder !== "undefined" && unbinder !== null) {
+          unbinder();
+          return unbound = true;
+        } else {
+          return shouldUnbind = true;
+        }
+      }
+    };
+    var unbinder = binder(function(...args) {
+      var value_ = eventTransformer(...args);
+      let valueArray = isArray2(value_) && isEvent(_2.last(value_)) ? value_ : [value_];
+      var reply = more;
+      for (var i2 = 0; i2 < valueArray.length; i2++) {
+        let event = toEvent(valueArray[i2]);
+        reply = sink(event);
+        if (reply === noMore || event.isEnd) {
+          unbind();
+          return reply;
+        }
+      }
+      return reply;
+    });
+    if (shouldUnbind) {
+      unbind();
+    }
+    return unbind;
+  });
+}
+function fromPoll(delay2, poll) {
+  var desc = new Desc("Bacon", "fromPoll", [delay2, poll]);
+  return fromBinder(function(handler) {
+    var id2 = GlobalScheduler.scheduler.setInterval(handler, delay2);
+    return function() {
+      return GlobalScheduler.scheduler.clearInterval(id2);
+    };
+  }, poll).withDesc(desc);
+}
+function interval(delay2, value) {
+  return fromPoll(delay2, function() {
+    return nextEvent(value);
+  }).withDesc(new Desc("Bacon", "interval", [delay2, value]));
+}
+function makeCombinator(combinator) {
+  if (typeof combinator == "function") {
+    return combinator;
+  } else {
+    return _2.id;
+  }
+}
+function sampledBy(samplee, sampler, f2) {
+  if (samplee instanceof EventStream) {
+    return sampledByE(samplee, sampler, f2);
+  } else {
+    return sampledByP(samplee, sampler, f2);
+  }
+}
+function sampledByP(samplee, sampler, f2) {
+  let combinator = makeCombinator(f2);
+  var result = withLatestFrom(sampler, samplee, flip(combinator));
+  return result.withDesc(new Desc(samplee, "sampledBy", [sampler]));
+}
+function sampledByE(samplee, sampler, f2) {
+  return sampledByP(samplee.toProperty(), sampler, f2).withDesc(new Desc(samplee, "sampledBy", [sampler]));
+}
+function sampleP(samplee, samplingInterval) {
+  return sampledByP(samplee, interval(samplingInterval, {}), (a2, b2) => a2).withDesc(new Desc(samplee, "sample", [samplingInterval]));
+}
+function transformP(src, transformer, desc) {
+  return new Property(new Desc(src, "transform", [transformer]), (sink) => src.subscribeInternal((e2) => transformer(e2, sink))).withDesc(desc);
+}
+function transformE(src, transformer, desc) {
+  return new EventStream(new Desc(src, "transform", [transformer]), (sink) => src.subscribeInternal((e2) => transformer(e2, sink)), void 0, allowSync).withDesc(desc);
+}
+function composeT(t1, t2) {
+  let finalSink;
+  const sink2 = (event) => {
+    return t2(event, finalSink);
+  };
+  return (event, sink) => {
+    finalSink = sink;
+    return t1(event, sink2);
+  };
+}
+function toPredicate(f2) {
+  if (typeof f2 == "boolean") {
+    return _2.always(f2);
+  } else if (typeof f2 != "function") {
+    throw new Error("Not a function: " + f2);
+  } else {
+    return f2;
+  }
+}
+function withPredicate(src, f2, predicateTransformer, desc) {
+  if (f2 instanceof Property) {
+    return withLatestFrom(src, f2, (p2, v2) => [p2, v2]).transform(composeT(predicateTransformer((tuple) => tuple[1]), mapT((tuple) => tuple[0])), desc);
+  }
+  return src.transform(predicateTransformer(toPredicate(f2)), desc);
+}
+function filter$1(src, f2) {
+  return withPredicate(src, f2, filterT, new Desc(src, "filter", [f2]));
+}
+function filterT(f2) {
+  return (e2, sink) => {
+    if (e2.filter(f2)) {
+      return sink(e2);
+    } else {
+      return more;
+    }
+  };
+}
+function not3(src) {
+  return src.map((x3) => !x3).withDesc(new Desc(src, "not", []));
+}
+function and(left2, right2) {
+  return left2.combine(toProperty(right2), (x3, y3) => !!(x3 && y3)).withDesc(new Desc(left2, "and", [right2]));
+}
+function or(left2, right2) {
+  return left2.combine(toProperty(right2), (x3, y3) => x3 || y3).withDesc(new Desc(left2, "or", [right2]));
+}
+function toProperty(x3) {
+  if (isProperty(x3)) {
+    return x3;
+  }
+  return constant(x3);
+}
+function flatMapFirst(src, f2) {
+  return flatMap_(handleEventValueWith(f2), src, {
+    firstOnly: true,
+    desc: new Desc(src, "flatMapFirst", [f2])
+  });
+}
+function concatE(left2, right2, options) {
+  return new EventStream(new Desc(left2, "concat", [right2]), function(sink) {
+    var unsubRight = nop;
+    var unsubLeft = left2.dispatcher.subscribe(function(e2) {
+      if (e2.isEnd) {
+        unsubRight = right2.toEventStream().dispatcher.subscribe(sink);
+        return more;
+      } else {
+        return sink(e2);
+      }
+    });
+    return function() {
+      return unsubLeft(), unsubRight();
+    };
+  }, void 0, options);
+}
+function transformPropertyChanges(property, f2, desc) {
+  let initValue;
+  let comboSink;
+  const changes = new EventStream(describe(property, "changes", []), (sink) => property.dispatcher.subscribe(function(event) {
+    if (!initValue && isInitial(event)) {
+      initValue = event;
+      UpdateBarrier.whenDoneWith(combo, function() {
+        if (!comboSink) {
+          throw new Error("Init sequence fail");
+        }
+        comboSink(initValue);
+      });
+    }
+    if (!event.isInitial) {
+      return sink(event);
+    }
+    return more;
+  }), void 0, allowSync);
+  const transformedChanges = f2(changes);
+  const combo = propertyFromStreamSubscribe(desc, (sink) => {
+    comboSink = sink;
+    return transformedChanges.dispatcher.subscribe(function(event) {
+      sink(event);
+    });
+  });
+  return combo;
+}
+function fold$1(src, seed, f2) {
+  return src.scan(seed, f2).last().withDesc(new Desc(src, "fold", [seed, f2]));
+}
+function startWithE(src, seed) {
+  return once(seed).concat(src).withDesc(new Desc(src, "startWith", [seed]));
+}
+function startWithP(src, seed) {
+  return src.scan(seed, (prev, next) => next).withDesc(new Desc(src, "startWith", [seed]));
+}
+function takeUntil(src, stopper) {
+  let endMapped = src.mapEnd(endMarker);
+  let withEndMarker = groupSimultaneous_([endMapped, stopper.skipErrors()], allowSync);
+  if (src instanceof Property)
+    withEndMarker = withEndMarker.toProperty();
+  return withEndMarker.transform(function(event, sink) {
+    if (hasValue(event)) {
+      var [data, stopper2] = event.value;
+      if (stopper2.length) {
+        return sink(endEvent());
+      } else {
+        var reply = more;
+        for (var i2 = 0; i2 < data.length; i2++) {
+          let value = data[i2];
+          if (value === endMarker) {
+            return sink(endEvent());
+          } else {
+            reply = sink(nextEvent(value));
+          }
+        }
+        return reply;
+      }
+    } else {
+      return sink(event);
+    }
+  }, new Desc(src, "takeUntil", [stopper]));
+}
+function flatMap$1(src, f2) {
+  return flatMap_(handleEventValueWith(f2), src, { desc: new Desc(src, "flatMap", [f2]) });
+}
+function flatMapError(src, f2) {
+  return flatMap_((x3) => {
+    if (x3 instanceof Error$1) {
+      let error = x3.error;
+      return f2(error);
+    } else {
+      return x3;
+    }
+  }, src, {
+    mapError: true,
+    desc: new Desc(src, "flatMapError", [f2])
+  });
+}
+function registerObs(obs) {
+  if (spies.length) {
+    if (!running) {
+      try {
+        running = true;
+        spies.forEach(function(spy) {
+          spy(obs);
+        });
+      } finally {
+        running = false;
+      }
+    }
+  }
+}
+function flatMapLatest(src, f_) {
+  let f2 = _2.toFunction(f_);
+  var stream = isProperty(src) ? src.toEventStream(allowSync) : src;
+  let flatMapped = flatMap$1(stream, (value) => makeObservable(f2(value)).takeUntil(stream));
+  if (isProperty(src))
+    flatMapped = flatMapped.toProperty();
+  return flatMapped.withDesc(new Desc(src, "flatMapLatest", [f2]));
+}
+function flatMapWithConcurrencyLimit(src, limit, f2) {
+  return flatMap_(handleEventValueWith(f2), src, {
+    desc: new Desc(src, "flatMapWithConcurrencyLimit", [limit, f2]),
+    limit
+  });
+}
+function bufferWithTime(src, delay2) {
+  return bufferWithTimeOrCount(src, delay2, Number.MAX_VALUE).withDesc(new Desc(src, "bufferWithTime", [delay2]));
+}
+function bufferWithCount(src, count) {
+  return bufferWithTimeOrCount(src, void 0, count).withDesc(new Desc(src, "bufferWithCount", [count]));
+}
+function bufferWithTimeOrCount(src, delay2, count) {
+  const delayFunc = toDelayFunction(delay2);
+  function flushOrSchedule(buffer2) {
+    if (buffer2.values.length === count) {
+      return buffer2.flush();
+    } else if (delayFunc !== void 0) {
+      return buffer2.schedule(delayFunc);
+    }
+  }
+  var desc = new Desc(src, "bufferWithTimeOrCount", [delay2, count]);
+  return buffer(src, flushOrSchedule, flushOrSchedule).withDesc(desc);
+}
+function toDelayFunction(delay2) {
+  if (delay2 === void 0) {
+    return void 0;
+  }
+  if (typeof delay2 === "number") {
+    var delayMs = delay2;
+    return function(f2) {
+      return GlobalScheduler.scheduler.setTimeout(f2, delayMs);
+    };
+  }
+  return delay2;
+}
+function buffer(src, onInput = nop, onFlush = nop) {
+  var reply = more;
+  var buffer2 = new Buffer2(onFlush, onInput);
+  return src.transform((event, sink) => {
+    buffer2.push = sink;
+    if (hasValue(event)) {
+      buffer2.values.push(event.value);
+      onInput(buffer2);
+    } else if (isError(event)) {
+      reply = sink(event);
+    } else if (isEnd(event)) {
+      buffer2.end = event;
+      if (!buffer2.scheduled) {
+        buffer2.flush();
+      }
+    }
+    return reply;
+  }).withDesc(new Desc(src, "buffer", []));
+}
+function asyncWrapSubscribe(obs, subscribe) {
+  var subscribing = false;
+  return function wrappedSubscribe2(sink) {
+    const inTransaction2 = UpdateBarrier.isInTransaction();
+    subscribing = true;
+    var asyncDeliveries;
+    function deliverAsync() {
+      var toDeliverNow = asyncDeliveries || [];
+      asyncDeliveries = void 0;
+      for (var i2 = 0; i2 < toDeliverNow.length; i2++) {
+        var event = toDeliverNow[i2];
+        sink(event);
+      }
+    }
+    try {
+      return subscribe(function wrappedSink(event) {
+        if (subscribing || asyncDeliveries) {
+          if (!asyncDeliveries) {
+            asyncDeliveries = [event];
+            if (inTransaction2) {
+              UpdateBarrier.soonButNotYet(obs, deliverAsync);
+            } else {
+              GlobalScheduler.scheduler.setTimeout(deliverAsync, 0);
+            }
+          } else {
+            asyncDeliveries.push(event);
+          }
+          return more;
+        } else {
+          return sink(event);
+        }
+      });
+    } finally {
+      subscribing = false;
+    }
+  };
+}
+function mergeAll(...streams) {
+  let flattenedStreams = argumentsToObservables(streams);
+  if (flattenedStreams.length) {
+    return new EventStream(new Desc("Bacon", "mergeAll", flattenedStreams), function(sink) {
+      var ends = 0;
+      var smartSink = function(obs) {
+        return function(unsubBoth) {
+          return obs.subscribeInternal(function(event) {
+            if (event.isEnd) {
+              ends++;
+              if (ends === flattenedStreams.length) {
+                return sink(endEvent());
+              } else {
+                return more;
+              }
+            } else {
+              event = event.toNext();
+              var reply = sink(event);
+              if (reply === noMore) {
+                unsubBoth();
+              }
+              return reply;
+            }
+          });
+        };
+      };
+      var sinks = map3(smartSink, flattenedStreams);
+      return new CompositeUnsubscribe(sinks).unsubscribe;
+    });
+  } else {
+    return never();
+  }
+}
+function later(delay2, value) {
+  return fromBinder(function(sink) {
+    var sender = function() {
+      return sink([toEvent(value), endEvent()]);
+    };
+    var id2 = GlobalScheduler.scheduler.setTimeout(sender, delay2);
+    return function() {
+      return GlobalScheduler.scheduler.clearTimeout(id2);
+    };
+  }).withDesc(new Desc("Bacon", "later", [delay2, value]));
+}
+function delay(src, delay2) {
+  return src.transformChanges(new Desc(src, "delay", [delay2]), function(changes) {
+    return changes.flatMap(function(value) {
+      return later(delay2, value);
+    });
+  });
+}
+function debounce(src, delay2) {
+  return src.transformChanges(new Desc(src, "debounce", [delay2]), function(changes) {
+    return changes.flatMapLatest(function(value) {
+      return later(delay2, value);
+    });
+  });
+}
+function debounceImmediate(src, delay2) {
+  return src.transformChanges(new Desc(src, "debounceImmediate", [delay2]), function(changes) {
+    return changes.flatMapFirst(function(value) {
+      return once(value).concat(later(delay2, value).errors());
+    });
+  });
+}
+function throttle(src, delay2) {
+  return src.transformChanges(new Desc(src, "throttle", [delay2]), (changes) => changes.bufferWithTime(delay2).map((values3) => values3[values3.length - 1]));
+}
+function bufferingThrottle(src, minimumInterval) {
+  var desc = new Desc(src, "bufferingThrottle", [minimumInterval]);
+  return src.transformChanges(desc, (changes) => changes.flatMapConcat((x3) => {
+    return once(x3).concat(later(minimumInterval, x3).errors());
+  }));
+}
+function takeWhile(src, f2) {
+  return withPredicate(src, f2, takeWhileT, new Desc(src, "takeWhile", [f2]));
+}
+function takeWhileT(f2) {
+  return (event, sink) => {
+    if (event.filter(f2)) {
+      return sink(event);
+    } else {
+      sink(endEvent());
+      return noMore;
+    }
+  };
+}
+function skipUntil(src, starter) {
+  var started = starter.transform(composeT(takeT(1), mapT(true))).toProperty().startWith(false);
+  return src.filter(started).withDesc(new Desc(src, "skipUntil", [starter]));
+}
+function skipWhile(src, f2) {
+  return withPredicate(src, f2, skipWhileT, new Desc(src, "skipWhile", [f2]));
+}
+function skipWhileT(f2) {
+  var started = false;
+  return function(event, sink) {
+    if (started || !hasValue(event) || !f2(event.value)) {
+      if (event.hasValue) {
+        started = true;
+      }
+      return sink(event);
+    } else {
+      return more;
+    }
+  };
+}
+function groupBy(src, keyF, limitF = _2.id) {
+  var streams = {};
+  return src.transform(composeT(filterT((x3) => !streams[keyF(x3)]), mapT(function(firstValue) {
+    var key = keyF(firstValue);
+    var similarValues = src.changes().filter((x3) => keyF(x3) === key);
+    var data = once(firstValue).concat(similarValues);
+    var limited = limitF(data, firstValue).toEventStream().transform((event, sink) => {
+      let reply = sink(event);
+      if (event.isEnd) {
+        delete streams[key];
+      }
+      return reply;
+    });
+    streams[key] = limited;
+    return limited;
+  })));
+}
+function slidingWindow(src, maxValues, minValues = 0) {
+  return src.scan([], function(window2, value) {
+    return window2.concat([value]).slice(-maxValues);
+  }).filter(function(values3) {
+    return values3.length >= minValues;
+  }).withDesc(new Desc(src, "slidingWindow", [maxValues, minValues]));
+}
+function diff(src, start, f2) {
+  return transformP(scan(src, [start, nullMarker], (prevTuple, next) => [next, f2(prevTuple[0], next)]), composeT(filterT((tuple) => tuple[1] !== nullMarker), mapT((tuple) => tuple[1])), new Desc(src, "diff", [start, f2]));
+}
+function flatScan(src, seed, f2) {
+  let current = seed;
+  return src.flatMapConcat((next) => makeObservable(f2(current, next)).doAction((updated) => current = updated)).toProperty().startWith(seed).withDesc(new Desc(src, "flatScan", [seed, f2]));
+}
+function holdWhen(src, valve) {
+  var onHold = false;
+  var bufferedValues = [];
+  var srcIsEnded = false;
+  return new EventStream(new Desc(src, "holdWhen", [valve]), function(sink) {
+    var composite = new CompositeUnsubscribe();
+    var subscribed = false;
+    var endIfBothEnded = function(unsub) {
+      if (unsub) {
+        unsub();
+      }
+      if (composite.empty() && subscribed) {
+        return sink(endEvent());
+      }
+      return more;
+    };
+    composite.add(function(unsubAll, unsubMe) {
+      return valve.subscribeInternal(function(event) {
+        if (hasValue(event)) {
+          onHold = event.value;
+          var result = more;
+          if (!onHold) {
+            var toSend = bufferedValues;
+            bufferedValues = [];
+            for (var i2 = 0; i2 < toSend.length; i2++) {
+              result = sink(nextEvent(toSend[i2]));
+            }
+            if (srcIsEnded) {
+              sink(endEvent());
+              unsubMe();
+              result = noMore;
+            }
+          }
+          return result;
+        } else if (event.isEnd) {
+          return endIfBothEnded(unsubMe);
+        } else {
+          return sink(event);
+        }
+      });
+    });
+    composite.add(function(unsubAll, unsubMe) {
+      return src.subscribeInternal(function(event) {
+        if (onHold && hasValue(event)) {
+          bufferedValues.push(event.value);
+          return more;
+        } else if (event.isEnd && bufferedValues.length) {
+          srcIsEnded = true;
+          return endIfBothEnded(unsubMe);
+        } else {
+          return sink(event);
+        }
+      });
+    });
+    subscribed = true;
+    endIfBothEnded();
+    return composite.unsubscribe;
+  });
+}
+function zipWith(f2, ...streams) {
+  var [streams, f2] = argumentsToObservablesAndFunction(arguments);
+  streams = _2.map((s2) => s2.toEventStream(), streams);
+  return when([streams, f2]).withDesc(new Desc("Bacon", "zipWith", [f2].concat(streams)));
+}
+function zip(left2, right2, f2) {
+  return zipWith(f2 || Array, left2, right2).withDesc(new Desc(left2, "zip", [right2]));
+}
+function combineTemplate(template) {
+  function current(ctxStack) {
+    return ctxStack[ctxStack.length - 1];
+  }
+  function setValue(ctxStack, key, value) {
+    current(ctxStack)[key] = value;
+    return value;
+  }
+  function applyStreamValue(key, index) {
+    return function(ctxStack, values3) {
+      setValue(ctxStack, key, values3[index]);
+    };
+  }
+  function constantValue(key, value) {
+    return function(ctxStack) {
+      setValue(ctxStack, key, value);
+    };
+  }
+  function mkContext(template2) {
+    return isArray2(template2) ? [] : {};
+  }
+  function pushContext(key, value) {
+    return function(ctxStack) {
+      const newContext = mkContext(value);
+      setValue(ctxStack, key, newContext);
+      ctxStack.push(newContext);
+    };
+  }
+  function containsObservables(value) {
+    if (isObservable(value)) {
+      return true;
+    } else if (value && (value.constructor == Object || value.constructor == Array)) {
+      for (var key in value) {
+        if (Object.prototype.hasOwnProperty.call(value, key)) {
+          const child = value[key];
+          if (containsObservables(child))
+            return true;
+        }
+      }
+    }
+  }
+  function compile(key, value) {
+    if (isObservable(value)) {
+      streams.push(value);
+      funcs.push(applyStreamValue(key, streams.length - 1));
+    } else if (containsObservables(value)) {
+      const popContext = function(ctxStack) {
+        ctxStack.pop();
+      };
+      funcs.push(pushContext(key, value));
+      compileTemplate(value);
+      funcs.push(popContext);
+    } else {
+      funcs.push(constantValue(key, value));
+    }
+  }
+  function combinator(values3) {
+    const rootContext = mkContext(template);
+    const ctxStack = [rootContext];
+    for (var i2 = 0, f2; i2 < funcs.length; i2++) {
+      f2 = funcs[i2];
+      f2(ctxStack, values3);
+    }
+    return rootContext;
+  }
+  function compileTemplate(template2) {
+    _2.each(template2, compile);
+  }
+  const funcs = [];
+  const streams = [];
+  const resultProperty = containsObservables(template) ? (compileTemplate(template), combineAsArray(streams).map(combinator)) : constant(template);
+  return resultProperty.withDesc(new Desc("Bacon", "combineTemplate", [template]));
+}
+function decode(src, cases) {
+  return src.combine(combineTemplate(cases), (key, values3) => values3[key]).withDesc(new Desc(src, "decode", [cases]));
+}
+function firstToPromise(src, PromiseCtr) {
+  const generator = (resolve, reject) => src.subscribe((event) => {
+    if (hasValue(event)) {
+      resolve(event.value);
+    }
+    if (isError(event)) {
+      reject(event.error);
+    }
+    return noMore;
+  });
+  if (typeof PromiseCtr === "function") {
+    return new PromiseCtr(generator);
+  } else if (typeof Promise === "function") {
+    return new Promise(generator);
+  } else {
+    throw new Error("There isn't default Promise, use shim or parameter");
+  }
+}
+function toPromise(src, PromiseCtr) {
+  return src.last().firstToPromise(PromiseCtr);
+}
+function isProperty(x3) {
+  return !!x3._isProperty;
+}
+function newEventStream(description, subscribe) {
+  return new EventStream(description, subscribe);
+}
+function newEventStreamAllowSync(description, subscribe) {
+  return new EventStream(description, subscribe, void 0, allowSync);
+}
+function symbol(key) {
+  if (typeof Symbol !== "undefined" && Symbol[key]) {
+    return Symbol[key];
+  } else if (typeof Symbol !== "undefined" && typeof Symbol.for === "function") {
+    return Symbol[key] = Symbol.for(key);
+  } else {
+    return "@@" + key;
+  }
+}
+function withMethodCallSupport(wrapped) {
+  return function(f2, ...args) {
+    if (typeof f2 === "object" && args.length) {
+      var context = f2;
+      var methodName = args[0];
+      f2 = function(...args2) {
+        return context[methodName](...args2);
+      };
+      args = args.slice(1);
+    }
+    return wrapped(f2, ...args);
+  };
+}
+function partiallyApplied(f2, applied) {
+  return function(...args) {
+    return f2(...applied.concat(args));
+  };
+}
+var isArray2, indexOf, _2, recursionDepth, more, noMore, defaultScheduler, GlobalScheduler, rootEvent, waiterObs, waiters, aftersStack, aftersStackHeight, flushed, processingAfters, UpdateBarrier, Desc, nullSink, nullVoidSink, Some, None, eventIdCounter, Event, Value, Next, Initial, NoValue, End, Error$1, CompositeUnsubscribe, Source, DefaultSource, ConsumingSource, BufferingSource, endMarker, spies, running, Dispatcher, PropertyDispatcher, Buffer2, nullMarker, idCounter, Observable, Property, allowSync, EventStream, ESObservable, makeFunction_, Bus;
+var init_Bacon = __esm({
+  "node_modules/.pnpm/baconjs@3.0.17/node_modules/baconjs/dist/Bacon.mjs"() {
+    isArray2 = Array.isArray || function(xs) {
+      return xs instanceof Array;
+    };
+    indexOf = Array.prototype.indexOf ? indexOfDefault : indexOfFallback;
+    _2 = {
+      indexOf,
+      indexWhere,
+      head,
+      always,
+      negate,
+      empty,
+      tail,
+      filter: filter2,
+      map: map3,
+      each,
+      toArray,
+      contains: contains3,
+      id,
+      last,
+      all,
+      any,
+      without,
+      remove,
+      fold,
+      flatMap,
+      bind: bind3,
+      isFunction: isFunction2,
+      toFunction,
+      toString: toString2
+    };
+    recursionDepth = 0;
+    more = void 0;
+    noMore = "<no-more>";
+    defaultScheduler = {
+      setTimeout(f2, d2) {
+        return setTimeout(f2, d2);
+      },
+      setInterval(f2, i2) {
+        return setInterval(f2, i2);
+      },
+      clearInterval(id2) {
+        return clearInterval(id2);
+      },
+      clearTimeout(id2) {
+        return clearTimeout(id2);
+      },
+      now() {
+        return new Date().getTime();
+      }
+    };
+    GlobalScheduler = {
+      scheduler: defaultScheduler
+    };
+    rootEvent = void 0;
+    waiterObs = [];
+    waiters = {};
+    aftersStack = [];
+    aftersStackHeight = 0;
+    flushed = {};
+    processingAfters = false;
+    UpdateBarrier = { toString: toString$1, whenDoneWith, hasWaiters, inTransaction, currentEventId, wrappedSubscribe, afterTransaction, soonButNotYet, isInTransaction };
+    Desc = class {
+      constructor(context, method, args = []) {
+        this._isDesc = true;
+        this.context = context;
+        this.method = method;
+        this.args = args;
+      }
+      deps() {
+        if (!this.cachedDeps) {
+          this.cachedDeps = findDeps([this.context].concat(this.args));
+        }
+        return this.cachedDeps;
+      }
+      toString() {
+        let args = _2.map(_2.toString, this.args);
+        return _2.toString(this.context) + "." + _2.toString(this.method) + "(" + args + ")";
+      }
+    };
+    nullSink = () => more;
+    nullVoidSink = () => more;
+    Some = class {
+      constructor(value) {
+        this._isSome = true;
+        this.isDefined = true;
+        this.value = value;
+      }
+      getOrElse(arg) {
+        return this.value;
+      }
+      get() {
+        return this.value;
+      }
+      filter(f2) {
+        if (f2(this.value)) {
+          return new Some(this.value);
+        } else {
+          return None;
+        }
+      }
+      map(f2) {
+        return new Some(f2(this.value));
+      }
+      forEach(f2) {
+        f2(this.value);
+      }
+      toArray() {
+        return [this.value];
+      }
+      inspect() {
+        return "Some(" + this.value + ")";
+      }
+      toString() {
+        return this.inspect();
+      }
+    };
+    None = {
+      _isNone: true,
+      getOrElse(value) {
+        return value;
+      },
+      get() {
+        throw new Error("None.get()");
+      },
+      filter() {
+        return None;
+      },
+      map() {
+        return None;
+      },
+      forEach() {
+      },
+      isDefined: false,
+      toArray() {
+        return [];
+      },
+      inspect() {
+        return "None";
+      },
+      toString() {
+        return this.inspect();
+      }
+    };
+    eventIdCounter = 0;
+    Event = class {
+      constructor() {
+        this.id = ++eventIdCounter;
+        this.isEvent = true;
+        this._isEvent = true;
+        this.isEnd = false;
+        this.isInitial = false;
+        this.isNext = false;
+        this.isError = false;
+        this.hasValue = false;
+      }
+      filter(f2) {
+        return true;
+      }
+      inspect() {
+        return this.toString();
+      }
+      log() {
+        return this.toString();
+      }
+      toNext() {
+        return this;
+      }
+    };
+    Value = class extends Event {
+      constructor(value) {
+        super();
+        this.hasValue = true;
+        if (value instanceof Event) {
+          throw new Error$1("Wrapping an event inside other event");
+        }
+        this.value = value;
+      }
+      fmap(f2) {
+        return this.apply(f2(this.value));
+      }
+      filter(f2) {
+        return f2(this.value);
+      }
+      toString() {
+        return _2.toString(this.value);
+      }
+      log() {
+        return this.value;
+      }
+    };
+    Next = class extends Value {
+      constructor(value) {
+        super(value);
+        this.isNext = true;
+        this._isNext = true;
+      }
+      apply(value) {
+        return new Next(value);
+      }
+    };
+    Initial = class extends Value {
+      constructor(value) {
+        super(value);
+        this.isInitial = true;
+        this._isInitial = true;
+      }
+      apply(value) {
+        return new Initial(value);
+      }
+      toNext() {
+        return new Next(this.value);
+      }
+    };
+    NoValue = class extends Event {
+      constructor() {
+        super(...arguments);
+        this.hasValue = false;
+      }
+      fmap(f2) {
+        return this;
+      }
+    };
+    End = class extends NoValue {
+      constructor() {
+        super(...arguments);
+        this.isEnd = true;
+      }
+      toString() {
+        return "<end>";
+      }
+    };
+    Error$1 = class extends NoValue {
+      constructor(error) {
+        super();
+        this.isError = true;
+        this.error = error;
+      }
+      toString() {
+        return "<error> " + _2.toString(this.error);
+      }
+    };
+    CompositeUnsubscribe = class {
+      constructor(ss = []) {
+        this.unsubscribed = false;
+        this.unsubscribe = _2.bind(this.unsubscribe, this);
+        this.unsubscribed = false;
+        this.subscriptions = [];
+        this.starting = [];
+        for (var i2 = 0, s2; i2 < ss.length; i2++) {
+          s2 = ss[i2];
+          this.add(s2);
+        }
+      }
+      add(subscription) {
+        if (!this.unsubscribed) {
+          var ended = false;
+          var unsub = nop;
+          this.starting.push(subscription);
+          var unsubMe = () => {
+            if (this.unsubscribed) {
+              return;
+            }
+            ended = true;
+            this.remove(unsub);
+            _2.remove(subscription, this.starting);
+          };
+          unsub = subscription(this.unsubscribe, unsubMe);
+          if (!(this.unsubscribed || ended)) {
+            this.subscriptions.push(unsub);
+          } else {
+            unsub();
+          }
+          _2.remove(subscription, this.starting);
+        }
+      }
+      remove(unsub) {
+        if (this.unsubscribed) {
+          return;
+        }
+        if (_2.remove(unsub, this.subscriptions) !== void 0) {
+          return unsub();
+        }
+      }
+      unsubscribe() {
+        if (this.unsubscribed) {
+          return;
+        }
+        this.unsubscribed = true;
+        var iterable = this.subscriptions;
+        for (var i2 = 0; i2 < iterable.length; i2++) {
+          iterable[i2]();
+        }
+        this.subscriptions = [];
+        this.starting = [];
+      }
+      count() {
+        if (this.unsubscribed) {
+          return 0;
+        }
+        return this.subscriptions.length + this.starting.length;
+      }
+      empty() {
+        return this.count() === 0;
+      }
+    };
+    Source = class {
+      constructor(obs, sync) {
+        this._isSource = true;
+        this.flatten = true;
+        this.ended = false;
+        this.obs = obs;
+        this.sync = sync;
+      }
+      subscribe(sink) {
+        return this.obs.subscribeInternal(sink);
+      }
+      toString() {
+        return this.obs.toString();
+      }
+      markEnded() {
+        this.ended = true;
+      }
+      mayHave(count) {
+        return true;
+      }
+    };
+    DefaultSource = class extends Source {
+      consume() {
+        return this.value;
+      }
+      push(x3) {
+        this.value = x3;
+      }
+      hasAtLeast(c3) {
+        return !!this.value;
+      }
+    };
+    ConsumingSource = class extends Source {
+      constructor(obs, sync) {
+        super(obs, sync);
+        this.flatten = false;
+        this.queue = [];
+      }
+      consume() {
+        return this.queue.shift();
+      }
+      push(x3) {
+        this.queue.push(x3);
+      }
+      mayHave(count) {
+        return !this.ended || this.queue.length >= count;
+      }
+      hasAtLeast(count) {
+        return this.queue.length >= count;
+      }
+    };
+    BufferingSource = class extends Source {
+      constructor(obs) {
+        super(obs, true);
+        this.queue = [];
+      }
+      consume() {
+        const values3 = this.queue;
+        this.queue = [];
+        return {
+          value: values3
+        };
+      }
+      push(x3) {
+        return this.queue.push(x3.value);
+      }
+      hasAtLeast(count) {
+        return true;
+      }
+    };
+    endMarker = {};
+    spies = [];
+    running = false;
+    Dispatcher = class {
+      constructor(observable, _subscribe, _handleEvent) {
+        this.pushing = false;
+        this.ended = false;
+        this.prevError = void 0;
+        this.unsubSrc = void 0;
+        this._subscribe = _subscribe;
+        this._handleEvent = _handleEvent;
+        this.subscribe = _2.bind(this.subscribe, this);
+        this.handleEvent = _2.bind(this.handleEvent, this);
+        this.subscriptions = [];
+        this.observable = observable;
+        this.queue = [];
+      }
+      hasSubscribers() {
+        return this.subscriptions.length > 0;
+      }
+      removeSub(subscription) {
+        this.subscriptions = _2.without(subscription, this.subscriptions);
+        return this.subscriptions;
+      }
+      push(event) {
+        if (event.isEnd) {
+          this.ended = true;
+        }
+        return UpdateBarrier.inTransaction(event, this, this.pushIt, [event]);
+      }
+      pushToSubscriptions(event) {
+        try {
+          let tmp = this.subscriptions;
+          const len = tmp.length;
+          for (let i2 = 0; i2 < len; i2++) {
+            const sub = tmp[i2];
+            let reply = sub.sink(event);
+            if (reply === noMore || event.isEnd) {
+              this.removeSub(sub);
+            }
+          }
+          return true;
+        } catch (error) {
+          this.pushing = false;
+          this.queue = [];
+          throw error;
+        }
+      }
+      pushIt(event) {
+        if (!this.pushing) {
+          if (event === this.prevError) {
+            return;
+          }
+          if (event.isError) {
+            this.prevError = event;
+          }
+          this.pushing = true;
+          this.pushToSubscriptions(event);
+          this.pushing = false;
+          while (true) {
+            let e2 = this.queue.shift();
+            if (e2) {
+              this.push(e2);
+            } else {
+              break;
+            }
+          }
+          if (this.hasSubscribers()) {
+            return more;
+          } else {
+            this.unsubscribeFromSource();
+            return noMore;
+          }
+        } else {
+          this.queue.push(event);
+          return more;
+        }
+      }
+      handleEvent(event) {
+        if (this._handleEvent) {
+          return this._handleEvent(event);
+        } else {
+          return this.push(event);
+        }
+      }
+      unsubscribeFromSource() {
+        if (this.unsubSrc) {
+          this.unsubSrc();
+        }
+        this.unsubSrc = void 0;
+      }
+      subscribe(sink) {
+        if (this.ended) {
+          sink(endEvent());
+          return nop;
+        } else {
+          assertFunction(sink);
+          let subscription = {
+            sink
+          };
+          this.subscriptions.push(subscription);
+          if (this.subscriptions.length === 1) {
+            this.unsubSrc = this._subscribe(this.handleEvent);
+            assertFunction(this.unsubSrc);
+          }
+          return () => {
+            this.removeSub(subscription);
+            if (!this.hasSubscribers()) {
+              return this.unsubscribeFromSource();
+            }
+          };
+        }
+      }
+      inspect() {
+        return this.observable.toString();
+      }
+    };
+    PropertyDispatcher = class extends Dispatcher {
+      constructor(property, subscribe, handleEvent) {
+        super(property, subscribe, handleEvent);
+        this.current = none();
+        this.propertyEnded = false;
+        this.subscribe = _2.bind(this.subscribe, this);
+      }
+      push(event) {
+        if (event.isEnd) {
+          this.propertyEnded = true;
+        }
+        if (event instanceof Value) {
+          this.current = new Some(event);
+          this.currentValueRootId = UpdateBarrier.currentEventId();
+        } else if (event.hasValue) {
+          console.error("Unknown event, two Bacons loaded?", event.constructor);
+        }
+        return super.push(event);
+      }
+      maybeSubSource(sink, reply) {
+        if (reply === noMore) {
+          return nop;
+        } else if (this.propertyEnded) {
+          sink(endEvent());
+          return nop;
+        } else {
+          return super.subscribe(sink);
+        }
+      }
+      subscribe(sink) {
+        var reply = more;
+        if (this.current.isDefined && (this.hasSubscribers() || this.propertyEnded)) {
+          var dispatchingId = UpdateBarrier.currentEventId();
+          var valId = this.currentValueRootId;
+          if (!this.propertyEnded && valId && dispatchingId && dispatchingId !== valId) {
+            UpdateBarrier.whenDoneWith(this.observable, () => {
+              if (this.currentValueRootId === valId) {
+                return sink(initialEvent(this.current.get().value));
+              }
+            });
+            return this.maybeSubSource(sink, reply);
+          } else {
+            UpdateBarrier.inTransaction(void 0, this, () => {
+              reply = sink(initialEvent(this.current.get().value));
+              return reply;
+            }, []);
+            return this.maybeSubSource(sink, reply);
+          }
+        } else {
+          return this.maybeSubSource(sink, reply);
+        }
+      }
+      inspect() {
+        return this.observable + " current= " + this.current;
+      }
+    };
+    Buffer2 = class {
+      constructor(onFlush, onInput) {
+        this.push = (e2) => more;
+        this.scheduled = null;
+        this.end = void 0;
+        this.values = [];
+        this.onFlush = onFlush;
+        this.onInput = onInput;
+      }
+      flush() {
+        if (this.scheduled) {
+          GlobalScheduler.scheduler.clearTimeout(this.scheduled);
+          this.scheduled = null;
+        }
+        if (this.values.length > 0) {
+          var valuesToPush = this.values;
+          this.values = [];
+          var reply = this.push(nextEvent(valuesToPush));
+          if (this.end != null) {
+            return this.push(this.end);
+          } else if (reply !== noMore) {
+            return this.onFlush(this);
+          }
+        } else {
+          if (this.end != null) {
+            return this.push(this.end);
+          }
+        }
+      }
+      schedule(delay2) {
+        if (!this.scheduled) {
+          return this.scheduled = delay2(() => {
+            return this.flush();
+          });
+        }
+      }
+    };
+    nullMarker = {};
+    idCounter = 0;
+    Observable = class {
+      constructor(desc) {
+        this.id = ++idCounter;
+        this._isObservable = true;
+        this.desc = desc;
+        this.initialDesc = desc;
+      }
+      awaiting(other) {
+        return awaiting(this, other);
+      }
+      bufferingThrottle(minimumInterval) {
+        return bufferingThrottle(this, minimumInterval);
+      }
+      combine(right2, f2) {
+        return combineTwo(this, right2, f2).withDesc(new Desc(this, "combine", [right2, f2]));
+      }
+      debounce(minimumInterval) {
+        return debounce(this, minimumInterval);
+      }
+      debounceImmediate(minimumInterval) {
+        return debounceImmediate(this, minimumInterval);
+      }
+      decode(cases) {
+        return decode(this, cases);
+      }
+      delay(delayMs) {
+        return delay(this, delayMs);
+      }
+      deps() {
+        return this.desc.deps();
+      }
+      diff(start, f2) {
+        return diff(this, start, f2);
+      }
+      doAction(f2) {
+        return this.transform(doActionT(f2), new Desc(this, "doAction", [f2]));
+      }
+      doEnd(f2) {
+        return this.transform(doEndT(f2), new Desc(this, "doEnd", [f2]));
+      }
+      doError(f2) {
+        return this.transform(doErrorT(f2), new Desc(this, "doError", [f2]));
+      }
+      doLog(...args) {
+        return this.transform(doLogT(args), new Desc(this, "doLog", args));
+      }
+      endAsValue() {
+        return endAsValue(this);
+      }
+      endOnError(predicate = (x3) => true) {
+        return endOnError(this, predicate);
+      }
+      errors() {
+        return this.filter((x3) => false).withDesc(new Desc(this, "errors"));
+      }
+      filter(f2) {
+        return filter$1(this, f2);
+      }
+      first() {
+        return take(1, this, new Desc(this, "first"));
+      }
+      firstToPromise(PromiseCtr) {
+        return firstToPromise(this, PromiseCtr);
+      }
+      fold(seed, f2) {
+        return fold$1(this, seed, f2);
+      }
+      forEach(f2 = nullSink) {
+        return this.onValue(f2);
+      }
+      holdWhen(valve) {
+        return holdWhen(this, valve);
+      }
+      inspect() {
+        return this.toString();
+      }
+      internalDeps() {
+        return this.initialDesc.deps();
+      }
+      last() {
+        return last$1(this);
+      }
+      log(...args) {
+        log(args, this);
+        return this;
+      }
+      mapEnd(f2) {
+        return this.transform(mapEndT(f2), new Desc(this, "mapEnd", [f2]));
+      }
+      mapError(f2) {
+        return this.transform(mapErrorT(f2), new Desc(this, "mapError", [f2]));
+      }
+      name(name) {
+        this._name = name;
+        return this;
+      }
+      onEnd(f2 = nullVoidSink) {
+        return this.subscribe(function(event) {
+          if (event.isEnd) {
+            return f2();
+          }
+          return more;
+        });
+      }
+      onError(f2 = nullSink) {
+        return this.subscribe(function(event) {
+          if (isError(event)) {
+            return f2(event.error);
+          }
+          return more;
+        });
+      }
+      onValue(f2 = nullSink) {
+        return this.subscribe(function(event) {
+          if (hasValue(event)) {
+            return f2(event.value);
+          }
+          return more;
+        });
+      }
+      onValues(f2) {
+        return this.onValue(function(args) {
+          return f2(...args);
+        });
+      }
+      reduce(seed, f2) {
+        return fold$1(this, seed, f2);
+      }
+      sampledBy(sampler) {
+        return sampledBy(this, sampler, arguments[1]);
+      }
+      scan(seed, f2) {
+        return scan(this, seed, f2);
+      }
+      skip(count) {
+        return skip(this, count);
+      }
+      skipDuplicates(isEqual) {
+        return skipDuplicates(this, isEqual);
+      }
+      skipErrors() {
+        return skipErrors(this);
+      }
+      skipUntil(starter) {
+        return skipUntil(this, starter);
+      }
+      skipWhile(f2) {
+        return skipWhile(this, f2);
+      }
+      slidingWindow(maxValues, minValues = 0) {
+        return slidingWindow(this, maxValues, minValues);
+      }
+      subscribe(sink = nullSink) {
+        return UpdateBarrier.wrappedSubscribe(this, (sink2) => this.subscribeInternal(sink2), sink);
+      }
+      take(count) {
+        return take(count, this);
+      }
+      takeUntil(stopper) {
+        return takeUntil(this, stopper);
+      }
+      takeWhile(f2) {
+        return takeWhile(this, f2);
+      }
+      throttle(minimumInterval) {
+        return throttle(this, minimumInterval);
+      }
+      toPromise(PromiseCtr) {
+        return toPromise(this, PromiseCtr);
+      }
+      toString() {
+        if (this._name) {
+          return this._name;
+        } else {
+          return this.desc.toString();
+        }
+      }
+      withDesc(desc) {
+        if (desc)
+          this.desc = desc;
+        return this;
+      }
+      withDescription(context, method, ...args) {
+        this.desc = describe(context, method, ...args);
+        return this;
+      }
+      zip(other, f2) {
+        return zip(this, other, f2);
+      }
+    };
+    Property = class extends Observable {
+      constructor(desc, subscribe, handler) {
+        super(desc);
+        this._isProperty = true;
+        assertFunction(subscribe);
+        this.dispatcher = new PropertyDispatcher(this, subscribe, handler);
+        registerObs(this);
+      }
+      and(other) {
+        return and(this, other);
+      }
+      changes() {
+        return new EventStream(new Desc(this, "changes", []), (sink) => this.dispatcher.subscribe(function(event) {
+          if (!event.isInitial) {
+            return sink(event);
+          }
+          return more;
+        }));
+      }
+      concat(other) {
+        return this.transformChanges(describe(this, "concat", other), (changes) => changes.concat(other));
+      }
+      transformChanges(desc, f2) {
+        return transformPropertyChanges(this, f2, desc);
+      }
+      flatMap(f2) {
+        return flatMap$1(this, f2);
+      }
+      flatMapConcat(f2) {
+        return flatMapConcat(this, f2);
+      }
+      flatMapError(f2) {
+        return flatMapError(this, f2);
+      }
+      flatMapEvent(f2) {
+        return flatMapEvent(this, f2);
+      }
+      flatMapFirst(f2) {
+        return flatMapFirst(this, f2);
+      }
+      flatMapLatest(f2) {
+        return flatMapLatest(this, f2);
+      }
+      flatMapWithConcurrencyLimit(limit, f2) {
+        return flatMapWithConcurrencyLimit(this, limit, f2);
+      }
+      groupBy(keyF, limitF) {
+        return groupBy(this, keyF, limitF);
+      }
+      map(f2) {
+        return map$1(this, f2);
+      }
+      not() {
+        return not3(this);
+      }
+      or(other) {
+        return or(this, other);
+      }
+      sample(interval2) {
+        return sampleP(this, interval2);
+      }
+      startWith(seed) {
+        return startWithP(this, seed);
+      }
+      subscribeInternal(sink = nullSink) {
+        return this.dispatcher.subscribe(sink);
+      }
+      toEventStream(options) {
+        return new EventStream(new Desc(this, "toEventStream", []), (sink) => this.subscribeInternal(function(event) {
+          return sink(event.toNext());
+        }), void 0, options);
+      }
+      toProperty() {
+        assertNoArguments(arguments);
+        return this;
+      }
+      transform(transformer, desc) {
+        return transformP(this, transformer, desc);
+      }
+      withLatestFrom(samplee, f2) {
+        return withLatestFromP(this, samplee, f2);
+      }
+      withStateMachine(initState, f2) {
+        return withStateMachine(initState, f2, this);
+      }
+    };
+    allowSync = { forceAsync: false };
+    EventStream = class extends Observable {
+      constructor(desc, subscribe, handler, options) {
+        super(desc);
+        this._isEventStream = true;
+        if (options !== allowSync) {
+          subscribe = asyncWrapSubscribe(this, subscribe);
+        }
+        this.dispatcher = new Dispatcher(this, subscribe, handler);
+        registerObs(this);
+      }
+      bufferWithTime(delay2) {
+        return bufferWithTime(this, delay2);
+      }
+      bufferWithCount(count) {
+        return bufferWithCount(this, count);
+      }
+      bufferWithTimeOrCount(delay2, count) {
+        return bufferWithTimeOrCount(this, delay2, count);
+      }
+      changes() {
+        return this;
+      }
+      concat(other, options) {
+        return concatE(this, other, options);
+      }
+      transformChanges(desc, f2) {
+        return f2(this).withDesc(desc);
+      }
+      flatMap(f2) {
+        return flatMap$1(this, f2);
+      }
+      flatMapConcat(f2) {
+        return flatMapConcat(this, f2);
+      }
+      flatMapError(f2) {
+        return flatMapError(this, f2);
+      }
+      flatMapFirst(f2) {
+        return flatMapFirst(this, f2);
+      }
+      flatMapLatest(f2) {
+        return flatMapLatest(this, f2);
+      }
+      flatMapWithConcurrencyLimit(limit, f2) {
+        return flatMapWithConcurrencyLimit(this, limit, f2);
+      }
+      flatMapEvent(f2) {
+        return flatMapEvent(this, f2);
+      }
+      flatScan(seed, f2) {
+        return flatScan(this, seed, f2);
+      }
+      groupBy(keyF, limitF) {
+        return groupBy(this, keyF, limitF);
+      }
+      map(f2) {
+        return map$1(this, f2);
+      }
+      merge(other) {
+        assertEventStream(other);
+        return mergeAll(this, other).withDesc(new Desc(this, "merge", [other]));
+      }
+      not() {
+        return not3(this);
+      }
+      startWith(seed) {
+        return startWithE(this, seed);
+      }
+      subscribeInternal(sink = nullSink) {
+        return this.dispatcher.subscribe(sink);
+      }
+      toEventStream() {
+        return this;
+      }
+      toProperty(initValue) {
+        let usedInitValue = arguments.length ? toOption(initValue) : none();
+        let disp = this.dispatcher;
+        let desc = new Desc(this, "toProperty", Array.prototype.slice.apply(arguments));
+        let streamSubscribe = disp.subscribe;
+        return new Property(desc, streamSubscribeToPropertySubscribe(usedInitValue, streamSubscribe));
+      }
+      transform(transformer, desc) {
+        return transformE(this, transformer, desc);
+      }
+      withLatestFrom(samplee, f2) {
+        return withLatestFromE(this, samplee, f2);
+      }
+      withStateMachine(initState, f2) {
+        return withStateMachine(initState, f2, this);
+      }
+    };
+    ESObservable = class {
+      constructor(observable) {
+        this.observable = observable;
+      }
+      subscribe(observerOrOnNext, onError, onComplete) {
+        const observer = typeof observerOrOnNext === "function" ? { next: observerOrOnNext, error: onError, complete: onComplete } : observerOrOnNext;
+        const subscription = {
+          closed: false,
+          unsubscribe: function() {
+            subscription.closed = true;
+            cancel();
+          }
+        };
+        const cancel = this.observable.subscribe(function(event) {
+          if (hasValue(event) && observer.next) {
+            observer.next(event.value);
+          } else if (isError(event)) {
+            if (observer.error)
+              observer.error(event.error);
+            subscription.unsubscribe();
+          } else if (event.isEnd) {
+            subscription.closed = true;
+            if (observer.complete)
+              observer.complete();
+          }
+        });
+        return subscription;
+      }
+    };
+    ESObservable.prototype[symbol("observable")] = function() {
+      return this;
+    };
+    Observable.prototype.toESObservable = function() {
+      return new ESObservable(this);
+    };
+    Observable.prototype[symbol("observable")] = Observable.prototype.toESObservable;
+    makeFunction_ = withMethodCallSupport(function(f2, ...args) {
+      if (_2.isFunction(f2)) {
+        if (args.length) {
+          return partiallyApplied(f2, args);
+        } else {
+          return f2;
+        }
+      } else {
+        return _2.always(f2);
+      }
+    });
+    Bus = class extends EventStream {
+      constructor() {
+        super(new Desc("Bacon", "Bus", []), (sink) => this.subscribeAll(sink));
+        this.pushing = false;
+        this.pushQueue = void 0;
+        this.ended = false;
+        this.subscriptions = [];
+        this.unsubAll = _2.bind(this.unsubAll, this);
+        this.push = _2.bind(this.push, this);
+        this.subscriptions = [];
+        this.ended = false;
+      }
+      plug(input) {
+        assertObservable(input);
+        if (this.ended) {
+          return;
+        }
+        var sub = { input, unsub: void 0 };
+        this.subscriptions.push(sub);
+        if (typeof this.sink !== "undefined") {
+          this.subscribeInput(sub);
+        }
+        return () => this.unsubscribeInput(input);
+      }
+      end() {
+        this.ended = true;
+        this.unsubAll();
+        if (typeof this.sink === "function") {
+          return this.sink(endEvent());
+        }
+      }
+      push(value) {
+        if (!this.ended && typeof this.sink === "function") {
+          var rootPush = !this.pushing;
+          if (!rootPush) {
+            if (!this.pushQueue)
+              this.pushQueue = [];
+            this.pushQueue.push(value);
+            return;
+          }
+          this.pushing = true;
+          try {
+            return this.sink(nextEvent(value));
+          } finally {
+            if (rootPush && this.pushQueue) {
+              var i2 = 0;
+              while (i2 < this.pushQueue.length) {
+                var v2 = this.pushQueue[i2];
+                this.sink(nextEvent(v2));
+                i2++;
+              }
+              this.pushQueue = void 0;
+            }
+            this.pushing = false;
+          }
+        }
+      }
+      error(error) {
+        if (typeof this.sink === "function") {
+          return this.sink(new Error$1(error));
+        }
+      }
+      unsubAll() {
+        var iterable = this.subscriptions;
+        for (var i2 = 0, sub; i2 < iterable.length; i2++) {
+          sub = iterable[i2];
+          if (typeof sub.unsub === "function") {
+            sub.unsub();
+          }
+        }
+      }
+      subscribeAll(newSink) {
+        if (this.ended) {
+          newSink(endEvent());
+        } else {
+          this.sink = newSink;
+          var iterable = this.subscriptions.slice();
+          for (var i2 = 0, subscription; i2 < iterable.length; i2++) {
+            subscription = iterable[i2];
+            this.subscribeInput(subscription);
+          }
+        }
+        return this.unsubAll;
+      }
+      guardedSink(input) {
+        return (event) => {
+          if (event.isEnd) {
+            this.unsubscribeInput(input);
+            return noMore;
+          } else if (this.sink) {
+            return this.sink(event);
+          } else {
+            return more;
+          }
+        };
+      }
+      subscribeInput(subscription) {
+        subscription.unsub = subscription.input.subscribeInternal(this.guardedSink(subscription.input));
+        return subscription.unsub;
+      }
+      unsubscribeInput(input) {
+        var iterable = this.subscriptions;
+        for (var i2 = 0, sub; i2 < iterable.length; i2++) {
+          sub = iterable[i2];
+          if (sub.input === input) {
+            if (typeof sub.unsub === "function") {
+              sub.unsub();
+            }
+            this.subscriptions.splice(i2, 1);
+            return;
+          }
+        }
+      }
+    };
+  }
+});
+
+// src/utilities/events.ts
+var events_exports = {};
+__export(events_exports, {
+  windowKeyDownListener: () => windowKeyDownListener,
+  windowKeyUpListener: () => windowKeyUpListener
+});
+var windowKeyDownListener, windowKeyUpListener;
+var init_events = __esm({
+  "src/utilities/events.ts"() {
+    init_Bacon();
+    windowKeyDownListener = new Bus();
+    windowKeyUpListener = new Bus();
+  }
+});
+
+// src/keys.ts
+var keys_exports = {};
+__export(keys_exports, {
+  isKeyDown: () => isKeyDown
+});
+var trackedKeys, frameSnapshotKeys, setKeyDown, setKeyUp, isKeyDown;
+var init_keys2 = __esm({
+  "src/keys.ts"() {
+    init_animate();
+    init_State();
+    init_events();
+    trackedKeys = State({});
+    frameSnapshotKeys = State({});
+    setKeyDown = (code) => {
+      trackedKeys((keys4) => ({ ...keys4, [code]: true }));
+    };
+    setKeyUp = (code) => {
+      trackedKeys(({ [code]: _3, ...rest }) => rest);
+    };
+    inputs.add(() => {
+      frameSnapshotKeys(trackedKeys());
+    });
+    windowKeyDownListener.onValue(({ code }) => {
+      setKeyDown(code);
+    });
+    windowKeyUpListener.onValue(({ code }) => {
+      setKeyUp(code);
+    });
+    isKeyDown = (keyString) => Boolean(frameSnapshotKeys()[keyString]);
+  }
+});
+
 // src/user.ts
 var user_exports = {};
 __export(user_exports, {
@@ -7646,7 +8044,7 @@ var init_user = __esm({
     init_keys2();
     init_Vector();
     init_State();
-    init_draw2();
+    init_draw();
     pos = State(zero());
     size = State(from(50));
     speed = State(400);
@@ -7700,15 +8098,15 @@ var init_hitbox = __esm({
     init_es();
     init_uid();
     init_State();
-    init_draw2();
-    createHitBox = (label, [x3, y4], [width, height], ownerId) => {
+    init_draw();
+    createHitBox = (label, [x3, y3], [width, height], ownerId) => {
       return {
         label,
         id: uid(),
         x: x3,
-        y: y4,
+        y: y3,
         x2: x3 + width,
-        y2: y4 + height,
+        y2: y3 + height,
         width,
         height,
         ownerId
@@ -7762,13 +8160,13 @@ var init_hitbox = __esm({
         hitboxInteractions((interactions) => ({ ...interactions, [hitbox.id]: [] }));
       });
     };
-    moveHitbox = (hitboxId, [x3, y4]) => {
+    moveHitbox = (hitboxId, [x3, y3]) => {
       hitboxes(SExtendValue(hitboxId, (hitbox) => {
         return {
           x: x3,
-          y: y4,
+          y: y3,
           x2: x3 + hitbox.width,
-          y2: y4 + hitbox.height
+          y2: y3 + hitbox.height
         };
       }));
     };
@@ -7782,11 +8180,11 @@ var init_hitbox = __esm({
     removal.add(clearHitboxInteractions, flushHitboxRemoveQueue, clearHitboxRemoveQueue);
     physics.add(checkHitboxes);
     render.add(() => {
-      values_default(hitboxes()).forEach(({ x: x3, x2: x22, y: y4, y2: y22 }) => {
+      values_default(hitboxes()).forEach(({ x: x3, x2: x22, y: y3, y2: y22 }) => {
         save();
         beginPath();
-        moveTo(x3, y4);
-        lineTo(x22, y4);
+        moveTo(x3, y3);
+        lineTo(x22, y3);
         lineTo(x22, y22);
         lineTo(x3, y22);
         strokeStyle("blue");
@@ -7811,11 +8209,11 @@ var ACTIVE, INACTIVE, lastSpawnTime, enemies, createEnemy, canCreate, moveEnemie
 var init_enemy = __esm({
   "src/enemy.ts"() {
     init_animate();
-    init_draw2();
+    init_draw();
     init_hitbox();
     init_es();
     init_uid();
-    init_util();
+    init_generic();
     init_Vector();
     init_State();
     ACTIVE = "ACTIVE";
@@ -7839,7 +8237,7 @@ var init_enemy = __esm({
       enemies(SMapExtendValues((enemy) => ({
         pos: add(enemy.pos, left(enemy.speed * timeDiffS()))
       })));
-      values3(enemies()).forEach((enemy) => {
+      values_default(enemies()).forEach((enemy) => {
         moveHitbox(enemy.hitboxId, enemy.pos);
       });
     };
@@ -7852,7 +8250,7 @@ var init_enemy = __esm({
       return false;
     };
     enemyRemover = () => {
-      values3(enemies()).forEach((enemy) => {
+      values_default(enemies()).forEach((enemy) => {
         if (canRemoveEnemy(enemy)) {
           setEnemyInactive(enemy);
           removeHitbox(enemy.hitboxId);
@@ -7879,7 +8277,7 @@ var init_enemy = __esm({
     removal.add(() => enemies(SFilterValues(({ status }) => status !== "INACTIVE")));
     update.add(spawnEnemies, moveEnemies, enemyRemover);
     render.add(() => {
-      values3(enemies()).forEach((enemy) => {
+      values_default(enemies()).forEach((enemy) => {
         if (enemy.status === INACTIVE)
           return [];
         const interactions = getInteractionsForHitboxId(enemy.hitboxId);
@@ -7926,7 +8324,7 @@ var init_bullets = __esm({
     init_Vector();
     init_enemy();
     init_State();
-    init_draw2();
+    init_draw();
     lastBulletFiredTime = State(0);
     bullets = StateImmer(/* @__PURE__ */ new Map());
     createBullet = (pos2) => {
@@ -8020,7 +8418,7 @@ var init_debug = __esm({
     init_hitbox();
     init_enemy();
     init_Vector();
-    init_draw2();
+    init_draw();
     render.add(() => {
       const thingsToShow = [
         { label: "fps", textLog: fps() },
@@ -8042,62 +8440,109 @@ var init_debug = __esm({
   }
 });
 
-// src/canvas.ts
-var call, set3, save2, fillRect2, restore2, fillStyle2, createCanvas;
-var init_canvas = __esm({
-  "src/canvas.ts"() {
-    init_animate();
-    init_draw2();
-    init_es();
-    init_Vector();
-    call = curry_default((key, args, actions) => [...actions, ["c", key, args]]);
-    set3 = curry_default((key, value, actions) => [...actions, ["s", key, value]]);
-    save2 = call("save");
-    fillRect2 = call("fillRect");
-    restore2 = call("restore");
-    fillStyle2 = set3("fillStyle");
-    createCanvas = async () => {
-      const canvas = document.createElement("canvas");
-      Object.assign(canvas, { width: 1920, height: 1080 });
-      Object.assign(canvas.style, { border: "1px solid #ccc", maxWidth: "100%" });
-      document.body.appendChild(canvas);
-      const canvasWorker = new Worker("/src/canvas-worker.js", { type: "module" });
-      const offscreen = canvas.transferControlToOffscreen();
-      canvasWorker.postMessage({ type: "canvas", canvas: offscreen }, [offscreen]);
-      return [
-        canvasWorker,
-        canvas
-      ];
-    };
-    prerender.add((canvas) => {
-      clearRect(...zero(), canvas.width, canvas.height);
-    });
-  }
+// src/app-worker.ts
+var app_worker_exports = {};
+__export(app_worker_exports, {
+  attachCanvasWorker: () => attachCanvasWorker,
+  default: () => app_worker_default,
+  fireEvent: () => fireEvent,
+  run: () => run
 });
-
-// src/index.ts
-var src_exports = {};
-var run;
-var init_src = __esm({
-  "src/index.ts"() {
-    init_animate();
-    init_canvas();
-    run = async () => {
-      activate(await createCanvas());
+var canvasWorker, attachCanvasWorker, fireEvent, run, methods, app_worker_default;
+var init_app_worker = __esm({
+  "src/app-worker.ts"() {
+    init_comlink();
+    init_events();
+    attachCanvasWorker = (transferredCanvasWorker) => {
+      console.log("received canvas worker");
+      canvasWorker = wrap(transferredCanvasWorker);
+      return true;
     };
-    if (document.readyState === "complete") {
-      run();
-    } else {
-      window.addEventListener("DOMContentLoaded", run);
-    }
+    fireEvent = (key, data) => {
+      events_exports[key].push(data);
+    };
+    run = async () => {
+      if (!canvasWorker)
+        throw new Error("canvasWorker has not been setup yet");
+      await Promise.resolve().then(() => (init_canvas(), canvas_exports));
+      await Promise.resolve().then(() => (init_keys2(), keys_exports));
+      await Promise.resolve().then(() => (init_user(), user_exports));
+      await Promise.resolve().then(() => (init_enemy(), enemy_exports));
+      await Promise.resolve().then(() => (init_bullets(), bullets_exports));
+      await Promise.resolve().then(() => (init_debug(), debug_exports));
+      const { activate: activate2 } = await Promise.resolve().then(() => (init_animate(), animate_exports));
+      activate2(canvasWorker);
+    };
+    methods = {
+      attachCanvasWorker,
+      fireEvent,
+      run
+    };
+    expose(methods);
+    app_worker_default = methods;
   }
 });
 
 // src/loader.ts
-await Promise.resolve().then(() => (init_keys2(), keys_exports));
-await Promise.resolve().then(() => (init_user(), user_exports));
-await Promise.resolve().then(() => (init_enemy(), enemy_exports));
-await Promise.resolve().then(() => (init_bullets(), bullets_exports));
-await Promise.resolve().then(() => (init_debug(), debug_exports));
-await Promise.resolve().then(() => (init_src(), src_exports));
+init_comlink();
+init_canvas();
+
+// src/utilities/worker.ts
+init_comlink();
+var createComlinkWorker = (path, options) => {
+  const worker = new Worker(path, options);
+  const comlinkWorker = wrap(worker);
+  return comlinkWorker;
+};
+var createComlinkSharedWorker = (path, options) => {
+  const worker = new SharedWorker(path, options);
+  worker.port.start();
+  const workerComlink = wrap(worker.port);
+  const base = {
+    get port() {
+      return worker.port;
+    },
+    clonePort() {
+      const worker2 = new SharedWorker(path, options);
+      worker2.port.start();
+      return worker2.port;
+    }
+  };
+  return new Proxy(base, {
+    get(obj, key) {
+      if (obj.hasOwnProperty(key)) {
+        return Reflect.get(obj, key);
+      }
+      return Reflect.get(workerComlink, key);
+    }
+  });
+};
+
+// src/loader.ts
+var loadApp = async ({ useWorker = false }) => {
+  if (useWorker === false)
+    return await Promise.resolve().then(() => (init_app_worker(), app_worker_exports));
+  const appWorker = createComlinkWorker("/src/app-worker.js", { type: "module" });
+  return appWorker;
+};
+var run2 = async () => {
+  const canvas = createCanvas();
+  const offscreenCanvas = canvas.transferControlToOffscreen();
+  const canvasWorker2 = createComlinkSharedWorker("/src/canvas-worker.js", { type: "module" });
+  canvasWorker2.setCanvas(transfer(offscreenCanvas, [offscreenCanvas]));
+  const app = await loadApp({ useWorker: true });
+  const clonedCanvasWorker = canvasWorker2.clonePort();
+  await app.attachCanvasWorker(transfer(clonedCanvasWorker, [clonedCanvasWorker]));
+  setupListeners(app);
+  await app.run();
+};
+var setupListeners = (app) => {
+  window.addEventListener("keydown", ({ code }) => app.fireEvent("windowKeyDownListener", { code }));
+  window.addEventListener("keyup", ({ code }) => app.fireEvent("windowKeyUpListener", { code }));
+};
+if (document.readyState === "complete") {
+  run2();
+} else {
+  window.addEventListener("DOMContentLoaded", run2);
+}
 //# sourceMappingURL=loader.js.map

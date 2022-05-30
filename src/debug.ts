@@ -3,7 +3,7 @@ import { bullets } from './bullets';
 import { hitboxes } from './hitbox';
 import { enemies } from './enemy';
 import { from } from './Vector';
-import { beginPath, restore, save, font, fillText } from './draw2';
+import { beginPath, restore, save, font, fillText } from './draw';
 
 render.add(() => {
   const thingsToShow = [

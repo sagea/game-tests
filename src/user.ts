@@ -1,9 +1,8 @@
-import { pipe, append } from 'ramda'
 import { render, timeDiffS, update } from './animate'
 import { isKeyDown } from './keys'
 import { add, down, from, left, right, up, zero } from './Vector'
 import { State } from './State/State'
-import { fill, fillStyle, restore, save, rect, beginPath, closePath } from './draw2'
+import { fill, fillStyle, restore, save, rect, beginPath, closePath } from './draw'
 
 export const pos = State(zero())
 export const size = State(from(50))

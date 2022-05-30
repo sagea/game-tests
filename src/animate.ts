@@ -1,15 +1,10 @@
 import { CBTracker } from './CBTracker'
-import { createGlobalStateArray } from './State/GlobalState'
 import { State } from './State/State';
-import { renderContext } from './draw2';
+import { renderContext } from './draw';
 
 
 type FinalCallback = () => any;
 
-const renderMethods = new Map<string, [() => any, string]>();
-export const addRenderMethod = (stateMethod, ) => {
-    
-}
 export const $$initiate = CBTracker<() => any>('$$initiate2')
 export const inputs = CBTracker<() => any>('inputs2')
 export const preframe = CBTracker<() => any>('preframe2')
@@ -17,8 +12,8 @@ export const physics = CBTracker<() => any>('physics2')
 export const update = CBTracker<() => any>('update2')
 export const removal = CBTracker<() => any>('removal2');
 
-export const prerender = CBTracker<(canvas: HTMLCanvasElement) => any>('prerender')
-export const render = CBTracker<(canvas: HTMLCanvasElement) => any>('render')
+export const prerender = CBTracker<() => any>('prerender')
+export const render = CBTracker<() => any>('render')
 
 export const final = CBTracker<FinalCallback>('final')
 
@@ -41,12 +36,12 @@ const attachTimes = (animateTimeMs) => {
 
 const frame = (method) => {
     // return setTimeout(method, 200);
-    return window.requestAnimationFrame(method)
+    return requestAnimationFrame(method)
 }
 
 export const sentTracker = new WeakSet();
-export function activate([canvasWorker, canvas]) {
-    function animate(t, prevRenderState) {
+export function activate(canvasWorker) {
+    function animate(t) {
         attachTimes(t)
         const stateMethods = [...$$initiate, ...inputs, ...preframe, ...physics, ...update ]
         const renderMethods = [...prerender, ...render ]
@@ -54,20 +49,12 @@ export function activate([canvasWorker, canvas]) {
 
         stateMethods.forEach(callback => callback());
         const renderContext2 = renderContext(() => {
-            renderMethods.forEach(callback => callback(canvas))
+            renderMethods.forEach(callback => callback())
         })
-
         endMethods.forEach(callback => callback())
-        // canvasWorker.postMessage({ type: 'NewRenderer', handlers: nextRenderState });
-        canvasWorker.postMessage({ type: 'NewRenderer2', handlers: renderContext2 });
-        frame(t => animate(t, createGlobalStateArray()))
+        canvasWorker.newRenderer2(renderContext2);
+        frame(animate)
     }
-    frame(
-        t =>
-            animate(
-                t,
-                createGlobalStateArray(),
-            ),
-    )
+    frame(animate)
 
 }

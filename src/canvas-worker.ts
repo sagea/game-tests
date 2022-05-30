@@ -1,38 +1,24 @@
-import { renderState } from './draw'
-import { fromEvent } from 'baconjs'
-import { drawHandlers, executeOnCanvas } from './draw2'
+import { expose } from 'comlink';
+import { executeOnCanvas } from './draw'
 
-const messageEvent = fromEvent(self, 'message')
-const onGameMessage = messageEvent
-    .map(e => e?.data)
-    .filter(Boolean)
+let canvas;
+let ctx;
 
-const onCanvasMessage = onGameMessage
-    .filter(e => e.type === 'canvas')
-    .map(({ canvas }) => canvas.getContext('2d'))
+const setCanvas = (offscreenCanvas) => {
+    canvas = offscreenCanvas;
+    ctx = canvas.getContext('2d');
+}
 
-const onNewRenderMessage = onGameMessage
-    .filter(e => e.type === 'NewRenderer')
+const newRenderer2 = (handlers) => {
+    for (let handler of handlers) {
+        executeOnCanvas(ctx, handler);
+    }
+}
+const comlinkObj = { setCanvas, newRenderer2 };
 
-const onNewRenderMessage2 = onGameMessage
-    .filter(e => e.type === 'NewRenderer2')
+self.onconnect = (event) => {
+    console.log('connected')
+    const port = event.ports[0]
+    expose(comlinkObj, port);
+}
 
-onCanvasMessage
-    .flatMap((ctx) =>
-        onNewRenderMessage
-            .map(message => [ctx, message])
-    )
-    .onValue(([ctx, { handlers }]) => {
-        renderState(ctx, handlers)
-    })
-
-onCanvasMessage
-    .flatMap((ctx) =>
-        onNewRenderMessage2
-            .map(message => [ctx, message])
-    )
-    .onValue(([ctx, { handlers }]) => {
-        for (let handler of handlers) {
-            executeOnCanvas(ctx, handler);
-        }
-    })

@@ -1,12 +1,8 @@
-import { $$initiate, physics, preframe, removal, render } from './animate'
-import { handleRenders } from './draw'
-import { modify, curry, pipe, reduce, dissoc, mergeDeepLeft, assoc, append, mergeLeft, mergeRight, map, values } from 'ramda'
-import { initialStateHandler } from './stateUtils'
+import { physics, removal, render } from './animate'
+import { values } from 'ramda'
 import { uid } from './uid'
-import { filterValues, isString, mapValues } from './util'
-import { from } from './Vector'
 import { SExtend, SExtendValue, SFilterValues, State } from './State/State'
-import { beginPath, closePath, moveTo, restore, save, stroke, lineTo, lineWidth, strokeStyle, } from './draw2'
+import { beginPath, closePath, moveTo, restore, save, stroke, lineTo, strokeStyle, } from './draw'
 
 export interface Hitbox {
     label: string;

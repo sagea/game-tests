@@ -1,4 +1,4 @@
-import { set, lensProp, view, curry } from 'ramda'
+import { curry } from 'ramda'
 
 
 const getX = ([x]) => x;

@@ -1,15 +1,4 @@
-import { isString } from './util'
 
-const trace = () => {
-    try {
-        // Code throwing an exception
-        throw new Error();
-    } catch(e) {
-        // console.log(e.stack);
-        // throw e;
-        return e.stack;
-    }
-}
 export const CBTracker = <TCallback>(labelName: string) => {
     const events = new Set<['once' | 'always', TCallback]>()
     let eventId = -1;

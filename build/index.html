@@ -7,11 +7,7 @@
   <body>
     <div id="app"></div>
     <script type="module">
-      import { setup } from './service-worker-register.js'
-      await setup();
-      console.log('setup');
       await import('./src/loader.js');
-      console.log('loaded')
     </script>
   </body>
 </html>

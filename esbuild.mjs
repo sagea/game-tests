@@ -10,7 +10,7 @@ const serveOptions = {
 }
 /** @type import('esbuild').BuildOptions */
 const buildOptions = {
-  entryPoints: ['src/loader.ts', './src/canvas-worker.ts'],
+  entryPoints: ['src/loader.ts', './src/canvas-worker.ts', './src/app-worker.js'],
   loader: { '.ts': 'ts' },
   treeShaking: true,
   outdir: 'build/src/',

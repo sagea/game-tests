@@ -1,19 +1,15 @@
-import { timeDiffS, update, preframe, timeMS, removal, render } from './animate'
-import { beginPath, fill, fillStyle, rect, restore, save } from './draw2'
-import { addHitbox, attachHitboxToObject, checkHitboxes, createHitBox, getInteractionsForHitboxId, moveHitbox, removeHitbox } from './hitbox'
-import { modify, lensPath, allPass, when, append, pipe, map, set, curry, reduce, dissoc, forEach, mergeLeft } from 'ramda'
-import { Field, GO } from './State/GO'
-import { initialStateHandler } from './stateUtils'
+import { timeDiffS, update, timeMS, removal, render } from './animate'
+import { beginPath, fill, fillStyle, rect, restore, save } from './draw'
+import { addHitbox, attachHitboxToObject, createHitBox, getInteractionsForHitboxId, moveHitbox, removeHitbox } from './hitbox'
+import { allPass, values } from 'ramda'
 import { uid } from './uid'
-import { filterValues, values, hasSymbol, isString, random, timeDifference, mapValues } from './util'
+import { random } from './utilities/generic'
 import { add, from, left, up, x, y } from './Vector'
 import { SExtendValue, SFilterValues, SMapExtendValues, State, SValue } from './State/State'
 
 const ACTIVE = 'ACTIVE';
 const INACTIVE = 'INACTIVE'
 const key = (custom) => `GAME/ENEMIES/${custom}`;
-// export const enemies = GO(key('enemies'));
-
 interface Enemy {
     id: string;
     pos: Vector;
@@ -59,6 +55,7 @@ const canRemoveEnemy = (enemy) => {
     if (enemy.health === 0) return true;
     return false;
 }
+
 const enemyRemover = () => {
     values(enemies())
         .forEach(enemy => {
@@ -83,16 +80,17 @@ export const spawnEnemies = () => {
 const setEnemyInactive = (enemy: Enemy) => {
     return enemies(SExtendValue(enemy.id, { status: 'INACTIVE' }));
 }
+
 export const damageEnemy = (amount: number, enemy: Enemy) => {
     enemies(SExtendValue(enemy.id, (e) => ({
         health: Math.max(0, e.health - amount)
     })))
 }
 
-
 removal.add(
     () => enemies(SFilterValues(({ status }) => status !== 'INACTIVE'))
 )
+
 update.add(
     spawnEnemies,
     moveEnemies,
@@ -124,28 +122,5 @@ render.add(() => {
         rect(...enemy.pos, ...enemy.size)
         fill();
         restore()
-        // rect(enemy.pos, enemy.size, fillStyle(hasTouchedBullet ? 'blue' : 'green'))
-        // rect(add(enemy.pos, up(50)), y(enemy.size, 20), fillStyle('red')),
-        // rect(add(enemy.pos, up(50)), from(x(enemy.size) * healthPercentage, 20), fillStyle('green'))
-        // rect(enemy.pos, enemy.size, fillStyle(hasTouchedBullet ? 'blue' : 'green')),
     })
 })
-// render.add((rs) => {
-//     return handleRenders(
-//         ...values(enemies()).flatMap((enemy) => {
-//             if (enemy.status === INACTIVE) return [];
-
-//             const interactions = getInteractionsForHitboxId(enemy.hitboxId)
-//             const hasTouchedBullet = interactions.some(hitbox => hitbox.label === 'bullets')
-//             const healthPercentage = enemy.health / enemy.originalHealth;
-//             const hb = [
-//                 rect(add(enemy.pos, up(50)), y(enemy.size, 20), fillStyle('red')),
-//                 rect(add(enemy.pos, up(50)), from(x(enemy.size) * healthPercentage, 20), fillStyle('green'))
-//             ];
-//             return [
-//                 ...hb,
-//                 rect(enemy.pos, enemy.size, fillStyle(hasTouchedBullet ? 'blue' : 'green')),
-//             ]
-//         })
-//     )(rs)
-// })
