@@ -1,27 +1,44 @@
 import { fps, render } from './animate';
-import { bullets } from './bullets';
-import { hitboxes } from './hitbox';
-import { enemies } from './enemy';
-import { from } from './Vector';
-import { beginPath, restore, save, font, fillText } from './draw';
+import { v } from './Vector';
+import { beginPath, restore, save, font, fillText, lineTo, moveTo, lineWidth, strokeStyle, closePath, stroke } from './draw';
+import { count, query } from './modules/ecs/entity';
 
 render.add(() => {
-  const thingsToShow = [
-    { label: 'fps', textLog: fps() },
-    { label: 'bullets', textLog: Object.keys(bullets()).length },
-    { label: 'enemies', textLog: Object.keys(enemies()).length },
-    { label: 'hitboxes', textLog: Object.keys(hitboxes()).length },
-  ];
-  thingsToShow.forEach(({ label, textLog }, index) => {
+  const metrics = [
+    ['fps', fps()],
+    ['bullets', count(['UserBullet'])],
+    ['enemies', count(['Enemy'])],
+    ['hitboxes', count(['Hitbox'])],
+  ]
+  metrics.forEach(([label, textLog], index) => {
     save()
     beginPath()
     const fontSize = 40;
-  
+
     const count = `${label}: ${textLog}`;
-    const pos = from(10, fontSize + (index * fontSize));
+    const pos = v(10, fontSize + (index * fontSize));
     font(`${fontSize}px serif`)
     fillText(count, ...pos)
     restore()
   })
-  
 })
+
+render.add([
+  99999,
+  () => {
+    for (let { Hitbox } of query(['Hitbox'])) {
+      const { x, x2, y, y2 } = Hitbox();
+      save()
+      beginPath()
+      moveTo(x, y)
+      lineTo(x2, y)
+      lineTo(x2, y2)
+      lineTo(x, y2)
+      lineWidth(4);
+      strokeStyle('blue')
+      closePath()
+      stroke()
+      restore()
+    }
+  }
+])

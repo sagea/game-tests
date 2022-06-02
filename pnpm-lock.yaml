@@ -21,6 +21,7 @@ specifiers:
   prettier: ^2.6.2
   ramda: 0.28.0
   typescript: 4.4.4
+  zod: ^3.17.3
 
 dependencies:
   baconjs: 3.0.17
@@ -32,6 +33,7 @@ dependencies:
   jt-collision-detection: 1.0.0
   mocha: 10.0.0
   ramda: 0.28.0
+  zod: 3.17.3
 
 devDependencies:
   '@types/jest': 27.5.1
@@ -2441,7 +2443,7 @@ packages:
       wrappy: 1.0.2
 
   /inherits/2.0.3:
-    resolution: {integrity: sha1-Yzwsg+PaQqUC9SRmAiSA9CCCYd4=}
+    resolution: {integrity: sha512-x00IRNXNy63jwGkJmzPigoySHbaqpNuzKbBOmzK+g2OdZpQ9w+sxCN+VSB3ja7IAge2OP2qpfxTjeNcyjmW1uw==}
     dev: true
 
   /inherits/2.0.4:
@@ -3564,7 +3566,7 @@ packages:
     dev: false
 
   /object-assign/4.1.1:
-    resolution: {integrity: sha1-IQmtx5ZYh8/AXLvUQsrIv7s2CGM=}
+    resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
     engines: {node: '>=0.10.0'}
     dev: true
 
@@ -4604,4 +4606,8 @@ packages:
   /yocto-queue/0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
+    dev: false
+
+  /zod/3.17.3:
+    resolution: {integrity: sha512-4oKP5zvG6GGbMlqBkI5FESOAweldEhSOZ6LI6cG+JzUT7ofj1ZOC0PJudpQOpT1iqOFpYYtX5Pw0+o403y4bcg==}
     dev: false

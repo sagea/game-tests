@@ -81,7 +81,7 @@ describe('State.ts', () => {
         })
       })
     })
-    
+
   })
   describe('SExtendValue', () => {
     test('should extend value with response from function', () => {
@@ -90,7 +90,7 @@ describe('State.ts', () => {
         coolBro: { num: 5, a: 'haha' },
         other: { num: 2, a: 'hehe' }
       })
-      item(SExtendValue('other', ({ num }) => ({ num: num + 2})))
+      item(SExtendValue('other', ({ num }) => ({ num: num + 2 })))
       expect(item()).toEqual({
         coolBro: { num: 5, a: 'haha' },
         other: { num: 4, a: 'hehe' }
@@ -115,12 +115,12 @@ describe('State.ts', () => {
       const item = State<Record<string, Test>>({
         coolBro: { num: 5, a: 'haha' },
         other: { num: 2, a: 'hehe' },
-        other2: { num: 3, a: 'huehue'},
+        other2: { num: 3, a: 'huehue' },
       })
       item(SFilterValues((value, id) => value.num === 5 || id === 'other2'))
       expect(item()).toEqual({
         coolBro: { num: 5, a: 'haha' },
-        other2: { num: 3, a: 'huehue'},
+        other2: { num: 3, a: 'huehue' },
       })
     })
   })

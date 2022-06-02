@@ -12,6 +12,9 @@ export const fireEvent = (key, data) => {
 }
 export const run = async () => {
   if (!canvasWorker) throw new Error('canvasWorker has not been setup yet');
+  await import('./components/DeleteQueueManager');
+  await import ('./components/basic');
+  await import ('./hitbox');
   await import('./canvas');
   await import('./keys');
   await import('./user');
@@ -21,6 +24,7 @@ export const run = async () => {
   const { activate } = await import('./animate');
   activate(canvasWorker);
 }
+
 const methods = {
   attachCanvasWorker,
   fireEvent,

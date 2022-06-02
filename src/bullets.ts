@@ -1,137 +1,103 @@
-import { removal, render, timeDiffS, timeMS, update } from './animate'
-import { addHitbox, attachHitboxToObject, createHitBox, getInteractionsForHitboxId, moveHitbox, removeHitbox } from './hitbox'
+import { $$initiate, render, timeDiffS, timeMS, update } from './animate'
+import { createHitBoxComponent, updateHitboxTransform } from './hitbox'
 import { isKeyDown } from './keys'
-import { allPass } from 'ramda'
-import { uid } from './uid'
-import { pos } from './user'
-import { add, from, right, Vector, x } from './Vector'
-import { damageEnemy, enemies } from './enemy'
-import { State, StateImmer } from './State/State';
+import { add, v, right, Vector } from './Vector'
+import { damageEnemy } from './enemy'
 import { fill, fillStyle, restore, save, rect, beginPath } from './draw'
 
-interface Bullet {
-    id: string;
-    pos: Vector,
-    size: Vector,
-    direction: Vector,
-    speed: number,
-    hitboxId?: string,
-    status: 'ACTIVE' | 'INACTIVE',
+import { addEntity, Component, createComponent, query } from './modules/ecs';
+declare module './modules/ecs' {
+  export interface ComponentList {
+    UserBullet: Component<'UserBullet', {
+      speed: number;
+      status: 'ACTIVE' | 'INACTIVE';
+    }>;
+    UserBulletManager: Component<'UserBulletManager', {
+      lastBulletFiredTime: number;
+    }>
+  }
 }
 
-export const lastBulletFiredTime = State(0);
-export const bullets = StateImmer<Map<string, Bullet>>(new Map());
+$$initiate.once(() => {
+  addEntity([
+    createComponent('UserBulletManager', {
+      lastBulletFiredTime: 0,
+    }),
+  ])
+})
 
-const createBullet = (pos): Bullet => {
-    return {
-        id: uid(),
-        pos,
-        size: from(10),
-        direction: from(0),
-        speed: 700,
-        hitboxId: null,
-        status: 'ACTIVE'
+const createBullet = (pos: Vector) => {
+  const size = v(10, 10);
+  addEntity([
+    createComponent('UserBullet', {
+      speed: 700,
+      status: 'ACTIVE',
+    }),
+    createComponent('Position', pos),
+    createComponent('Size', size),
+    createComponent('DeleteQueueManager', { markedForDeletion: false }),
+    createHitBoxComponent('UserBullet', pos, size),
+  ]);
+  
+}
+
+const calculateBulletSpeedForFrame = (speed: number) => speed * timeDiffS()
+
+const spawnBullet = () => {
+  for (let { UserBulletManager } of query(['UserBulletManager'])) {
+    if (!isKeyDown('Space')) return;
+    if ((timeMS() - UserBulletManager().lastBulletFiredTime) < 100) return;
+    UserBulletManager({ lastBulletFiredTime: timeMS() });
+    for (let { Position } of query(['User', 'Position'])) {
+      createBullet(Position())
     }
+  }
 }
 
-const calculateBulletSpeedForFrame = (bullet) => bullet.speed * timeDiffS()
+const moveBullet = () => {
+  for (let { UserBullet, Position, Size, Hitbox } of query(['UserBullet', 'Position', 'Size', 'Hitbox'])) {
+    const { speed } = UserBullet();
+    Position(add(Position(), right(calculateBulletSpeedForFrame(speed))))
+    updateHitboxTransform(Hitbox, Position(), Size());
+  }
+}
 
-const canCreateBullet = allPass([
-    () => {
-        return isKeyDown('Space')
-    },
-    () => (timeMS() - lastBulletFiredTime()) > 100,
-])
+const removeBullet = () => {
+  for (let { Position, DeleteQueueManager } of query(['UserBullet', 'Position', 'DeleteQueueManager'])) {
+    if (Position().x < 1920) return;
+    DeleteQueueManager({ markedForDeletion: true });
+  }
+}
 
-
-const bulletCreator = () => {
-    if (canCreateBullet()) {
-        const userPosition = pos()  
-        const bullet = createBullet(userPosition)
-        const hitbox = createHitBox('bullets', bullet.pos, bullet.size, bullet.id)
-        bullets(bullets => {
-            bullets.set(bullet.id, attachHitboxToObject(hitbox, bullet))
-        })
-        lastBulletFiredTime(() => timeMS());
-        addHitbox(hitbox)
+const bulletEnemyManager = () => {
+  const enemies = [...query(['Enemy', 'EntityId'])];
+  for (const { Hitbox, DeleteQueueManager } of query(['UserBullet', 'EntityId', 'Hitbox', 'DeleteQueueManager'])) {
+    const { entityInteractions } = Hitbox();
+    const firstInteractedEnemeyId = entityInteractions.find((entityId) => enemies.some(({ EntityId }) => entityId === EntityId().id));
+    if (firstInteractedEnemeyId) {
+      damageEnemy(firstInteractedEnemeyId, 20)
+      DeleteQueueManager({ markedForDeletion: true });
     }
+  }
 }
-
-const isBulletOnPage = ({ pos }) => x(pos) < 1920;
-
-const bulletUpdate = () => {
-    bullets(bullets => {
-        bullets.forEach((bullet) => {
-            bullet.pos = add(bullet.pos, right(calculateBulletSpeedForFrame(bullet)));
-        })
-    })
-    bullets().forEach(({ hitboxId, pos }) => {
-        moveHitbox(hitboxId, pos)
-    })
-}
-
-const bulletRemover = () => {
-    bullets().forEach((bullet) => {
-        const onPage = isBulletOnPage(bullet)
-        const interactions = getInteractionsForHitboxId(bullet.hitboxId)
-        const firstTouchedEnemyHitbox = interactions.find(hitbox => hitbox.label === 'enemies')
-        const shouldRemove = !onPage || firstTouchedEnemyHitbox;
-        if (shouldRemove) {
-            setBulletInactive(bullet)
-            removeHitbox(bullet.hitboxId)
-        }
-        if (firstTouchedEnemyHitbox) {
-            damageEnemy(10, enemies()[firstTouchedEnemyHitbox.ownerId])
-        }
-    })
-}
-
-const setBulletInactive = ({ id }: Bullet) => {
-    bullets(bullets => {
-        bullets.get(id).status = 'INACTIVE';
-    })
-}
-
-removal
-    .add(
-        () => bullets(bullets => {
-            bullets.forEach((bullet, id) => {
-                if (bullet.status === 'INACTIVE') {
-                    bullets.delete(id);
-                }
-            })
-        })
-    )
 
 update
-    .add(
-        bulletCreator,
-        bulletUpdate,
-        bulletRemover,
-    )
+  .add(
+    spawnBullet,
+    moveBullet,
+    bulletEnemyManager,
+    removeBullet,
+  )
 
-const keyframes = () => {}
-
-// type Color = [number, number, number, number];
-// interface Rect {
-//     x: number;
-//     y: number;
-//     width: number;
-//     height: number;
-//     stroke: boolean;
-//     strokeColor: Color;
-//     strokeWidth: number;
-//     fillColor: Color;
-// }
 
 render
-    .add(() => {
-        bullets().forEach(({ pos, size }) => {
-            save()
-            beginPath()
-            rect(...pos, ...size)
-            fillStyle('black')
-            fill()
-            restore()
-        })
-    })
+  .add(() => {
+    for (let { Position, Size } of query(['UserBullet', 'Position', 'Size'])) {
+      save()
+      beginPath()
+      rect(...Position(), ...Size())
+      fillStyle('black')
+      fill()
+      restore()
+    }
+  });

@@ -10,7 +10,7 @@ describe('utils', () => {
     test.only('p should handle empty generator', () => {
       const gs = {};
       const result = p(
-        function* () {}
+        function* () { }
       )(gs);
       expect(result).toEqual(gs);
     })
@@ -37,16 +37,16 @@ describe('utils', () => {
         c('a'),
         c('b')
       ]],
-      function* () {},
+      function* () { },
       ]],
       function* () {
         yield c('c')
         yield [
           c('d'),
-          [[[ function* () { yield c('e')}]]]
+          [[[function* () { yield c('e') }]]]
         ]
       }
-    ]])(gs)
+      ]])(gs)
       expect(result).toEqual({ a: true, b: true, c: true, d: true, e: true });
     })
   })

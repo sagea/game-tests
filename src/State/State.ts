@@ -12,6 +12,22 @@ export const State = <T>(initialState: T) => {
   }
 }
 
+
+export const StateExtend = <T>(initialState: T) => {
+  let internalState: T = initialState;
+  return (handler?: Partial<T> | ((internalState: Omit<T, 'name'>) => Partial<Omit<T, 'name'>>)): Omit<T, 'name'> => {
+    if (handler) {
+      let changes = isFunction(handler) ? handler(internalState) : handler;
+      internalState = {
+        ...internalState,
+        ...changes,
+      };
+    }
+    return internalState;
+  }
+}
+
+
 export const StateImmer = <T>(initialState: T) => {
   let internalState: T = initialState;
   return (handler?: ((internalState: Draft<T>) => any)) => {

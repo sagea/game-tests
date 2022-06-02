@@ -14,27 +14,28 @@ const loadApp = async ({ useWorker = false }: { useWorker: boolean }) => {
 }
 
 const run = async () => {
-    const canvas = createCanvas();
-    const offscreenCanvas = canvas.transferControlToOffscreen()
-    const canvasWorker = createComlinkSharedWorker('/src/canvas-worker.js', { type: 'module' });
-    canvasWorker.setCanvas(transfer(offscreenCanvas, [offscreenCanvas]));
+  const canvas = createCanvas();
+  const offscreenCanvas = canvas.transferControlToOffscreen()
+  const canvasWorker = createComlinkSharedWorker('/src/canvas-worker.js', { type: 'module' });
+  canvasWorker.setCanvas(transfer(offscreenCanvas, [offscreenCanvas]));
 
-    const app = await loadApp({ useWorker: true });
-    const clonedCanvasWorker = canvasWorker.clonePort();
+  const app = await loadApp({ useWorker: true });
+  const clonedCanvasWorker = canvasWorker.clonePort();
 
-    await app.attachCanvasWorker(transfer(clonedCanvasWorker, [clonedCanvasWorker]));
+  await app.attachCanvasWorker(transfer(clonedCanvasWorker, [clonedCanvasWorker]));
 
-    setupListeners(app);
-    await app.run();
+  setupListeners(app);
+  await app.run();
 }
 
 const setupListeners = (app?: any) => {
   window.addEventListener('keydown', ({ code }) => app.fireEvent('windowKeyDownListener', { code }))
   window.addEventListener('keyup', ({ code }) => app.fireEvent('windowKeyUpListener', { code }))
+  window.addEventListener('blur', () => app.fireEvent('windowBlurListener', {}))
 }
 
 if (document.readyState === "complete") {
-    run();
+  run();
 } else {
-    window.addEventListener('DOMContentLoaded', run);
+  window.addEventListener('DOMContentLoaded', run);
 }

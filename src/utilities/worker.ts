@@ -10,7 +10,7 @@ export const createComlinkSharedWorker = (path, options) => {
   worker.port.start();
   const workerComlink = wrap(worker.port);
   const base = {
-    get port () { return worker.port },
+    get port() { return worker.port },
     clonePort() {
       const worker = new SharedWorker(path, options);
       worker.port.start();

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <my-component-yo></my-component-yo>
+  <script type="module">
+    import { component, html, useState } from 'https://unpkg.com/haunted@4.8.3/haunted.js';
+    const componentEntityMapping = new Map();
+    const range = (start, end, skipPercentage) => {
+      let item = []
+      for (let i = start; i < end; i++) {
+        if (Math.random() > skipPercentage) {
+          item.push(i);
+        }
+      }
+      return JSON.stringify(item)
+    }
+    console.log(`
+    componentEntityMapping.set('A', ${range(0, 100, 0)})
+    componentEntityMapping.set('B', ${range(0, 100, .5)})
+    componentEntityMapping.set('C', ${range(0, 100, .9)})
+    `)
+    componentEntityMapping.set('A', [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99])
+    componentEntityMapping.set('B', [1,5,7,9,10,15,18,19,20,23,26,28,29,32,33,34,38,39,41,42,44,46,48,49,50,51,52,54,56,57,58,60,61,67,68,69,70,71,73,78,80,82,84,86,87,91,92,93,94,95,96,99])
+    componentEntityMapping.set('C', [7,12,45,46,60,82,83,85,87,97])
+    // componentEntityMapping.set('B', [5, 7, 8])
+    // componentEntityMapping.set('C', [4, 5, 6, 7])
+    // componentEntityMapping.set('D', [4, 5, 6, 7])
+    // componentEntityMapping.set('E', [4, 5, 6, 7])
+    // componentEntityMapping.set('F', [4, 5, 6, 7])
+    // componentEntityMapping.set('G', [4, 5, 6, 7])
+
+
+    const componentFilter = ['A', 'B', 'C'];
+    const stack = []
+    const each = (label, showLog, list, startingIndex, callback) => {
+      let skipped = false;
+      const skip = () => { skipped = true };
+      // console.group(label);
+      for (let i = 0; i < list.length; i++) {
+        const item = list[i];
+        stack.push(`${label} ${item}`)
+        if (skipped === true || i < startingIndex) {
+          showLog && console.log(`%c ${stack.join(' ')}`, 'color: rgb(100, 100, 100)');
+        } else {
+          showLog && console.log(`%c ${stack.join(' ')}`, 'color: rgb(200, 200, 200)');
+          callback(item, i, skip);
+        }
+        stack.pop();
+      }
+    }
+    const query = (componentFilter, {
+      consolelog = false,
+      trackDetails = false,
+      sortFirst = false,
+      skipOnEquals = true,
+      skipOnLessThan = true,
+    } = {}) => {
+      let deets = { itterations: 0 }
+      if (trackDetails) {
+        deets.perf = performance.now();
+      }
+      let itterationCount = 0;
+      let componentMapping = []
+      for (let componentName of componentFilter) {
+        trackDetails && deets.itterations++
+        const component = componentEntityMapping.get(componentName);
+        if (!component || component.length === 0) {
+          return []
+        };
+        componentMapping.push(component);
+      }
+      if (sortFirst) {
+        componentMapping = componentMapping.sort((a, b) => {
+          trackDetails && deets.itterations++
+          return a.length - b.length
+        })
+      }
+      let last = componentMapping[0];
+      for (let i = 1; i < componentMapping.length; i++) {
+        if (last.length === 0) return;
+        consolelog && console.log('=============');
+        const f = componentMapping[i]
+        let matches = [];
+        let _id2Start = 0;
+        let labelA = componentFilter[i - 1];
+        let labelB = componentFilter[i];
+        consolelog && console.log(labelA, labelB);
+        each(labelA, false && consolelog, last, 0, (id, i1, skip) => {
+          // itterationCount++
+          consolelog && console.log('---')
+          let found = false;
+          let breaked = false;
+          each(labelB, true && consolelog, f, _id2Start, (id2, i2, skip) => {
+            trackDetails && deets.itterations++
+            if (id === id2) {
+              _id2Start = i2 + 1;
+              matches.push(id);
+              if (skipOnEquals) {
+                return skip();
+              }
+            } else if (id < id2) {
+              if (skipOnLessThan) {
+                return skip();
+              }
+            } else if (id > id2) {
+              _id2Start = i2;
+            }
+          })
+        })
+        // for (let _id = 0; _id < last.length; _id++) {
+        //   const id = last[_id];
+        //   console.log('---')
+        //   let found = false;
+        //   let breaked = false;
+        //   for (let _id2 = _id2Start; _id2 < f.length; _id2++) {
+        //     const id2 = f[_id2];
+        //     if (breaked || _id2 < _id2Start) {
+        //       ls(id, id2)
+        //       continue;
+        //     } else {
+        //       l(id, id2)
+        //     }
+        //     if (id === id2) {
+        //       _id2Start = _id2 + 1;
+        //       matches.push(id);
+        //       break;
+        //     } else if (id < id2) {
+        //       break;
+        //     } else if (id > id2) {
+        //       _id2Start = _id2;
+        //     }
+        //   }
+        // }
+        
+        last = matches;
+      }
+      console.log('Itteration Count', itterationCount)
+      if (trackDetails) {
+        deets.perf = performance.now() - deets.perf;
+        return {...deets, result: last}
+      }
+      return last;
+    }
+    console.log('ids', query(['A', 'B', 'C']))
+
+
+    const App = () => {
+      const [state, setState] = useState({
+        options: [{
+          sortFirst: false,
+          skipOnEquals: true,
+          skipOnLessThan: true,
+        }]
+      })
+      return html `
+      <div>
+          ${
+            state.options
+              .map((options, id) => {
+                return html `
+                  <div>
+                    <ul>
+
+                    ${
+                      [...Object.entries(options)]
+                        .map(([key, checked]) => {
+                          return html `
+                          <li>
+                          ${key}
+                          <input type="checkbox"
+                            value=${key}
+                            .checked=${checked}
+                            @click=${() => {
+                              state.options[id][key] = !checked;
+                              setState(state);
+                            }}>
+                            </li>
+                          `
+                        })
+                    }
+                    <ul>
+
+                    <br>
+                    Result: <pre>${JSON.stringify(query(['A', 'B', 'C'], {
+                      trackDetails: true,
+                      ...options,
+                    }), null, 2)}</pre>
+                    <hr>
+                  </div>
+                `
+              })
+          }
+        
+      </div>
+      `;
+    }
+    customElements.define('my-component-yo', component(App));
+
+  </script>
+</body>
+</html>

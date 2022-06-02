@@ -11,25 +11,25 @@ var __export = (target, all2) => {
 // node_modules/.pnpm/baconjs@3.0.17/node_modules/baconjs/dist/Bacon.mjs
 function nop() {
 }
-function isObservable(x3) {
-  return x3 && x3._isObservable;
+function isObservable(x2) {
+  return x2 && x2._isObservable;
 }
 function all(xs, f2) {
-  for (var i2 = 0, x3; i2 < xs.length; i2++) {
-    x3 = xs[i2];
-    if (!f2(x3)) {
+  for (var i2 = 0, x2; i2 < xs.length; i2++) {
+    x2 = xs[i2];
+    if (!f2(x2)) {
       return false;
     }
   }
   return true;
 }
-function always(x3) {
-  return () => x3;
+function always(x2) {
+  return () => x2;
 }
 function any(xs, f2) {
-  for (var i2 = 0, x3; i2 < xs.length; i2++) {
-    x3 = xs[i2];
-    if (f2(x3)) {
+  for (var i2 = 0, x2; i2 < xs.length; i2++) {
+    x2 = xs[i2];
+    if (f2(x2)) {
       return true;
     }
   }
@@ -40,8 +40,8 @@ function bind(fn2, me) {
     return fn2.apply(me, arguments);
   };
 }
-function contains(xs, x3) {
-  return indexOf(xs, x3) !== -1;
+function contains(xs, x2) {
+  return indexOf(xs, x2) !== -1;
 }
 function each(xs, f2) {
   for (var key in xs) {
@@ -56,51 +56,51 @@ function empty(xs) {
 }
 function filter(f2, xs) {
   var filtered = [];
-  for (var i2 = 0, x3; i2 < xs.length; i2++) {
-    x3 = xs[i2];
-    if (f2(x3)) {
-      filtered.push(x3);
+  for (var i2 = 0, x2; i2 < xs.length; i2++) {
+    x2 = xs[i2];
+    if (f2(x2)) {
+      filtered.push(x2);
     }
   }
   return filtered;
 }
 function flatMap(f2, xs) {
-  return fold(xs, [], function(ys, x3) {
-    return ys.concat(f2(x3));
+  return fold(xs, [], function(ys, x2) {
+    return ys.concat(f2(x2));
   });
 }
 function flip(f2) {
   return (a2, b2) => f2(b2, a2);
 }
 function fold(xs, seed, f2) {
-  for (var i2 = 0, x3; i2 < xs.length; i2++) {
-    x3 = xs[i2];
-    seed = f2(seed, x3);
+  for (var i2 = 0, x2; i2 < xs.length; i2++) {
+    x2 = xs[i2];
+    seed = f2(seed, x2);
   }
   return seed;
 }
 function head(xs) {
   return xs[0];
 }
-function id(x3) {
-  return x3;
+function id(x2) {
+  return x2;
 }
-function indexOfDefault(xs, x3) {
-  return xs.indexOf(x3);
+function indexOfDefault(xs, x2) {
+  return xs.indexOf(x2);
 }
-function indexOfFallback(xs, x3) {
-  for (var i2 = 0, y3; i2 < xs.length; i2++) {
-    y3 = xs[i2];
-    if (x3 === y3) {
+function indexOfFallback(xs, x2) {
+  for (var i2 = 0, y2; i2 < xs.length; i2++) {
+    y2 = xs[i2];
+    if (x2 === y2) {
       return i2;
     }
   }
   return -1;
 }
 function indexWhere(xs, f2) {
-  for (var i2 = 0, y3; i2 < xs.length; i2++) {
-    y3 = xs[i2];
-    if (f2(y3)) {
+  for (var i2 = 0, y2; i2 < xs.length; i2++) {
+    y2 = xs[i2];
+    if (f2(y2)) {
       return i2;
     }
   }
@@ -114,19 +114,19 @@ function last(xs) {
 }
 function map(f2, xs) {
   var result = [];
-  for (var i2 = 0, x3; i2 < xs.length; i2++) {
-    x3 = xs[i2];
-    result.push(f2(x3));
+  for (var i2 = 0, x2; i2 < xs.length; i2++) {
+    x2 = xs[i2];
+    result.push(f2(x2));
   }
   return result;
 }
 function negate(f2) {
-  return function(x3) {
-    return !f2(x3);
+  return function(x2) {
+    return !f2(x2);
   };
 }
-function remove(x3, xs) {
-  var i2 = indexOf(xs, x3);
+function remove(x2, xs) {
+  var i2 = indexOf(xs, x2);
   if (i2 >= 0) {
     return xs.splice(i2, 1);
   }
@@ -141,7 +141,7 @@ function toFunction(f2) {
   if (typeof f2 == "function") {
     return f2;
   }
-  return (x3) => f2;
+  return (x2) => f2;
 }
 function toString(obj) {
   var hasProp = {}.hasOwnProperty;
@@ -183,9 +183,9 @@ function toString(obj) {
     recursionDepth--;
   }
 }
-function without(x3, xs) {
-  return filter(function(y3) {
-    return y3 !== x3;
+function without(x2, xs) {
+  return filter(function(y2) {
+    return y2 !== x2;
   }, xs);
 }
 function assert(message, condition) {
@@ -399,13 +399,13 @@ function describe(context, method, ...args) {
     return new Desc(context, method, args);
   }
 }
-function findDeps(x3) {
-  if (isArray(x3)) {
-    return _.flatMap(findDeps, x3);
-  } else if (isObservable(x3)) {
-    return [x3];
-  } else if (typeof x3 !== "undefined" && x3 !== null ? x3._isSource : void 0) {
-    return [x3.obs];
+function findDeps(x2) {
+  if (isArray(x2)) {
+    return _.flatMap(findDeps, x2);
+  } else if (isObservable(x2)) {
+    return [x2];
+  } else if (typeof x2 !== "undefined" && x2 !== null ? x2._isSource : void 0) {
+    return [x2.obs];
   } else {
     return [];
   }
@@ -433,11 +433,11 @@ function withStateMachineT(initState, f2) {
 function none() {
   return None;
 }
-function toOption(v2) {
-  if (v2 && (v2._isSome || v2._isNone)) {
-    return v2;
+function toOption(v3) {
+  if (v3 && (v3._isSome || v3._isNone)) {
+    return v3;
   } else {
-    return new Some(v2);
+    return new Some(v3);
   }
 }
 function isNone(object) {
@@ -452,11 +452,11 @@ function nextEvent(value) {
 function endEvent() {
   return new End();
 }
-function toEvent(x3) {
-  if (x3 && x3._isEvent) {
-    return x3;
+function toEvent(x2) {
+  if (x2 && x2._isEvent) {
+    return x2;
   } else {
-    return nextEvent(x3);
+    return nextEvent(x2);
   }
 }
 function isEvent(e2) {
@@ -489,19 +489,19 @@ function skipDuplicates(src, isEqual = equals) {
     }
   }, src).withDesc(desc);
 }
-function take(count, src, desc) {
-  return src.transform(takeT(count), desc || new Desc(src, "take", [count]));
+function take(count2, src, desc) {
+  return src.transform(takeT(count2), desc || new Desc(src, "take", [count2]));
 }
-function takeT(count) {
+function takeT(count2) {
   return (e2, sink) => {
     if (!e2.hasValue) {
       return sink(e2);
     } else {
-      count--;
-      if (count > 0) {
+      count2--;
+      if (count2 > 0) {
         return sink(e2);
       } else {
-        if (count === 0) {
+        if (count2 === 0) {
           sink(e2);
         }
         sink(endEvent());
@@ -801,11 +801,11 @@ function handleEventValueWith(f2) {
   }
   return (event) => f2;
 }
-function makeObservable(x3) {
-  if (isObservable(x3)) {
-    return x3;
+function makeObservable(x2) {
+  if (isObservable(x2)) {
+    return x2;
   } else {
-    return once(x3);
+    return once(x2);
   }
 }
 function flatMapEvent(src, f2) {
@@ -824,7 +824,7 @@ function endAsValue(src) {
     return more;
   });
 }
-function endOnError(src, predicate = (x3) => true) {
+function endOnError(src, predicate = (x2) => true) {
   return src.transform((event, sink) => {
     if (isError(event) && predicate(event.error)) {
       sink(event);
@@ -910,14 +910,14 @@ function when_(ctor, patterns) {
             for (var i2 = 0, p2; i2 < ixPats.length; i2++) {
               p2 = ixPats[i2];
               if (match(p2)) {
-                const values3 = [];
+                const values = [];
                 for (var j2 = 0; j2 < p2.ixs.length; j2++) {
                   let event = sources[p2.ixs[j2].index].consume();
                   if (!event)
                     throw new Error("Event was undefined");
-                  values3.push(event.value);
+                  values.push(event.value);
                 }
-                let applied = p2.f.apply(null, values3);
+                let applied = p2.f.apply(null, values);
                 reply = sink(trigger.e.apply(applied));
                 if (triggers.length) {
                   triggers = filter(nonFlattened, triggers);
@@ -1094,9 +1094,9 @@ function mapT(f2) {
     return sink(e2.fmap(theF));
   };
 }
-function constant(x3) {
-  return new Property(new Desc("Bacon", "constant", [x3]), function(sink) {
-    sink(initialEvent(x3));
+function constant(x2) {
+  return new Property(new Desc("Bacon", "constant", [x2]), function(sink) {
+    sink(initialEvent(x2));
     sink(endEvent());
     return nop;
   });
@@ -1105,13 +1105,13 @@ function argumentsToObservables(args) {
   args = Array.prototype.slice.call(args);
   return _.flatMap(singleToObservables, args);
 }
-function singleToObservables(x3) {
-  if (isObservable(x3)) {
-    return [x3];
-  } else if (isArray(x3)) {
-    return argumentsToObservables(x3);
+function singleToObservables(x2) {
+  if (isObservable(x2)) {
+    return [x2];
+  } else if (isArray(x2)) {
+    return argumentsToObservables(x2);
   } else {
-    return [constant(x3)];
+    return [constant(x2)];
   }
 }
 function argumentsToObservablesAndFunction(args) {
@@ -1129,7 +1129,7 @@ function groupSimultaneous_(streams, options) {
   }]).withDesc(new Desc("Bacon", "groupSimultaneous", streams));
 }
 function awaiting(src, other) {
-  return groupSimultaneous_([src, other], allowSync).map((values3) => values3[1].length === 0).toProperty(false).skipDuplicates().withDesc(new Desc(src, "awaiting", [other]));
+  return groupSimultaneous_([src, other], allowSync).map((values) => values[1].length === 0).toProperty(false).skipDuplicates().withDesc(new Desc(src, "awaiting", [other]));
 }
 function combineAsArray(...streams) {
   streams = argumentsToObservables(streams);
@@ -1150,17 +1150,17 @@ function combineTwo(left2, right2, f2) {
 function wrap2(obs) {
   return new DefaultSource(obs, true);
 }
-function skip(src, count) {
+function skip(src, count2) {
   return src.transform((event, sink) => {
     if (!event.hasValue) {
       return sink(event);
-    } else if (count > 0) {
-      count--;
+    } else if (count2 > 0) {
+      count2--;
       return more;
     } else {
       return sink(event);
     }
-  }, new Desc(src, "skip", [count]));
+  }, new Desc(src, "skip", [count2]));
 }
 function flatMapConcat(src, f2) {
   return flatMap_(handleEventValueWith(f2), src, {
@@ -1269,7 +1269,7 @@ function toPredicate(f2) {
 }
 function withPredicate(src, f2, predicateTransformer, desc) {
   if (f2 instanceof Property) {
-    return withLatestFrom(src, f2, (p2, v2) => [p2, v2]).transform(composeT(predicateTransformer((tuple) => tuple[1]), mapT((tuple) => tuple[0])), desc);
+    return withLatestFrom(src, f2, (p2, v3) => [p2, v3]).transform(composeT(predicateTransformer((tuple) => tuple[1]), mapT((tuple) => tuple[0])), desc);
   }
   return src.transform(predicateTransformer(toPredicate(f2)), desc);
 }
@@ -1286,19 +1286,19 @@ function filterT(f2) {
   };
 }
 function not(src) {
-  return src.map((x3) => !x3).withDesc(new Desc(src, "not", []));
+  return src.map((x2) => !x2).withDesc(new Desc(src, "not", []));
 }
 function and(left2, right2) {
-  return left2.combine(toProperty(right2), (x3, y3) => !!(x3 && y3)).withDesc(new Desc(left2, "and", [right2]));
+  return left2.combine(toProperty(right2), (x2, y2) => !!(x2 && y2)).withDesc(new Desc(left2, "and", [right2]));
 }
 function or(left2, right2) {
-  return left2.combine(toProperty(right2), (x3, y3) => x3 || y3).withDesc(new Desc(left2, "or", [right2]));
+  return left2.combine(toProperty(right2), (x2, y2) => x2 || y2).withDesc(new Desc(left2, "or", [right2]));
 }
-function toProperty(x3) {
-  if (isProperty(x3)) {
-    return x3;
+function toProperty(x2) {
+  if (isProperty(x2)) {
+    return x2;
   }
-  return constant(x3);
+  return constant(x2);
 }
 function flatMapFirst(src, f2) {
   return flatMap_(handleEventValueWith(f2), src, {
@@ -1389,12 +1389,12 @@ function flatMap$1(src, f2) {
   return flatMap_(handleEventValueWith(f2), src, { desc: new Desc(src, "flatMap", [f2]) });
 }
 function flatMapError(src, f2) {
-  return flatMap_((x3) => {
-    if (x3 instanceof Error$1) {
-      let error = x3.error;
+  return flatMap_((x2) => {
+    if (x2 instanceof Error$1) {
+      let error = x2.error;
       return f2(error);
     } else {
-      return x3;
+      return x2;
     }
   }, src, {
     mapError: true,
@@ -1432,19 +1432,19 @@ function flatMapWithConcurrencyLimit(src, limit, f2) {
 function bufferWithTime(src, delay2) {
   return bufferWithTimeOrCount(src, delay2, Number.MAX_VALUE).withDesc(new Desc(src, "bufferWithTime", [delay2]));
 }
-function bufferWithCount(src, count) {
-  return bufferWithTimeOrCount(src, void 0, count).withDesc(new Desc(src, "bufferWithCount", [count]));
+function bufferWithCount(src, count2) {
+  return bufferWithTimeOrCount(src, void 0, count2).withDesc(new Desc(src, "bufferWithCount", [count2]));
 }
-function bufferWithTimeOrCount(src, delay2, count) {
+function bufferWithTimeOrCount(src, delay2, count2) {
   const delayFunc = toDelayFunction(delay2);
   function flushOrSchedule(buffer2) {
-    if (buffer2.values.length === count) {
+    if (buffer2.values.length === count2) {
       return buffer2.flush();
     } else if (delayFunc !== void 0) {
       return buffer2.schedule(delayFunc);
     }
   }
-  var desc = new Desc(src, "bufferWithTimeOrCount", [delay2, count]);
+  var desc = new Desc(src, "bufferWithTimeOrCount", [delay2, count2]);
   return buffer(src, flushOrSchedule, flushOrSchedule).withDesc(desc);
 }
 function toDelayFunction(delay2) {
@@ -1581,12 +1581,12 @@ function debounceImmediate(src, delay2) {
   });
 }
 function throttle(src, delay2) {
-  return src.transformChanges(new Desc(src, "throttle", [delay2]), (changes) => changes.bufferWithTime(delay2).map((values3) => values3[values3.length - 1]));
+  return src.transformChanges(new Desc(src, "throttle", [delay2]), (changes) => changes.bufferWithTime(delay2).map((values) => values[values.length - 1]));
 }
 function bufferingThrottle(src, minimumInterval) {
   var desc = new Desc(src, "bufferingThrottle", [minimumInterval]);
-  return src.transformChanges(desc, (changes) => changes.flatMapConcat((x3) => {
-    return once(x3).concat(later(minimumInterval, x3).errors());
+  return src.transformChanges(desc, (changes) => changes.flatMapConcat((x2) => {
+    return once(x2).concat(later(minimumInterval, x2).errors());
   }));
 }
 function takeWhile(src, f2) {
@@ -1624,9 +1624,9 @@ function skipWhileT(f2) {
 }
 function groupBy(src, keyF, limitF = _.id) {
   var streams = {};
-  return src.transform(composeT(filterT((x3) => !streams[keyF(x3)]), mapT(function(firstValue) {
+  return src.transform(composeT(filterT((x2) => !streams[keyF(x2)]), mapT(function(firstValue) {
     var key = keyF(firstValue);
-    var similarValues = src.changes().filter((x3) => keyF(x3) === key);
+    var similarValues = src.changes().filter((x2) => keyF(x2) === key);
     var data = once(firstValue).concat(similarValues);
     var limited = limitF(data, firstValue).toEventStream().transform((event, sink) => {
       let reply = sink(event);
@@ -1642,8 +1642,8 @@ function groupBy(src, keyF, limitF = _.id) {
 function slidingWindow(src, maxValues, minValues = 0) {
   return src.scan([], function(window, value) {
     return window.concat([value]).slice(-maxValues);
-  }).filter(function(values3) {
-    return values3.length >= minValues;
+  }).filter(function(values) {
+    return values.length >= minValues;
   }).withDesc(new Desc(src, "slidingWindow", [maxValues, minValues]));
 }
 function diff(src, start, f2) {
@@ -1729,8 +1729,8 @@ function combineTemplate(template) {
     return value;
   }
   function applyStreamValue(key, index) {
-    return function(ctxStack, values3) {
-      setValue(ctxStack, key, values3[index]);
+    return function(ctxStack, values) {
+      setValue(ctxStack, key, values[index]);
     };
   }
   function constantValue(key, value) {
@@ -1776,12 +1776,12 @@ function combineTemplate(template) {
       funcs.push(constantValue(key, value));
     }
   }
-  function combinator(values3) {
+  function combinator(values) {
     const rootContext = mkContext(template);
     const ctxStack = [rootContext];
     for (var i2 = 0, f2; i2 < funcs.length; i2++) {
       f2 = funcs[i2];
-      f2(ctxStack, values3);
+      f2(ctxStack, values);
     }
     return rootContext;
   }
@@ -1794,7 +1794,7 @@ function combineTemplate(template) {
   return resultProperty.withDesc(new Desc("Bacon", "combineTemplate", [template]));
 }
 function decode(src, cases) {
-  return src.combine(combineTemplate(cases), (key, values3) => values3[key]).withDesc(new Desc(src, "decode", [cases]));
+  return src.combine(combineTemplate(cases), (key, values) => values[key]).withDesc(new Desc(src, "decode", [cases]));
 }
 function firstToPromise(src, PromiseCtr) {
   const generator = (resolve, reject) => src.subscribe((event) => {
@@ -1817,8 +1817,8 @@ function firstToPromise(src, PromiseCtr) {
 function toPromise(src, PromiseCtr) {
   return src.last().firstToPromise(PromiseCtr);
 }
-function isProperty(x3) {
-  return !!x3._isProperty;
+function isProperty(x2) {
+  return !!x2._isProperty;
 }
 function newEventStream(description, subscribe) {
   return new EventStream(description, subscribe);
@@ -2178,7 +2178,7 @@ var init_Bacon = __esm({
       markEnded() {
         this.ended = true;
       }
-      mayHave(count) {
+      mayHave(count2) {
         return true;
       }
     };
@@ -2186,8 +2186,8 @@ var init_Bacon = __esm({
       consume() {
         return this.value;
       }
-      push(x3) {
-        this.value = x3;
+      push(x2) {
+        this.value = x2;
       }
       hasAtLeast(c3) {
         return !!this.value;
@@ -2202,14 +2202,14 @@ var init_Bacon = __esm({
       consume() {
         return this.queue.shift();
       }
-      push(x3) {
-        this.queue.push(x3);
+      push(x2) {
+        this.queue.push(x2);
       }
-      mayHave(count) {
-        return !this.ended || this.queue.length >= count;
+      mayHave(count2) {
+        return !this.ended || this.queue.length >= count2;
       }
-      hasAtLeast(count) {
-        return this.queue.length >= count;
+      hasAtLeast(count2) {
+        return this.queue.length >= count2;
       }
     };
     BufferingSource = class extends Source {
@@ -2218,16 +2218,16 @@ var init_Bacon = __esm({
         this.queue = [];
       }
       consume() {
-        const values3 = this.queue;
+        const values = this.queue;
         this.queue = [];
         return {
-          value: values3
+          value: values
         };
       }
-      push(x3) {
-        return this.queue.push(x3.value);
+      push(x2) {
+        return this.queue.push(x2.value);
       }
-      hasAtLeast(count) {
+      hasAtLeast(count2) {
         return true;
       }
     };
@@ -2492,11 +2492,11 @@ var init_Bacon = __esm({
       endAsValue() {
         return endAsValue(this);
       }
-      endOnError(predicate = (x3) => true) {
+      endOnError(predicate = (x2) => true) {
         return endOnError(this, predicate);
       }
       errors() {
-        return this.filter((x3) => false).withDesc(new Desc(this, "errors"));
+        return this.filter((x2) => false).withDesc(new Desc(this, "errors"));
       }
       filter(f2) {
         return filter$1(this, f2);
@@ -2577,8 +2577,8 @@ var init_Bacon = __esm({
       scan(seed, f2) {
         return scan(this, seed, f2);
       }
-      skip(count) {
-        return skip(this, count);
+      skip(count2) {
+        return skip(this, count2);
       }
       skipDuplicates(isEqual) {
         return skipDuplicates(this, isEqual);
@@ -2598,8 +2598,8 @@ var init_Bacon = __esm({
       subscribe(sink = nullSink) {
         return UpdateBarrier.wrappedSubscribe(this, (sink2) => this.subscribeInternal(sink2), sink);
       }
-      take(count) {
-        return take(count, this);
+      take(count2) {
+        return take(count2, this);
       }
       takeUntil(stopper) {
         return takeUntil(this, stopper);
@@ -2733,11 +2733,11 @@ var init_Bacon = __esm({
       bufferWithTime(delay2) {
         return bufferWithTime(this, delay2);
       }
-      bufferWithCount(count) {
-        return bufferWithCount(this, count);
+      bufferWithCount(count2) {
+        return bufferWithCount(this, count2);
       }
-      bufferWithTimeOrCount(delay2, count) {
-        return bufferWithTimeOrCount(this, delay2, count);
+      bufferWithTimeOrCount(delay2, count2) {
+        return bufferWithTimeOrCount(this, delay2, count2);
       }
       changes() {
         return this;
@@ -2905,8 +2905,8 @@ var init_Bacon = __esm({
             if (rootPush && this.pushQueue) {
               var i2 = 0;
               while (i2 < this.pushQueue.length) {
-                var v2 = this.pushQueue[i2];
-                this.sink(nextEvent(v2));
+                var v3 = this.pushQueue[i2];
+                this.sink(nextEvent(v3));
                 i2++;
               }
               this.pushQueue = void 0;
@@ -2978,15 +2978,17 @@ var init_Bacon = __esm({
 // src/utilities/events.ts
 var events_exports = {};
 __export(events_exports, {
+  windowBlurListener: () => windowBlurListener,
   windowKeyDownListener: () => windowKeyDownListener,
   windowKeyUpListener: () => windowKeyUpListener
 });
-var windowKeyDownListener, windowKeyUpListener;
+var windowKeyDownListener, windowKeyUpListener, windowBlurListener;
 var init_events = __esm({
   "src/utilities/events.ts"() {
     init_Bacon();
     windowKeyDownListener = new Bus();
     windowKeyUpListener = new Bus();
+    windowBlurListener = new Bus();
   }
 });
 
@@ -2996,7 +2998,6 @@ var init_CBTracker = __esm({
   "src/CBTracker.ts"() {
     CBTracker = (labelName) => {
       const events = /* @__PURE__ */ new Set();
-      let eventId = -1;
       const once2 = (...callbacks) => {
         callbacks.forEach((callback) => events.add(["once", callback]));
       };
@@ -3236,40 +3237,6 @@ var init_addIndex = __esm({
 });
 
 // node_modules/.pnpm/ramda@0.28.0/node_modules/ramda/es/internal/_curry3.js
-function _curry3(fn2) {
-  return function f3(a2, b2, c3) {
-    switch (arguments.length) {
-      case 0:
-        return f3;
-      case 1:
-        return _isPlaceholder(a2) ? f3 : _curry2(function(_b, _c) {
-          return fn2(a2, _b, _c);
-        });
-      case 2:
-        return _isPlaceholder(a2) && _isPlaceholder(b2) ? f3 : _isPlaceholder(a2) ? _curry2(function(_a, _c) {
-          return fn2(_a, b2, _c);
-        }) : _isPlaceholder(b2) ? _curry2(function(_b, _c) {
-          return fn2(a2, _b, _c);
-        }) : _curry1(function(_c) {
-          return fn2(a2, b2, _c);
-        });
-      default:
-        return _isPlaceholder(a2) && _isPlaceholder(b2) && _isPlaceholder(c3) ? f3 : _isPlaceholder(a2) && _isPlaceholder(b2) ? _curry2(function(_a, _b) {
-          return fn2(_a, _b, c3);
-        }) : _isPlaceholder(a2) && _isPlaceholder(c3) ? _curry2(function(_a, _c) {
-          return fn2(_a, b2, _c);
-        }) : _isPlaceholder(b2) && _isPlaceholder(c3) ? _curry2(function(_b, _c) {
-          return fn2(a2, _b, _c);
-        }) : _isPlaceholder(a2) ? _curry1(function(_a) {
-          return fn2(_a, b2, c3);
-        }) : _isPlaceholder(b2) ? _curry1(function(_b) {
-          return fn2(a2, _b, c3);
-        }) : _isPlaceholder(c3) ? _curry1(function(_c) {
-          return fn2(a2, b2, _c);
-        }) : fn2(a2, b2, c3);
-    }
-  };
-}
 var init_curry3 = __esm({
   "node_modules/.pnpm/ramda@0.28.0/node_modules/ramda/es/internal/_curry3.js"() {
     init_curry1();
@@ -3375,14 +3342,9 @@ var init_all = __esm({
 });
 
 // node_modules/.pnpm/ramda@0.28.0/node_modules/ramda/es/max.js
-var max, max_default;
 var init_max = __esm({
   "node_modules/.pnpm/ramda@0.28.0/node_modules/ramda/es/max.js"() {
     init_curry2();
-    max = /* @__PURE__ */ _curry2(function max2(a2, b2) {
-      return b2 > a2 ? b2 : a2;
-    });
-    max_default = max;
   }
 });
 
@@ -3403,8 +3365,8 @@ var init_map = __esm({
 });
 
 // node_modules/.pnpm/ramda@0.28.0/node_modules/ramda/es/internal/_isString.js
-function _isString(x3) {
-  return Object.prototype.toString.call(x3) === "[object String]";
+function _isString(x2) {
+  return Object.prototype.toString.call(x2) === "[object String]";
 }
 var init_isString = __esm({
   "node_modules/.pnpm/ramda@0.28.0/node_modules/ramda/es/internal/_isString.js"() {
@@ -3418,24 +3380,24 @@ var init_isArrayLike = __esm({
     init_curry1();
     init_isArray();
     init_isString();
-    _isArrayLike = /* @__PURE__ */ _curry1(function isArrayLike(x3) {
-      if (isArray_default(x3)) {
+    _isArrayLike = /* @__PURE__ */ _curry1(function isArrayLike(x2) {
+      if (isArray_default(x2)) {
         return true;
       }
-      if (!x3) {
+      if (!x2) {
         return false;
       }
-      if (typeof x3 !== "object") {
+      if (typeof x2 !== "object") {
         return false;
       }
-      if (_isString(x3)) {
+      if (_isString(x2)) {
         return false;
       }
-      if (x3.length === 0) {
+      if (x2.length === 0) {
         return true;
       }
-      if (x3.length > 0) {
-        return x3.hasOwnProperty(0) && x3.hasOwnProperty(x3.length - 1);
+      if (x2.length > 0) {
+        return x2.hasOwnProperty(0) && x2.hasOwnProperty(x2.length - 1);
       }
       return false;
     });
@@ -3460,8 +3422,8 @@ var init_xwrap = __esm({
       XWrap2.prototype["@@transducer/result"] = function(acc) {
         return acc;
       };
-      XWrap2.prototype["@@transducer/step"] = function(acc, x3) {
-        return this.f(acc, x3);
+      XWrap2.prototype["@@transducer/step"] = function(acc, x2) {
+        return this.f(acc, x2);
       };
       return XWrap2;
     }();
@@ -3569,8 +3531,8 @@ var init_xmap = __esm({
 });
 
 // node_modules/.pnpm/ramda@0.28.0/node_modules/ramda/es/internal/_has.js
-function _has(prop3, obj) {
-  return Object.prototype.hasOwnProperty.call(obj, prop3);
+function _has(prop, obj) {
+  return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 var init_has = __esm({
   "node_modules/.pnpm/ramda@0.28.0/node_modules/ramda/es/internal/_has.js"() {
@@ -3584,10 +3546,10 @@ var init_isArguments = __esm({
     init_has();
     toString2 = Object.prototype.toString;
     _isArguments = /* @__PURE__ */ function() {
-      return toString2.call(arguments) === "[object Arguments]" ? function _isArguments2(x3) {
-        return toString2.call(x3) === "[object Arguments]";
-      } : function _isArguments2(x3) {
-        return _has("callee", x3);
+      return toString2.call(arguments) === "[object Arguments]" ? function _isArguments2(x2) {
+        return toString2.call(x2) === "[object Arguments]";
+      } : function _isArguments2(x2) {
+        return _has("callee", x2);
       };
     }();
     isArguments_default = _isArguments;
@@ -3625,20 +3587,20 @@ var init_keys = __esm({
       if (Object(obj) !== obj) {
         return [];
       }
-      var prop3, nIdx;
+      var prop, nIdx;
       var ks = [];
       var checkArgsLength = hasArgsEnumBug && isArguments_default(obj);
-      for (prop3 in obj) {
-        if (_has(prop3, obj) && (!checkArgsLength || prop3 !== "length")) {
-          ks[ks.length] = prop3;
+      for (prop in obj) {
+        if (_has(prop, obj) && (!checkArgsLength || prop !== "length")) {
+          ks[ks.length] = prop;
         }
       }
       if (hasEnumBug) {
         nIdx = nonEnumerableProps.length - 1;
         while (nIdx >= 0) {
-          prop3 = nonEnumerableProps[nIdx];
-          if (_has(prop3, obj) && !contains2(ks, prop3)) {
-            ks[ks.length] = prop3;
+          prop = nonEnumerableProps[nIdx];
+          if (_has(prop, obj) && !contains2(ks, prop)) {
+            ks[ks.length] = prop;
           }
           nIdx -= 1;
         }
@@ -3690,63 +3652,40 @@ var init_isInteger = __esm({
 });
 
 // node_modules/.pnpm/ramda@0.28.0/node_modules/ramda/es/nth.js
-var nth, nth_default;
 var init_nth = __esm({
   "node_modules/.pnpm/ramda@0.28.0/node_modules/ramda/es/nth.js"() {
     init_curry2();
     init_isString();
-    nth = /* @__PURE__ */ _curry2(function nth2(offset, list) {
-      var idx = offset < 0 ? list.length + offset : offset;
-      return _isString(list) ? list.charAt(idx) : list[idx];
-    });
-    nth_default = nth;
   }
 });
 
 // node_modules/.pnpm/ramda@0.28.0/node_modules/ramda/es/prop.js
-var prop, prop_default;
 var init_prop = __esm({
   "node_modules/.pnpm/ramda@0.28.0/node_modules/ramda/es/prop.js"() {
     init_curry2();
     init_isInteger();
     init_nth();
-    prop = /* @__PURE__ */ _curry2(function prop2(p2, obj) {
-      if (obj == null) {
-        return;
-      }
-      return isInteger_default(p2) ? nth_default(p2, obj) : obj[p2];
-    });
-    prop_default = prop;
   }
 });
 
 // node_modules/.pnpm/ramda@0.28.0/node_modules/ramda/es/pluck.js
-var pluck, pluck_default;
 var init_pluck = __esm({
   "node_modules/.pnpm/ramda@0.28.0/node_modules/ramda/es/pluck.js"() {
     init_curry2();
     init_map2();
     init_prop();
-    pluck = /* @__PURE__ */ _curry2(function pluck2(p2, list) {
-      return map_default(prop_default(p2), list);
-    });
-    pluck_default = pluck;
   }
 });
 
 // node_modules/.pnpm/ramda@0.28.0/node_modules/ramda/es/reduce.js
-var reduce, reduce_default;
 var init_reduce2 = __esm({
   "node_modules/.pnpm/ramda@0.28.0/node_modules/ramda/es/reduce.js"() {
     init_curry3();
     init_reduce();
-    reduce = /* @__PURE__ */ _curry3(_reduce);
-    reduce_default = reduce;
   }
 });
 
 // node_modules/.pnpm/ramda@0.28.0/node_modules/ramda/es/allPass.js
-var allPass, allPass_default;
 var init_allPass = __esm({
   "node_modules/.pnpm/ramda@0.28.0/node_modules/ramda/es/allPass.js"() {
     init_curry1();
@@ -3754,20 +3693,6 @@ var init_allPass = __esm({
     init_max();
     init_pluck();
     init_reduce2();
-    allPass = /* @__PURE__ */ _curry1(function allPass2(preds) {
-      return curryN_default(reduce_default(max_default, 0, pluck_default("length", preds)), function() {
-        var idx = 0;
-        var len = preds.length;
-        while (idx < len) {
-          if (!preds[idx].apply(this, arguments)) {
-            return false;
-          }
-          idx += 1;
-        }
-        return true;
-      });
-    });
-    allPass_default = allPass;
   }
 });
 
@@ -3823,8 +3748,8 @@ var init_ap = __esm({
     init_reduce();
     init_map2();
     ap = /* @__PURE__ */ _curry2(function ap2(applyF, applyX) {
-      return typeof applyX["fantasy-land/ap"] === "function" ? applyX["fantasy-land/ap"](applyF) : typeof applyF.ap === "function" ? applyF.ap(applyX) : typeof applyF === "function" ? function(x3) {
-        return applyF(x3)(applyX(x3));
+      return typeof applyX["fantasy-land/ap"] === "function" ? applyX["fantasy-land/ap"](applyF) : typeof applyF.ap === "function" ? applyF.ap(applyX) : typeof applyF === "function" ? function(x2) {
+        return applyF(x2)(applyX(x2));
       } : _reduce(function(acc, f2) {
         return _concat(acc, map_default(f2, applyX));
       }, [], applyF);
@@ -3874,23 +3799,10 @@ var init_apply = __esm({
 });
 
 // node_modules/.pnpm/ramda@0.28.0/node_modules/ramda/es/values.js
-var values, values_default;
 var init_values = __esm({
   "node_modules/.pnpm/ramda@0.28.0/node_modules/ramda/es/values.js"() {
     init_curry1();
     init_keys();
-    values = /* @__PURE__ */ _curry1(function values2(obj) {
-      var props = keys_default(obj);
-      var len = props.length;
-      var vals = [];
-      var idx = 0;
-      while (idx < len) {
-        vals[idx] = obj[props[idx]];
-        idx += 1;
-      }
-      return vals;
-    });
-    values_default = values;
   }
 });
 
@@ -3936,8 +3848,8 @@ var isNil, isNil_default;
 var init_isNil = __esm({
   "node_modules/.pnpm/ramda@0.28.0/node_modules/ramda/es/isNil.js"() {
     init_curry1();
-    isNil = /* @__PURE__ */ _curry1(function isNil2(x3) {
-      return x3 == null;
+    isNil = /* @__PURE__ */ _curry1(function isNil2(x2) {
+      return x2 == null;
     });
     isNil_default = isNil;
   }
@@ -6582,10 +6494,10 @@ var init_generic = __esm({
     init_es();
     isFunction2 = (item) => typeof item === "function";
     isNotNil = complement_default(isNil_default);
-    random = (from2, to = 0) => {
-      const min = Math.min(from2, to);
-      const max3 = Math.max(from2, to);
-      return Math.random() * (max3 - min) + min;
+    random = (from, to = 0) => {
+      const min = Math.min(from, to);
+      const max = Math.max(from, to);
+      return Math.random() * (max - min) + min;
     };
     createEnum = (...args) => {
       return Object.fromEntries(args.map((enumName, index) => [
@@ -6731,8 +6643,8 @@ function M(n2, r2, t2) {
 }
 function A(e2, i2, o2, a2, c3, s2) {
   if (c3 === o2 && n(5), r(c3)) {
-    var v2 = M(e2, c3, s2 && i2 && i2.i !== 3 && !u(i2.D, a2) ? s2.concat(a2) : void 0);
-    if (f(o2, a2, v2), !r(v2))
+    var v3 = M(e2, c3, s2 && i2 && i2.i !== 3 && !u(i2.D, a2) ? s2.concat(a2) : void 0);
+    if (f(o2, a2, v3), !r(v3))
       return;
     e2.m = false;
   }
@@ -6834,8 +6746,8 @@ function N() {
           return true;
       }
     }
-    var v2 = !!r2[Q];
-    return e3.length !== nn(r2).length + (v2 ? 0 : 1);
+    var v3 = !!r2[Q];
+    return e3.length !== nn(r2).length + (v3 ? 0 : 1);
   }
   function a2(n2) {
     var r2 = n2.k;
@@ -6886,8 +6798,8 @@ function N() {
               for (var s3 = o4.length; s3 < e3.length; s3++)
                 f3[s3] = false;
             else
-              for (var v2 = e3.length; v2 < o4.length; v2++)
-                f3[v2] = true;
+              for (var v3 = e3.length; v3 < o4.length; v3++)
+                f3[v3] = true;
             for (var p2 = Math.min(o4.length, e3.length), l2 = 0; l2 < p2; l2++)
               o4.hasOwnProperty(l2) || (f3[l2] = true), f3[l2] === void 0 && n3(o4[l2]);
           }
@@ -6922,8 +6834,8 @@ function T() {
   m("Patches", { $: function(r2, t2) {
     return t2.forEach(function(t3) {
       for (var i2 = t3.path, u2 = t3.op, f3 = r2, s2 = 0; s2 < i2.length - 1; s2++) {
-        var v2 = o(f3), p2 = "" + i2[s2];
-        v2 !== 0 && v2 !== 1 || p2 !== "__proto__" && p2 !== "constructor" || n(24), typeof f3 == "function" && p2 === "prototype" && n(24), typeof (f3 = a(f3, p2)) != "object" && n(15, i2.join("/"));
+        var v3 = o(f3), p2 = "" + i2[s2];
+        v3 !== 0 && v3 !== 1 || p2 !== "__proto__" && p2 !== "constructor" || n(24), typeof f3 == "function" && p2 === "prototype" && n(24), typeof (f3 = a(f3, p2)) != "object" && n(15, i2.join("/"));
       }
       var l2 = o(f3), d2 = e2(t3.value), h2 = i2[i2.length - 1];
       switch (u2) {
@@ -6970,10 +6882,10 @@ function T() {
         return function(n3, r3, t3, e4) {
           var o2 = n3.t, s2 = n3.o;
           i(n3.D, function(n4, i2) {
-            var v2 = a(o2, n4), p2 = a(s2, n4), l2 = i2 ? u(o2, n4) ? "replace" : c3 : "remove";
-            if (v2 !== p2 || l2 !== "replace") {
+            var v3 = a(o2, n4), p2 = a(s2, n4), l2 = i2 ? u(o2, n4) ? "replace" : c3 : "remove";
+            if (v3 !== p2 || l2 !== "replace") {
               var d2 = r3.concat(n4);
-              t3.push(l2 === "remove" ? { op: l2, path: d2 } : { op: l2, path: d2, value: p2 }), e4.push(l2 === c3 ? { op: "remove", path: d2 } : l2 === "remove" ? { op: c3, path: d2, value: f2(v2) } : { op: "replace", path: d2, value: f2(v2) });
+              t3.push(l2 === "remove" ? { op: l2, path: d2 } : { op: l2, path: d2, value: p2 }), e4.push(l2 === c3 ? { op: "remove", path: d2 } : l2 === "remove" ? { op: c3, path: d2, value: f2(v3) } : { op: "replace", path: d2, value: f2(v3) });
             }
           });
         }(n2, r2, t2, e3);
@@ -6987,10 +6899,10 @@ function T() {
             var s2 = [e4, t3];
             t3 = s2[0], e4 = s2[1];
           }
-          for (var v2 = 0; v2 < i2.length; v2++)
-            if (o2[v2] && u2[v2] !== i2[v2]) {
-              var p2 = r3.concat([v2]);
-              t3.push({ op: "replace", path: p2, value: f2(u2[v2]) }), e4.push({ op: "replace", path: p2, value: f2(i2[v2]) });
+          for (var v3 = 0; v3 < i2.length; v3++)
+            if (o2[v3] && u2[v3] !== i2[v3]) {
+              var p2 = r3.concat([v3]);
+              t3.push({ op: "replace", path: p2, value: f2(u2[v3]) }), e4.push({ op: "replace", path: p2, value: f2(i2[v3]) });
             }
           for (var l2 = i2.length; l2 < u2.length; l2++) {
             var d2 = r3.concat([l2]);
@@ -7157,7 +7069,7 @@ function C() {
 function J() {
   N(), C(), T();
 }
-var G, U, W, X, q, B, H, L, Q, V, Y, Z, nn, rn, tn, en, on, un, an, fn, cn, sn, vn, pn, ln, dn, immer_esm_default;
+var G, U, W, X, q, B, H, L, Q, V, Y, Z, nn, rn, tn, en, on, un, an, fn, cn, sn, vn, pn, ln, dn;
 var init_immer_esm = __esm({
   "node_modules/.pnpm/immer@9.0.14/node_modules/immer/dist/immer.esm.mjs"() {
     W = typeof Symbol != "undefined" && typeof Symbol("x") == "symbol";
@@ -7265,11 +7177,11 @@ var init_immer_esm = __esm({
           }
           var f2;
           if (typeof i3 != "function" && n(6), o2 !== void 0 && typeof o2 != "function" && n(7), t(r3)) {
-            var c3 = w(e3), s2 = R(e3, r3, void 0), v2 = true;
+            var c3 = w(e3), s2 = R(e3, r3, void 0), v3 = true;
             try {
-              f2 = i3(s2), v2 = false;
+              f2 = i3(s2), v3 = false;
             } finally {
-              v2 ? O(c3) : g(c3);
+              v3 ? O(c3) : g(c3);
             }
             return typeof Promise != "undefined" && f2 instanceof Promise ? f2.then(function(n2) {
               return j(c3, o2), P(n2, c3);
@@ -7340,12 +7252,11 @@ var init_immer_esm = __esm({
     pn = an.applyPatches.bind(an);
     ln = an.createDraft.bind(an);
     dn = an.finishDraft.bind(an);
-    immer_esm_default = fn;
   }
 });
 
 // src/State/State.ts
-var State, StateImmer, SValue, SExtendValue, SExtend, SMapValues, SFilterValues, SMapExtendValues;
+var State;
 var init_State = __esm({
   "src/State/State.ts"() {
     init_generic();
@@ -7359,45 +7270,6 @@ var init_State = __esm({
         }
         return internalState;
       };
-    };
-    StateImmer = (initialState) => {
-      let internalState = initialState;
-      return (handler) => {
-        if (handler) {
-          internalState = immer_esm_default(internalState, (draft) => {
-            handler(draft);
-          });
-        }
-        return internalState;
-      };
-    };
-    SValue = (key, handler) => (internalState) => {
-      return {
-        ...internalState,
-        [key]: isFunction2(handler) ? handler(internalState[key]) : handler
-      };
-    };
-    SExtendValue = (key, handler) => SValue(key, (item) => ({
-      ...item,
-      ...isFunction2(handler) ? handler(item) : handler
-    }));
-    SExtend = (changes) => (original) => ({
-      ...original,
-      ...isFunction2(changes) ? changes(original) : changes
-    });
-    SMapValues = (handler) => (items) => {
-      const r2 = Object.entries(items).map(([prop3, value]) => [prop3, handler(value, prop3)]);
-      return Object.fromEntries(r2);
-    };
-    SFilterValues = (handler) => (items) => {
-      const r2 = Object.entries(items).filter(([prop3, value]) => handler(value, prop3));
-      return Object.fromEntries(r2);
-    };
-    SMapExtendValues = (handler) => {
-      return SMapValues((item, prop3) => ({
-        ...item,
-        ...handler(item, prop3)
-      }));
     };
   }
 });
@@ -7595,27 +7467,34 @@ __export(animate_exports, {
   update: () => update
 });
 function activate(canvasWorker2) {
-  function animate(t2) {
+  async function animate(t2) {
     attachTimes(t2);
     const stateMethods = [...$$initiate, ...inputs, ...preframe, ...physics, ...update];
-    const renderMethods = [...prerender, ...render];
     const endMethods = [...removal, ...final];
+    perf.setEnabled(false).start();
     stateMethods.forEach((callback) => callback());
+    perf.log("update()");
     const renderContext2 = renderContext(() => {
-      renderMethods.forEach((callback) => callback());
+      const prerenderSorted = [...prerender].map((item) => isFunction2(item) ? [0, item] : item).sort((a2, b2) => a2[0] - b2[0]);
+      const renderSorted = [...render].map((item) => isFunction2(item) ? [0, item] : item).sort((a2, b2) => a2[0] - b2[0]);
+      [...prerenderSorted, ...renderSorted].forEach(([, callback]) => callback());
     });
+    perf.log("render()");
     endMethods.forEach((callback) => callback());
-    canvasWorker2.newRenderer2(renderContext2);
+    await canvasWorker2.newRenderer2(renderContext2);
+    perf.log("canvas render complete");
+    perf.end();
     frame(animate);
   }
   frame(animate);
 }
-var $$initiate, inputs, preframe, physics, update, removal, prerender, render, final, timeMS, timeDiffMS, timeS, timeDiffS, fps, calculateFpsFromDiff, attachTimes, frame, sentTracker;
+var $$initiate, inputs, preframe, physics, update, removal, prerender, render, final, timeMS, timeDiffMS, timeS, timeDiffS, fps, calculateFpsFromDiff, attachTimes, frame, Perf, sentTracker, perf;
 var init_animate = __esm({
   "src/animate.ts"() {
     init_CBTracker();
     init_State();
     init_draw();
+    init_generic();
     $$initiate = CBTracker("$$initiate2");
     inputs = CBTracker("inputs2");
     preframe = CBTracker("preframe2");
@@ -7643,56 +7522,354 @@ var init_animate = __esm({
     frame = (method) => {
       return requestAnimationFrame(method);
     };
+    Perf = class {
+      constructor(label, enabled = true) {
+        this.running = false;
+        this.label = label;
+        this.enabled = enabled;
+      }
+      reset() {
+        this.running = false;
+        this.times = [];
+      }
+      setEnabled(enabled) {
+        this.enabled = enabled;
+        this.reset();
+        return this;
+      }
+      logTime(smallLabel) {
+        const currentTime = performance.now();
+        const firstTime = this.times.length === 0 ? 0 : this.times[0].time;
+        this.times.push({ label: smallLabel, time: currentTime });
+        console.log(this.label, ":", smallLabel, currentTime - firstTime);
+        return this;
+      }
+      start() {
+        if (!this.enabled)
+          return this;
+        if (this.running) {
+          this.reset();
+          console.warn(`Perf with name "${this.label}" already found.`);
+        }
+        this.running = true;
+        return this.logTime("start");
+      }
+      log(detail) {
+        if (!this.enabled)
+          return this;
+        return this.logTime(detail);
+      }
+      calculateMetrics() {
+        const firstTime = this.times[0];
+        const lastTime = this.times[this.times.length - 1];
+        const totalTime = lastTime.time - firstTime.time;
+        console.log(`Results:`);
+        console.log(`totalTime: ${totalTime}`);
+        for (let i2 = 1; i2 < this.times.length - 1; i2++) {
+          let last2 = this.times[i2 - 1];
+          const current = this.times[i2];
+          const delta = current.time - last2.time;
+          const perfentage = (delta / totalTime * 100).toFixed(2);
+          console.log(`${current.label} Delta(${delta}) Percentage (${perfentage})`);
+        }
+      }
+      end() {
+        if (!this.enabled)
+          return this;
+        this.logTime("end");
+        this.calculateMetrics();
+        this.reset();
+        return this;
+      }
+    };
     sentTracker = /* @__PURE__ */ new WeakSet();
+    perf = new Perf("Animate");
+  }
+});
+
+// src/modules/ecs/components.ts
+var ComponentNameSymbol, ComponentStateManager, createComponent;
+var init_components = __esm({
+  "src/modules/ecs/components.ts"() {
+    ComponentNameSymbol = Symbol("ECS_Component_Name");
+    ComponentStateManager = (initialState) => {
+      let internalState = initialState;
+      return (changes) => {
+        if (changes) {
+          internalState = {
+            ...internalState,
+            ...changes
+          };
+        }
+        return internalState;
+      };
+    };
+    createComponent = (name, def) => ({
+      [ComponentNameSymbol]: name,
+      ...def
+    });
+  }
+});
+
+// src/utilities/counter.ts
+function* Counter(starting = 0) {
+  let current = starting;
+  while (true) {
+    yield current++;
+  }
+}
+var init_counter = __esm({
+  "src/utilities/counter.ts"() {
+  }
+});
+
+// src/modules/ecs/entity.ts
+function removeEntity(id2) {
+  const { components } = entities.get(id2);
+  entities.delete(id2);
+  for (let componentName of Object.keys(components)) {
+    const idmappings = componentEntityMapping.get(componentName).filter((i2) => i2 !== id2);
+    componentEntityMapping.set(componentName, idmappings);
+  }
+}
+function count(componentFilter) {
+  let componentMapping = [];
+  for (let componentName of componentFilter) {
+    const component = componentEntityMapping.get(componentName);
+    if (!component || component.length === 0) {
+      return 0;
+    }
+    ;
+    componentMapping.push(component);
+  }
+  const entityIds = intersectionBetweenOrderedIntegerLists(componentMapping);
+  return entityIds.length;
+}
+function* query(componentFilter, filteredUserIds) {
+  let componentMapping = [];
+  if (filteredUserIds) {
+    componentMapping.push(filteredUserIds);
+  }
+  for (let componentName of componentFilter) {
+    const component = componentEntityMapping.get(componentName);
+    if (!component || component.length === 0) {
+      return;
+    }
+    ;
+    componentMapping.push(component);
+  }
+  componentMapping = componentMapping.sort((a2, b2) => a2.length - b2.length);
+  const entityIds = intersectionBetweenOrderedIntegerLists(componentMapping);
+  for (let entityId of entityIds) {
+    const entity = entities.get(entityId);
+    const components = {};
+    for (let componentName of componentFilter) {
+      components[componentName] = entity.components[componentName];
+    }
+    yield components;
+  }
+}
+var entityIdCounter, entities, componentEntityMapping, addEntity, addComponentToEntity, intersectionBetweenOrderedIntegerLists;
+var init_entity = __esm({
+  "src/modules/ecs/entity.ts"() {
+    init_components();
+    init_counter();
+    entityIdCounter = Counter();
+    entities = /* @__PURE__ */ new Map();
+    componentEntityMapping = /* @__PURE__ */ new Map();
+    addEntity = (components) => {
+      const id2 = entityIdCounter.next().value;
+      const entity = {
+        id: id2,
+        components: {}
+      };
+      const defaultComponents = [createComponent("EntityId", { id: id2 })];
+      entities.set(entity.id, entity);
+      for (let component of [...components, ...defaultComponents]) {
+        addComponentToEntity(id2, component);
+      }
+      return entity;
+    };
+    addComponentToEntity = (entityId, component) => {
+      const componentName = component[ComponentNameSymbol];
+      const componentMapping = componentEntityMapping.get(componentName) || [];
+      const entity = entities.get(entityId);
+      entity.components[componentName] = ComponentStateManager(component);
+      componentEntityMapping.set(componentName, [...componentMapping, entityId]);
+    };
+    intersectionBetweenOrderedIntegerLists = (intLists) => {
+      let last2 = intLists[0];
+      for (let i2 = 1; i2 < intLists.length; i2++) {
+        const current = intLists[i2];
+        let matches = [];
+        const lastLength = last2.length;
+        const currentLength = current.length;
+        let currentIndexStartingPoint = 0;
+        for (let lastIndex = 0; lastIndex < lastLength; lastIndex++) {
+          const lastId = last2[lastIndex];
+          for (let currentIndex = currentIndexStartingPoint; currentIndex < currentLength; currentIndex++) {
+            const currentId = current[currentIndex];
+            if (lastId === currentId) {
+              currentIndexStartingPoint = currentIndex + 1;
+              matches.push(lastId);
+              break;
+            } else if (lastId < currentId) {
+              break;
+            } else if (lastId > currentId) {
+              currentIndexStartingPoint = currentIndex;
+            }
+          }
+        }
+        if (matches.length === 0) {
+          return [];
+        }
+        last2 = matches;
+      }
+      return last2;
+    };
+  }
+});
+
+// src/modules/ecs/index.ts
+var init_ecs = __esm({
+  "src/modules/ecs/index.ts"() {
+    init_components();
+    init_entity();
+  }
+});
+
+// src/components/DeleteQueueManager.ts
+var DeleteQueueManager_exports = {};
+var init_DeleteQueueManager = __esm({
+  "src/components/DeleteQueueManager.ts"() {
+    init_animate();
+    init_ecs();
+    removal.add(() => {
+      for (let { DeleteQueueManager, EntityId } of query(["DeleteQueueManager", "EntityId"])) {
+        const { markedForDeletion } = DeleteQueueManager();
+        if (markedForDeletion) {
+          removeEntity(EntityId().id);
+        }
+      }
+    });
+  }
+});
+
+// src/components/basic.ts
+var basic_exports = {};
+var init_basic = __esm({
+  "src/components/basic.ts"() {
+  }
+});
+
+// src/hitbox.ts
+var hitbox_exports = {};
+__export(hitbox_exports, {
+  checkHitboxes: () => checkHitboxes,
+  clearHitboxInteractions: () => clearHitboxInteractions,
+  createHitBoxComponent: () => createHitBoxComponent,
+  hittest: () => hittest,
+  isLine: () => isLine,
+  updateHitboxTransform: () => updateHitboxTransform
+});
+var createHitBoxComponent, updateHitboxTransform, isLine, hittest, checkHitboxes, clearHitboxInteractions;
+var init_hitbox = __esm({
+  "src/hitbox.ts"() {
+    init_animate();
+    init_ecs();
+    createHitBoxComponent = (label, [x2, y2], [width, height]) => {
+      return createComponent("Hitbox", {
+        label,
+        x: x2,
+        y: y2,
+        x2: x2 + width,
+        y2: y2 + height,
+        width,
+        height,
+        entityInteractions: []
+      });
+    };
+    updateHitboxTransform = (Hitbox, [x2, y2], [width, height]) => {
+      Hitbox({ x: x2, y: y2, x2: x2 + width, y2: y2 + height, width, height });
+    };
+    isLine = (hitbox) => hitbox.x === hitbox.x2 || hitbox.y === hitbox.y2;
+    hittest = (hitboxA, hitboxB) => {
+      if (isLine(hitboxA) || isLine(hitboxB))
+        return false;
+      if (hitboxB.x >= hitboxA.x2)
+        return false;
+      if (hitboxA.x >= hitboxB.x2)
+        return false;
+      if (hitboxB.y >= hitboxA.y2)
+        return false;
+      if (hitboxA.y >= hitboxB.y2)
+        return false;
+      return true;
+    };
+    checkHitboxes = () => {
+      const ht = [...query(["EntityId", "Hitbox"])];
+      for (let i2 = 0; i2 < ht.length; i2++) {
+        const a2 = ht[i2];
+        for (let j2 = i2 + 1; j2 < ht.length; j2++) {
+          const b2 = ht[j2];
+          const aHitbox = a2.Hitbox();
+          const bHitbox = b2.Hitbox();
+          if (hittest(aHitbox, bHitbox)) {
+            const aid = a2.EntityId().id;
+            const bid = b2.EntityId().id;
+            a2.Hitbox({
+              entityInteractions: [...aHitbox.entityInteractions, bid]
+            });
+            b2.Hitbox({
+              entityInteractions: [...bHitbox.entityInteractions, aid]
+            });
+          }
+        }
+      }
+    };
+    clearHitboxInteractions = () => {
+      for (let { Hitbox } of query(["Hitbox"])) {
+        Hitbox({ entityInteractions: [] });
+      }
+    };
+    removal.add(clearHitboxInteractions);
+    physics.add(checkHitboxes);
   }
 });
 
 // src/Vector.ts
-var getX, setX, getY, setY, from, zero, x2, y2, add, up, down, left, right;
+function* it() {
+  yield this.x;
+  yield this.y;
+}
+var v2, zero, add, up, down, left, right;
 var init_Vector = __esm({
   "src/Vector.ts"() {
     init_es();
-    getX = ([x3]) => x3;
-    setX = ([_x, _y], value) => [value, _y];
-    getY = ([_3, y3]) => y3;
-    setY = ([_x], value) => [_x, value];
-    from = (x3 = 0, y3 = x3) => {
-      if (Array.isArray(x3))
-        return from(x3[0], x3[1]);
-      return [x3, y3];
+    v2 = (x2, y2) => {
+      return {
+        x: x2,
+        y: y2,
+        [0]: x2,
+        [1]: x2,
+        [Symbol.iterator]: it
+      };
     };
-    zero = () => from(0);
-    x2 = (...args) => {
-      if (args.length === 0)
-        throw new Error("X requires a method");
-      if (args.length === 1)
-        return getX(...args);
-      if (args.length === 2)
-        return setX(...args);
-    };
-    y2 = (...args) => {
-      if (args.length === 0)
-        throw new Error("X requires a method");
-      if (args.length === 1)
-        return getY(...args);
-      if (args.length === 2)
-        return setY(...args);
-    };
-    add = curry_default((_1, _22) => {
-      const [x1, y1] = from(_1);
-      const [x22, y22] = from(_22);
-      return [x1 + x22, y1 + y22];
+    zero = () => v2(0, 0);
+    add = curry_default(([x1, y1], [x2, y2]) => {
+      return v2(x1 + x2, y1 + y2);
     });
-    up = (value) => from(0, value * -1);
-    down = (value) => from(0, value);
-    left = (value) => from(value * -1, 0);
-    right = (value) => from(value, 0);
+    up = (value) => v2(0, value * -1);
+    down = (value) => v2(0, value);
+    left = (value) => v2(value * -1, 0);
+    right = (value) => v2(value, 0);
   }
 });
 
 // src/canvas.ts
 var canvas_exports = {};
 __export(canvas_exports, {
+  Canvas: () => Canvas,
   call: () => call,
   createCanvas: () => createCanvas,
   fillRect: () => fillRect2,
@@ -7736,7 +7913,7 @@ var keys_exports = {};
 __export(keys_exports, {
   isKeyDown: () => isKeyDown
 });
-var trackedKeys, frameSnapshotKeys, setKeyDown, setKeyUp, isKeyDown;
+var trackedKeys, frameSnapshotKeys, removeAllDownKeys, setKeyDown, setKeyUp, isKeyDown;
 var init_keys2 = __esm({
   "src/keys.ts"() {
     init_animate();
@@ -7744,6 +7921,9 @@ var init_keys2 = __esm({
     init_events();
     trackedKeys = State({});
     frameSnapshotKeys = State({});
+    removeAllDownKeys = () => {
+      trackedKeys({});
+    };
     setKeyDown = (code) => {
       trackedKeys((keys4) => ({ ...keys4, [code]: true }));
     };
@@ -7759,172 +7939,64 @@ var init_keys2 = __esm({
     windowKeyUpListener.onValue(({ code }) => {
       setKeyUp(code);
     });
+    windowBlurListener.onValue(() => {
+      removeAllDownKeys();
+    });
     isKeyDown = (keyString) => Boolean(frameSnapshotKeys()[keyString]);
   }
 });
 
 // src/user.ts
 var user_exports = {};
-__export(user_exports, {
-  pos: () => pos,
-  size: () => size,
-  speed: () => speed
-});
-var pos, size, speed, calculateSpeedForFrame, moveUp, moveDown, moveLeft, moveRight;
+var calculateSpeedForFrame;
 var init_user = __esm({
   "src/user.ts"() {
+    init_canvas();
     init_animate();
     init_keys2();
     init_Vector();
-    init_State();
     init_draw();
-    pos = State(zero());
-    size = State(from(50));
-    speed = State(400);
-    calculateSpeedForFrame = () => speed() * timeDiffS();
-    moveUp = () => {
-      if (isKeyDown("KeyW")) {
-        pos((pos2) => add(pos2, up(calculateSpeedForFrame())));
-      }
-    };
-    moveDown = () => {
-      if (isKeyDown("KeyS")) {
-        pos((pos2) => add(pos2, down(calculateSpeedForFrame())));
-      }
-    };
-    moveLeft = () => {
-      if (isKeyDown("KeyA")) {
-        pos((pos2) => add(pos2, left(calculateSpeedForFrame())));
-      }
-    };
-    moveRight = () => {
-      if (isKeyDown("KeyD")) {
-        pos((pos2) => add(pos2, right(calculateSpeedForFrame())));
-      }
-    };
-    update.add(moveUp, moveDown, moveLeft, moveRight);
-    render.add(() => {
-      save();
-      beginPath();
-      rect(...pos(), ...size());
-      fillStyle("black");
-      fill();
-      closePath();
-      restore();
+    init_ecs();
+    $$initiate.once(() => {
+      addEntity([
+        createComponent("User", {
+          speed: 400
+        }),
+        createComponent("Position", zero()),
+        createComponent("Size", v2(50, 50))
+      ]);
     });
-  }
-});
-
-// src/uid.ts
-var uid;
-var init_uid = __esm({
-  "src/uid.ts"() {
-    uid = () => `${Date.now()}${Math.random()}`;
-  }
-});
-
-// src/hitbox.ts
-var createHitBox, hitboxes, hitboxInteractions, hitboxRemoveQueue, attachHitboxToObject, isLine, hittest, getInteractionsForHitboxId, removeHitbox, addInteraction, checkHitboxes, addHitbox, moveHitbox, clearHitboxInteractions, clearHitboxRemoveQueue, flushHitboxRemoveQueue;
-var init_hitbox = __esm({
-  "src/hitbox.ts"() {
-    init_animate();
-    init_es();
-    init_uid();
-    init_State();
-    init_draw();
-    createHitBox = (label, [x3, y3], [width, height], ownerId) => {
-      return {
-        label,
-        id: uid(),
-        x: x3,
-        y: y3,
-        x2: x3 + width,
-        y2: y3 + height,
-        width,
-        height,
-        ownerId
-      };
-    };
-    hitboxes = State({});
-    hitboxInteractions = State({});
-    hitboxRemoveQueue = State([]);
-    attachHitboxToObject = (hitbox, obj) => ({ ...obj, hitboxId: hitbox.id });
-    isLine = (hitbox) => hitbox.x === hitbox.x2 || hitbox.y === hitbox.y2;
-    hittest = (hitboxA, hitboxB) => {
-      if (isLine(hitboxA) || isLine(hitboxB))
-        return false;
-      if (hitboxB.x >= hitboxA.x2)
-        return false;
-      if (hitboxA.x >= hitboxB.x2)
-        return false;
-      if (hitboxB.y >= hitboxA.y2)
-        return false;
-      if (hitboxA.y >= hitboxB.y2)
-        return false;
-      return true;
-    };
-    getInteractionsForHitboxId = (hitboxId) => {
-      return (hitboxInteractions()[hitboxId] || []).map((hitboxId2) => hitboxes()[hitboxId2]);
-    };
-    removeHitbox = (hitboxId) => {
-      hitboxRemoveQueue((queue) => [...queue, hitboxId]);
-    };
-    addInteraction = ({ id: idA }, { id: idB }) => {
-      hitboxInteractions(SExtend((interactions) => ({
-        [idA]: [...interactions[idA] || [], idB],
-        [idB]: [...interactions[idB] || [], idA]
-      })));
-    };
-    checkHitboxes = () => {
-      const ht = values_default(hitboxes());
-      for (let i2 = 0; i2 < ht.length; i2++) {
-        const hitboxA = ht[i2];
-        for (let j2 = i2 + 1; j2 < ht.length; j2++) {
-          const hitboxB = ht[j2];
-          if (hittest(hitboxA, hitboxB)) {
-            addInteraction(hitboxA, hitboxB);
-          }
+    calculateSpeedForFrame = (speed) => speed * timeDiffS();
+    update.add(() => {
+      for (let { User, Position, Size } of query(["User", "Position", "Size"])) {
+        if (isKeyDown("KeyW")) {
+          Position(add(Position(), up(calculateSpeedForFrame(User().speed))));
         }
+        if (isKeyDown("KeyS")) {
+          Position(add(Position(), down(calculateSpeedForFrame(User().speed))));
+        }
+        if (isKeyDown("KeyA")) {
+          Position(add(Position(), left(calculateSpeedForFrame(User().speed))));
+        }
+        if (isKeyDown("KeyD")) {
+          Position(add(Position(), right(calculateSpeedForFrame(User().speed))));
+        }
+        const canvas = Canvas();
+        const [width, height] = Size();
+        const [x2, y2] = Position();
+        Position(v2(Math.max(0, Math.min(x2, canvas.width - width)), Math.max(0, Math.min(y2, canvas.height - height))));
       }
-    };
-    addHitbox = (...hitboxesToAdd) => {
-      hitboxesToAdd.forEach((hitbox) => {
-        hitboxes((hitboxes2) => ({ ...hitboxes2, [hitbox.id]: hitbox }));
-        hitboxInteractions((interactions) => ({ ...interactions, [hitbox.id]: [] }));
-      });
-    };
-    moveHitbox = (hitboxId, [x3, y3]) => {
-      hitboxes(SExtendValue(hitboxId, (hitbox) => {
-        return {
-          x: x3,
-          y: y3,
-          x2: x3 + hitbox.width,
-          y2: y3 + hitbox.height
-        };
-      }));
-    };
-    clearHitboxInteractions = () => hitboxInteractions({});
-    clearHitboxRemoveQueue = () => hitboxRemoveQueue([]);
-    flushHitboxRemoveQueue = () => {
-      hitboxes(SFilterValues((_3, hitboxId) => {
-        return !hitboxRemoveQueue().includes(hitboxId);
-      }));
-    };
-    removal.add(clearHitboxInteractions, flushHitboxRemoveQueue, clearHitboxRemoveQueue);
-    physics.add(checkHitboxes);
+    });
     render.add(() => {
-      values_default(hitboxes()).forEach(({ x: x3, x2: x22, y: y3, y2: y22 }) => {
+      for (let { Position, Size } of query(["Position", "User", "Size"])) {
         save();
         beginPath();
-        moveTo(x3, y3);
-        lineTo(x22, y3);
-        lineTo(x22, y22);
-        lineTo(x3, y22);
-        strokeStyle("blue");
+        rect(...Position(), ...Size());
+        fillStyle("black");
+        fill();
         closePath();
-        stroke();
         restore();
-      });
+      }
     });
   }
 });
@@ -7934,210 +8006,180 @@ var enemy_exports = {};
 __export(enemy_exports, {
   createEnemy: () => createEnemy,
   damageEnemy: () => damageEnemy,
-  enemies: () => enemies,
-  lastSpawnTime: () => lastSpawnTime,
   spawnEnemies: () => spawnEnemies
 });
-var ACTIVE, INACTIVE, lastSpawnTime, enemies, createEnemy, canCreate, moveEnemies, isEnemyOnPage, canRemoveEnemy, enemyRemover, spawnEnemies, setEnemyInactive, damageEnemy;
+var createEnemy, moveEnemies, enemyRemover, spawnEnemies, damageEnemy;
 var init_enemy = __esm({
   "src/enemy.ts"() {
     init_animate();
     init_draw();
     init_hitbox();
-    init_es();
-    init_uid();
     init_generic();
     init_Vector();
-    init_State();
-    ACTIVE = "ACTIVE";
-    INACTIVE = "INACTIVE";
-    lastSpawnTime = State(0);
-    enemies = State({});
-    createEnemy = (posX) => ({
-      id: uid(),
-      pos: from(1800, posX),
-      size: from(100, 50),
-      speed: 350,
-      health: 100,
-      originalHealth: 100,
-      hitboxId: null,
-      status: ACTIVE
+    init_ecs();
+    $$initiate.once(() => {
+      addEntity([
+        createComponent("EnemyManager", {
+          lastSpawnTime: 0
+        })
+      ]);
     });
-    canCreate = allPass_default([
-      () => timeMS() - lastSpawnTime() > 1e3
-    ]);
+    createEnemy = (posX) => {
+      const startingPosition = v2(1800, posX);
+      const startingSize = v2(100, 50);
+      addEntity([
+        createComponent("Enemy", {
+          speed: 350,
+          health: 100,
+          originalHealth: 100
+        }),
+        createComponent("Position", startingPosition),
+        createComponent("Size", startingSize),
+        createComponent("DeleteQueueManager", { markedForDeletion: false }),
+        createHitBoxComponent("Enemy", startingPosition, startingSize)
+      ]);
+    };
     moveEnemies = () => {
-      enemies(SMapExtendValues((enemy) => ({
-        pos: add(enemy.pos, left(enemy.speed * timeDiffS()))
-      })));
-      values_default(enemies()).forEach((enemy) => {
-        moveHitbox(enemy.hitboxId, enemy.pos);
-      });
-    };
-    isEnemyOnPage = ({ pos: pos2 }) => x2(pos2) > 100;
-    canRemoveEnemy = (enemy) => {
-      if (!isEnemyOnPage(enemy))
-        return true;
-      if (enemy.health === 0)
-        return true;
-      return false;
-    };
-    enemyRemover = () => {
-      values_default(enemies()).forEach((enemy) => {
-        if (canRemoveEnemy(enemy)) {
-          setEnemyInactive(enemy);
-          removeHitbox(enemy.hitboxId);
-        }
-      });
-    };
-    spawnEnemies = () => {
-      if (canCreate()) {
-        const enemy = createEnemy(random(100, 900));
-        const hitbox = createHitBox("enemies", enemy.pos, enemy.size, enemy.id);
-        lastSpawnTime(timeMS());
-        enemies(SValue(enemy.id, attachHitboxToObject(hitbox, enemy)));
-        addHitbox(hitbox);
+      for (const { Enemy, Position, Size, Hitbox } of query(["Enemy", "Position", "Size", "Hitbox"])) {
+        Position(add(Position(), left(Enemy().speed * timeDiffS())));
+        updateHitboxTransform(Hitbox, Position(), Size());
       }
     };
-    setEnemyInactive = (enemy) => {
-      return enemies(SExtendValue(enemy.id, { status: "INACTIVE" }));
+    enemyRemover = () => {
+      for (const { Position, DeleteQueueManager } of query(["Position", "DeleteQueueManager"])) {
+        if (Position().x < 100) {
+          DeleteQueueManager({ markedForDeletion: true });
+        }
+      }
     };
-    damageEnemy = (amount, enemy) => {
-      enemies(SExtendValue(enemy.id, (e2) => ({
-        health: Math.max(0, e2.health - amount)
-      })));
+    spawnEnemies = () => {
+      for (let { EnemyManager } of query(["EnemyManager"])) {
+        const { lastSpawnTime } = EnemyManager();
+        if (timeMS() - lastSpawnTime < 1e3)
+          continue;
+        EnemyManager({ lastSpawnTime: timeMS() });
+        createEnemy(random(100, 900));
+      }
     };
-    removal.add(() => enemies(SFilterValues(({ status }) => status !== "INACTIVE")));
+    damageEnemy = (entityId, amount) => {
+      for (let { Enemy, DeleteQueueManager } of query(["Enemy", "DeleteQueueManager"], [entityId])) {
+        Enemy({ health: Math.max(0, Enemy().health - amount) });
+        if (Enemy().health === 0) {
+          DeleteQueueManager({ markedForDeletion: true });
+        }
+      }
+    };
     update.add(spawnEnemies, moveEnemies, enemyRemover);
     render.add(() => {
-      values_default(enemies()).forEach((enemy) => {
-        if (enemy.status === INACTIVE)
-          return [];
-        const interactions = getInteractionsForHitboxId(enemy.hitboxId);
-        const hasTouchedBullet = interactions.some((hitbox) => hitbox.label === "bullets");
-        const healthPercentage = enemy.health / enemy.originalHealth;
+      for (const { Enemy, Position, Size } of query(["Enemy", "Position", "Size"])) {
+        const { health, originalHealth } = Enemy();
+        const healthPercentage = health / originalHealth;
+        const hasTouchedBullet = false;
+        const pos = Position();
+        const size = Size();
         save();
         beginPath();
         fillStyle("red");
-        rect(...add(enemy.pos, up(50)), ...y2(enemy.size, 20));
+        rect(...add(pos, up(50)), ...v2(size.x, 20));
         fill();
         restore();
         save();
         beginPath();
         fillStyle("green");
-        rect(...add(enemy.pos, up(50)), ...from(x2(enemy.size) * healthPercentage, 20));
+        rect(...add(pos, up(50)), ...v2(size.x * healthPercentage, 20));
         fill();
         restore();
         save();
         beginPath();
         fillStyle(hasTouchedBullet ? "blue" : "green");
-        rect(...enemy.pos, ...enemy.size);
+        rect(...pos, ...size);
         fill();
         restore();
-      });
+      }
     });
   }
 });
 
 // src/bullets.ts
 var bullets_exports = {};
-__export(bullets_exports, {
-  bullets: () => bullets,
-  lastBulletFiredTime: () => lastBulletFiredTime
-});
-var lastBulletFiredTime, bullets, createBullet, calculateBulletSpeedForFrame, canCreateBullet, bulletCreator, isBulletOnPage, bulletUpdate, bulletRemover, setBulletInactive;
+var createBullet, calculateBulletSpeedForFrame, spawnBullet, moveBullet, removeBullet, bulletEnemyManager;
 var init_bullets = __esm({
   "src/bullets.ts"() {
     init_animate();
     init_hitbox();
     init_keys2();
-    init_es();
-    init_uid();
-    init_user();
     init_Vector();
     init_enemy();
-    init_State();
     init_draw();
-    lastBulletFiredTime = State(0);
-    bullets = StateImmer(/* @__PURE__ */ new Map());
-    createBullet = (pos2) => {
-      return {
-        id: uid(),
-        pos: pos2,
-        size: from(10),
-        direction: from(0),
-        speed: 700,
-        hitboxId: null,
-        status: "ACTIVE"
-      };
+    init_ecs();
+    $$initiate.once(() => {
+      addEntity([
+        createComponent("UserBulletManager", {
+          lastBulletFiredTime: 0
+        })
+      ]);
+    });
+    createBullet = (pos) => {
+      const size = v2(10, 10);
+      addEntity([
+        createComponent("UserBullet", {
+          speed: 700,
+          status: "ACTIVE"
+        }),
+        createComponent("Position", pos),
+        createComponent("Size", size),
+        createComponent("DeleteQueueManager", { markedForDeletion: false }),
+        createHitBoxComponent("UserBullet", pos, size)
+      ]);
     };
-    calculateBulletSpeedForFrame = (bullet) => bullet.speed * timeDiffS();
-    canCreateBullet = allPass_default([
-      () => {
-        return isKeyDown("Space");
-      },
-      () => timeMS() - lastBulletFiredTime() > 100
-    ]);
-    bulletCreator = () => {
-      if (canCreateBullet()) {
-        const userPosition = pos();
-        const bullet = createBullet(userPosition);
-        const hitbox = createHitBox("bullets", bullet.pos, bullet.size, bullet.id);
-        bullets((bullets2) => {
-          bullets2.set(bullet.id, attachHitboxToObject(hitbox, bullet));
-        });
-        lastBulletFiredTime(() => timeMS());
-        addHitbox(hitbox);
+    calculateBulletSpeedForFrame = (speed) => speed * timeDiffS();
+    spawnBullet = () => {
+      for (let { UserBulletManager } of query(["UserBulletManager"])) {
+        if (!isKeyDown("Space"))
+          return;
+        if (timeMS() - UserBulletManager().lastBulletFiredTime < 100)
+          return;
+        UserBulletManager({ lastBulletFiredTime: timeMS() });
+        for (let { Position } of query(["User", "Position"])) {
+          createBullet(Position());
+        }
       }
     };
-    isBulletOnPage = ({ pos: pos2 }) => x2(pos2) < 1920;
-    bulletUpdate = () => {
-      bullets((bullets2) => {
-        bullets2.forEach((bullet) => {
-          bullet.pos = add(bullet.pos, right(calculateBulletSpeedForFrame(bullet)));
-        });
-      });
-      bullets().forEach(({ hitboxId, pos: pos2 }) => {
-        moveHitbox(hitboxId, pos2);
-      });
+    moveBullet = () => {
+      for (let { UserBullet, Position, Size, Hitbox } of query(["UserBullet", "Position", "Size", "Hitbox"])) {
+        const { speed } = UserBullet();
+        Position(add(Position(), right(calculateBulletSpeedForFrame(speed))));
+        updateHitboxTransform(Hitbox, Position(), Size());
+      }
     };
-    bulletRemover = () => {
-      bullets().forEach((bullet) => {
-        const onPage = isBulletOnPage(bullet);
-        const interactions = getInteractionsForHitboxId(bullet.hitboxId);
-        const firstTouchedEnemyHitbox = interactions.find((hitbox) => hitbox.label === "enemies");
-        const shouldRemove = !onPage || firstTouchedEnemyHitbox;
-        if (shouldRemove) {
-          setBulletInactive(bullet);
-          removeHitbox(bullet.hitboxId);
-        }
-        if (firstTouchedEnemyHitbox) {
-          damageEnemy(10, enemies()[firstTouchedEnemyHitbox.ownerId]);
-        }
-      });
+    removeBullet = () => {
+      for (let { Position, DeleteQueueManager } of query(["UserBullet", "Position", "DeleteQueueManager"])) {
+        if (Position().x < 1920)
+          return;
+        DeleteQueueManager({ markedForDeletion: true });
+      }
     };
-    setBulletInactive = ({ id: id2 }) => {
-      bullets((bullets2) => {
-        bullets2.get(id2).status = "INACTIVE";
-      });
-    };
-    removal.add(() => bullets((bullets2) => {
-      bullets2.forEach((bullet, id2) => {
-        if (bullet.status === "INACTIVE") {
-          bullets2.delete(id2);
+    bulletEnemyManager = () => {
+      const enemies = [...query(["Enemy", "EntityId"])];
+      for (const { Hitbox, DeleteQueueManager } of query(["UserBullet", "EntityId", "Hitbox", "DeleteQueueManager"])) {
+        const { entityInteractions } = Hitbox();
+        const firstInteractedEnemeyId = entityInteractions.find((entityId) => enemies.some(({ EntityId }) => entityId === EntityId().id));
+        if (firstInteractedEnemeyId) {
+          damageEnemy(firstInteractedEnemeyId, 20);
+          DeleteQueueManager({ markedForDeletion: true });
         }
-      });
-    }));
-    update.add(bulletCreator, bulletUpdate, bulletRemover);
+      }
+    };
+    update.add(spawnBullet, moveBullet, bulletEnemyManager, removeBullet);
     render.add(() => {
-      bullets().forEach(({ pos: pos2, size: size2 }) => {
+      for (let { Position, Size } of query(["UserBullet", "Position", "Size"])) {
         save();
         beginPath();
-        rect(...pos2, ...size2);
+        rect(...Position(), ...Size());
         fillStyle("black");
         fill();
         restore();
-      });
+      }
     });
   }
 });
@@ -8147,29 +8189,46 @@ var debug_exports = {};
 var init_debug = __esm({
   "src/debug.ts"() {
     init_animate();
-    init_bullets();
-    init_hitbox();
-    init_enemy();
     init_Vector();
     init_draw();
+    init_entity();
     render.add(() => {
-      const thingsToShow = [
-        { label: "fps", textLog: fps() },
-        { label: "bullets", textLog: Object.keys(bullets()).length },
-        { label: "enemies", textLog: Object.keys(enemies()).length },
-        { label: "hitboxes", textLog: Object.keys(hitboxes()).length }
+      const metrics = [
+        ["fps", fps()],
+        ["bullets", count(["UserBullet"])],
+        ["enemies", count(["Enemy"])],
+        ["hitboxes", count(["Hitbox"])]
       ];
-      thingsToShow.forEach(({ label, textLog }, index) => {
+      metrics.forEach(([label, textLog], index) => {
         save();
         beginPath();
         const fontSize = 40;
-        const count = `${label}: ${textLog}`;
-        const pos2 = from(10, fontSize + index * fontSize);
+        const count2 = `${label}: ${textLog}`;
+        const pos = v2(10, fontSize + index * fontSize);
         font(`${fontSize}px serif`);
-        fillText(count, ...pos2);
+        fillText(count2, ...pos);
         restore();
       });
     });
+    render.add([
+      99999,
+      () => {
+        for (let { Hitbox } of query(["Hitbox"])) {
+          const { x: x2, x2: x22, y: y2, y2: y22 } = Hitbox();
+          save();
+          beginPath();
+          moveTo(x2, y2);
+          lineTo(x22, y2);
+          lineTo(x22, y22);
+          lineTo(x2, y22);
+          lineWidth(4);
+          strokeStyle("blue");
+          closePath();
+          stroke();
+          restore();
+        }
+      }
+    ]);
   }
 });
 
@@ -8229,8 +8288,8 @@ function expose(obj, ep = self) {
     const argumentList = (ev.data.argumentList || []).map(fromWireValue);
     let returnValue;
     try {
-      const parent = path.slice(0, -1).reduce((obj2, prop3) => obj2[prop3], obj);
-      const rawValue = path.reduce((obj2, prop3) => obj2[prop3], obj);
+      const parent = path.slice(0, -1).reduce((obj2, prop) => obj2[prop], obj);
+      const rawValue = path.reduce((obj2, prop) => obj2[prop], obj);
       switch (type) {
         case "GET":
           {
@@ -8306,9 +8365,9 @@ function createProxy(ep, path = [], target = function() {
 }) {
   let isProxyReleased = false;
   const proxy2 = new Proxy(target, {
-    get(_target, prop3) {
+    get(_target, prop) {
       throwIfProxyReleased(isProxyReleased);
-      if (prop3 === releaseProxy) {
+      if (prop === releaseProxy) {
         return () => {
           return requestResponseMessage(ep, {
             type: "RELEASE",
@@ -8319,7 +8378,7 @@ function createProxy(ep, path = [], target = function() {
           });
         };
       }
-      if (prop3 === "then") {
+      if (prop === "then") {
         if (path.length === 0) {
           return { then: () => proxy2 };
         }
@@ -8329,14 +8388,14 @@ function createProxy(ep, path = [], target = function() {
         }).then(fromWireValue);
         return r2.then.bind(r2);
       }
-      return createProxy(ep, [...path, prop3]);
+      return createProxy(ep, [...path, prop]);
     },
-    set(_target, prop3, rawValue) {
+    set(_target, prop, rawValue) {
       throwIfProxyReleased(isProxyReleased);
       const [value, transferables] = toWireValue(rawValue);
       return requestResponseMessage(ep, {
         type: "SET",
-        path: [...path, prop3].map((p2) => p2.toString()),
+        path: [...path, prop].map((p2) => p2.toString()),
         value
       }, transferables).then(fromWireValue);
     },
@@ -8375,7 +8434,7 @@ function myFlat(arr) {
 }
 function processArguments(argumentList) {
   const processed = argumentList.map(toWireValue);
-  return [processed.map((v2) => v2[0]), myFlat(processed.map((v2) => v2[1]))];
+  return [processed.map((v3) => v3[0]), myFlat(processed.map((v3) => v3[1]))];
 }
 var transferCache = /* @__PURE__ */ new WeakMap();
 function transfer(obj, transfers) {
@@ -8449,6 +8508,9 @@ var fireEvent = (key, data) => {
 var run = async () => {
   if (!canvasWorker)
     throw new Error("canvasWorker has not been setup yet");
+  await Promise.resolve().then(() => (init_DeleteQueueManager(), DeleteQueueManager_exports));
+  await Promise.resolve().then(() => (init_basic(), basic_exports));
+  await Promise.resolve().then(() => (init_hitbox(), hitbox_exports));
   await Promise.resolve().then(() => (init_canvas(), canvas_exports));
   await Promise.resolve().then(() => (init_keys2(), keys_exports));
   await Promise.resolve().then(() => (init_user(), user_exports));
