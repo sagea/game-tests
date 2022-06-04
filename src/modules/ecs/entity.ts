@@ -1,90 +1,117 @@
-import { ComponentList, ComponentStateManager, ComponentNameSymbol, ComponentListStateManagers, createComponent } from './components';
-import { Counter } from '../../utilities/counter';
+import { ComponentList, ComponentStateManager, ComponentNameSymbol, ComponentListStateManagers, createComponent } from './components.ts';
+import { Counter } from '../../utilities/counter.ts';
 
-let entityIdCounter = Counter();
 export type Entity = {
   id: number;
   components: Partial<ComponentListStateManagers>;
 }
 
-export const entities = new Map<number, Entity>();
-export const componentEntityMapping = new Map<string, number[]>();
+export const EntityList = () => {
+  const entityIdCounter = Counter();
+  const entities = new Map<number, Entity>();
+  const componentEntityMapping = new Map<string, number[]>();
 
-export const addEntity = <T extends ComponentList[keyof ComponentList]>(components: T[]) => {
-  const id = entityIdCounter.next().value;
-  const entity: Entity = {
-    id,
-    components: {},
-  }
-  const defaultComponents = [createComponent('EntityId', { id })];
-  entities.set(entity.id, entity);
-  for (let component of [...components, ...defaultComponents]) {
-    addComponentToEntity(id, component);
-  }
-  return entity;
-}
-export const addComponentToEntity = <T extends ComponentList[keyof ComponentList]>(entityId: number, component: T) => {
-  const componentName = component[ComponentNameSymbol];
-  const componentMapping = componentEntityMapping.get(componentName) || [];
-  const entity = entities.get(entityId);
-  entity.components[componentName] = ComponentStateManager(component);
-  componentEntityMapping.set(componentName, [...componentMapping, entityId]);
-}
-
-export function removeEntity(id: number) {
-  const { components } = entities.get(id);
-  entities.delete(id);
-  for (let componentName of Object.keys(components)) {
-    const idmappings = componentEntityMapping.get(componentName)
-      .filter(i => i !== id);
-    componentEntityMapping.set(componentName, idmappings);
-  }
-}
-
-export function count<T extends keyof ComponentListStateManagers>(
-  componentFilter: T[],
-): number {
-  let componentMapping: number[][] = []
-  for (let componentName of componentFilter) {
-    const component = componentEntityMapping.get(componentName);
-    if (!component || component.length === 0) {
-      return 0
-    };
-    componentMapping.push(component);
-  }
-  const entityIds = intersectionBetweenOrderedIntegerLists(componentMapping);
-  return entityIds.length;
-}
-export function* query<T extends keyof ComponentListStateManagers>(
-  componentFilter: T[],
-  filteredUserIds?: number[],
-): Generator<
-  { [id in T]: ComponentListStateManagers[id] },
-  void,
-  unknown> {
-    let componentMapping: number[][] = []
-    if (filteredUserIds) {
-      componentMapping.push(filteredUserIds);
+  const addEntity = <T extends ComponentList[keyof ComponentList]>(
+    components: T[],
+  ) => {
+    const id = entityIdCounter() as number;
+    const entity: Entity = {
+      id,
+      components: {},
     }
-    for (let componentName of componentFilter) {
-      const component = componentEntityMapping.get(componentName);
-      if (!component || component.length === 0) {
-        return
-      };
+    const defaultComponents = [createComponent('EntityId', { id })];
+    entities.set(entity.id, entity);
+    for (const component of [...components, ...defaultComponents]) {
+      addComponentToEntity(id, component);
+    }
+    return entity;
+  }
+  const addComponentToEntity = <T extends ComponentList[keyof ComponentList]>(entityId: number, component: T) => {
+    const componentName = component[ComponentNameSymbol];
+    const componentMapping = componentEntityMapping.get(componentName) || [];
+    const entity = entities.get(entityId);
+    if (!entity) return;
+    entity.components[componentName] = ComponentStateManager(component);
+    componentEntityMapping.set(componentName, [...componentMapping, entityId]);
+  }
+
+  function removeEntity(id: number) {
+    const entity = entities.get(id)
+    if (!entity) return
+    const { components } = entity;
+    entities.delete(id);
+    for (const componentName of Object.keys(components)) {
+      const idmappings = (componentEntityMapping.get(componentName) || [])
+        .filter(i => i !== id);
+      componentEntityMapping.set(componentName, idmappings);
+    }
+  }
+
+  function count<T extends keyof ComponentListStateManagers>(
+    componentFilter: T[],
+  ): number {
+    const componentMapping: number[][] = []
+    for (const componentName of componentFilter) {
+      const component = componentEntityMapping.get(componentName) || [];
+      if (component.length === 0) {
+        return 0
+      }
       componentMapping.push(component);
     }
-    componentMapping = componentMapping.sort((a, b) => a.length - b.length)
-
     const entityIds = intersectionBetweenOrderedIntegerLists(componentMapping);
-    for (let entityId of entityIds) {
-      const entity = entities.get(entityId);
-      const components: any = {};
-      for (let componentName of componentFilter) {
-        components[componentName] = entity.components[componentName];
+    return entityIds.length;
+  }
+  function* query<T extends keyof ComponentListStateManagers>(
+    componentFilter: T[],
+    filteredUserIds?: number[],
+  ): Generator<
+    { [id in T]: ComponentListStateManagers[id] },
+    void,
+    unknown> {
+      let componentMapping: number[][] = []
+      if (filteredUserIds) {
+        componentMapping.push(filteredUserIds);
       }
-      yield components;
-    }
+      for (const componentName of componentFilter) {
+        const component = componentEntityMapping.get(componentName) || [];
+        if (!component || component.length === 0) {
+          return
+        }
+        componentMapping.push(component);
+      }
+      componentMapping = componentMapping.sort((a, b) => a.length - b.length)
+
+      const entityIds = intersectionBetweenOrderedIntegerLists(componentMapping);
+      for (const entityId of entityIds) {
+        const entity = entities.get(entityId);
+        if (!entity) {
+          continue;
+        }
+        const components: any = {};
+        for (const componentName of componentFilter) {
+          components[componentName] = entity.components[componentName];
+        }
+        yield components;
+      }
+  }
+
+  return {
+    addEntity,
+    removeEntity,
+    addComponentToEntity,
+    count,
+    query,
+  }
 }
+
+const globalEntityList = EntityList();
+
+export const addEntity = globalEntityList.addEntity;
+export const removeEntity = globalEntityList.removeEntity;
+export const addComponentToEntity = globalEntityList.addComponentToEntity;
+export const count = globalEntityList.count;
+export const query = globalEntityList.query;
+
 
 const intersectionBetweenOrderedIntegerLists = (intLists: number[][]) => {
   // todo: Rename last as it's not the last component mapping but more of the filtered item
@@ -92,7 +119,7 @@ const intersectionBetweenOrderedIntegerLists = (intLists: number[][]) => {
   let last = intLists[0];
   for (let i = 1; i < intLists.length; i++) {
     const current = intLists[i]
-    let matches = [];
+    const matches = [];
     const lastLength = last.length;
     const currentLength = current.length;
     let currentIndexStartingPoint = 0;

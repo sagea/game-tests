@@ -1,4 +1,4 @@
-import { createEnum } from './utilities/generic'
+import { createEnum } from './utilities/generic.ts'
 
 let activeContext = null;
 export const renderContext = (method: () => any) => {
@@ -242,7 +242,45 @@ drawHandlers.set(e.textAlign, hs());
 drawHandlers.set(e.textBaseline, hs());
 drawHandlers.set(e.textRendering, hs());
 drawHandlers.set(e.wordSpacing, hs());
-
+const loadImage = (url) => {
+	return new Promise((resolve, reject) => {
+  	const img = new Image();
+    img.onerror = (e) => reject(e)
+    img.onload = () => resolve(img);
+    img.src = url
+  })
+}
+const images = new Map();
+const loadImageBehind = (url: string) => {
+  images.set(url, false);
+  loadImage(url)
+    .then(image => images.set(url, image))
+    .catch(err => images.set(url, 'ERROR'));
+}
+const getImage = (url: string) => {
+  if (!images.has(url)) {
+    images.set(url, false);
+    fetch(url)
+      .then(res => res.blob())
+      .then(imageBlob => createImageBitmap(imageBlob))
+      .then(image => images.set(url, image))
+    // loadImage(url)
+    //   .then(image => images.set(url, image))
+      .catch(err => {
+        console.log('Failed to load image', err);
+        images.set(url, false);
+      });
+  }
+  return images.get(url);
+}
 export const executeOnCanvas = (ctx, [enumber, args]) => {
-  drawHandlers.get(enumber)(ctx, enumber, args)
+  if (enumber === e.drawImage) {
+    const [imageUrl, ...otherArgs] = args;
+    const image = getImage(imageUrl);
+    if (image) {
+      drawHandlers.get(enumber)(ctx, enumber, [image, ...otherArgs]);
+    }
+  } else {
+    drawHandlers.get(enumber)(ctx, enumber, args)
+  }
 };

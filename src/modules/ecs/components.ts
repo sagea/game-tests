@@ -1,4 +1,4 @@
-import { NormalizeUnion } from '../../utilities/types';
+import { NormalizeUnion } from '../../utilities/types.ts';
 
 export const ComponentNameSymbol = Symbol('ECS_Component_Name');
 

@@ -1,11 +1,11 @@
-import { $$initiate, render, timeDiffS, timeMS, update } from './animate'
-import { createHitBoxComponent, updateHitboxTransform } from './hitbox'
-import { isKeyDown } from './keys'
-import { add, v, right, Vector } from './Vector'
-import { damageEnemy } from './enemy'
-import { fill, fillStyle, restore, save, rect, beginPath } from './draw'
+import { $$initiate, render, timeDiffS, timeMS, update } from './animate.ts'
+import { createHitBoxComponent, updateHitboxTransform } from './hitbox.ts'
+import { isKeyDown } from './keys.ts'
+import { add, v, right, Vector } from './Vector.ts'
+import { damageEnemy } from './enemy.ts'
+import { fill, fillStyle, restore, save, rect, beginPath } from './draw.ts'
 
-import { addEntity, Component, createComponent, query } from './modules/ecs';
+import { addEntity, Component, createComponent, query } from './modules/ecs/index.ts';
 declare module './modules/ecs' {
   export interface ComponentList {
     UserBullet: Component<'UserBullet', {

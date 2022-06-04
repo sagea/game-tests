@@ -1,0 +1,8 @@
+{
+  "imports": {
+    "ramda": "https://unpkg.com/ramda@0.28.0/es/index.js",
+    "baconjs": "https://unpkg.com/baconjs@3.0.17/dist/Bacon.mjs",
+    "immer": "https://unpkg.com/immer@9.0.14/dist/immer.esm.js",
+    "comlink": "https://unpkg.com/comlink/dist/esm/comlink.mjs"
+  }
+}

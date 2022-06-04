@@ -1,2 +1,2 @@
-export { Component, ComponentList, createComponent } from './components'
-export { addEntity, removeEntity, query } from './entity';
+export { Component, ComponentList, createComponent } from './components.ts'
+export { addEntity, removeEntity, query } from './entity.ts';

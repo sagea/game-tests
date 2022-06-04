@@ -1,5 +1,5 @@
-import { removal } from '../animate';
-import { query, Component, removeEntity, createComponent } from '../modules/ecs';
+import { removal } from '../animate.ts';
+import { query, Component, removeEntity, createComponent } from '../modules/ecs/index.ts';
 
 declare module '../modules/ecs' {
   export interface ComponentList {

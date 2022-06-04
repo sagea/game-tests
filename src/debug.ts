@@ -1,7 +1,7 @@
-import { fps, render } from './animate';
-import { v } from './Vector';
-import { beginPath, restore, save, font, fillText, lineTo, moveTo, lineWidth, strokeStyle, closePath, stroke } from './draw';
-import { count, query } from './modules/ecs/entity';
+import { fps, render } from './animate.ts';
+import { v } from './Vector.ts';
+import { beginPath, restore, save, font, fillText, lineTo, moveTo, lineWidth, strokeStyle, closePath, stroke } from './draw.ts';
+import { count, query } from './modules/ecs/entity.ts';
 
 render.add(() => {
   const metrics = [

@@ -1,4 +1,4 @@
-import { SExtend, SExtendValue, SFilterValues, SMapExtendValues, SMapValues, State, SValue } from '../State'
+import { SExtend, SExtendValue, SFilterValues, SMapExtendValues, SMapValues, State, SValue } from '../State.ts'
 
 describe('State.ts', () => {
   describe('State', () => {

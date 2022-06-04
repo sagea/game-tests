@@ -1,5 +1,15 @@
 import { expose, wrap } from 'comlink';
-import * as events from './utilities/events';
+import * as events from './utilities/events.ts';
+import './components/DeleteQueueManager.ts';
+import './components/basic.ts';
+import './hitbox.ts';
+import './canvas.ts';
+import './keys.ts';
+import './user.ts';
+import './enemy.ts';
+import './bullets.ts';
+import './debug.ts';
+import { activate } from './animate.ts';
 
 let canvasWorker;
 export const attachCanvasWorker = (transferredCanvasWorker) => {
@@ -7,21 +17,13 @@ export const attachCanvasWorker = (transferredCanvasWorker) => {
   canvasWorker = wrap(transferredCanvasWorker);
   return true;
 }
+
 export const fireEvent = (key, data) => {
   events[key].push(data);
 }
+
 export const run = async () => {
   if (!canvasWorker) throw new Error('canvasWorker has not been setup yet');
-  await import('./components/DeleteQueueManager');
-  await import ('./components/basic');
-  await import ('./hitbox');
-  await import('./canvas');
-  await import('./keys');
-  await import('./user');
-  await import('./enemy');
-  await import('./bullets');
-  await import('./debug');
-  const { activate } = await import('./animate');
   activate(canvasWorker);
 }
 

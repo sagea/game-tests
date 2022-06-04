@@ -1,5 +1,5 @@
-import * as ecs from '../modules/ecs';
-import { Vector } from '../Vector';
+import * as ecs from '../modules/ecs/index.ts';
+import { Vector } from '../Vector.ts';
 
 declare module '../modules/ecs' {
   export interface ComponentList {

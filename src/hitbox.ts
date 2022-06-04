@@ -1,7 +1,7 @@
-import { physics, removal } from './animate'
-import { Component, createComponent, query } from './modules/ecs'
-import { Vector } from './Vector'
-import { ComponentListStateManagers } from './modules/ecs/components'
+import { physics, removal } from './animate.ts'
+import { Component, createComponent, query } from './modules/ecs/index.ts'
+import { Vector } from './Vector.ts'
+import { ComponentListStateManagers } from './modules/ecs/components.ts'
 
 declare module './modules/ecs' {
   export interface ComponentList {

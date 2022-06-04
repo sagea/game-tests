@@ -1,9 +1,9 @@
-import { timeDiffS, update, timeMS, render, $$initiate } from './animate'
-import { beginPath, fill, fillStyle, rect, restore, save } from './draw'
-import { createHitBoxComponent, updateHitboxTransform } from './hitbox'
-import { random } from './utilities/generic'
-import { add, v, left, up } from './Vector'
-import { addEntity, Component, createComponent, query } from './modules/ecs';
+import { timeDiffS, update, timeMS, render, $$initiate } from './animate.ts'
+import { beginPath, fill, fillStyle, rect, restore, save } from './draw.ts'
+import { createHitBoxComponent, updateHitboxTransform } from './hitbox.ts'
+import { random } from './utilities/generic.ts'
+import { add, v, left, up } from './Vector.ts'
+import { addEntity, Component, createComponent, query } from './modules/ecs/index.ts';
 declare module './modules/ecs' {
   export interface ComponentList {
     Enemy: Component<'Enemy', {

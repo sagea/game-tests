@@ -4,11 +4,12 @@
 
 
 import { transfer } from 'comlink';
-import { createCanvas } from './canvas'
-import { createComlinkSharedWorker, createComlinkWorker } from './utilities/worker';
+import { createCanvas } from './canvas.ts'
+import { createComlinkSharedWorker, createComlinkWorker } from './utilities/worker.ts';
+import { resources } from './resources.ts';
 
 const loadApp = async ({ useWorker = false }: { useWorker: boolean }) => {
-  if (useWorker === false) return await import('./app-worker');
+  if (useWorker === false) return await import('./app-worker.ts');
   const appWorker = createComlinkWorker('/src/app-worker.js', { type: 'module' });
   return appWorker;
 }
@@ -23,7 +24,8 @@ const run = async () => {
   const clonedCanvasWorker = canvasWorker.clonePort();
 
   await app.attachCanvasWorker(transfer(clonedCanvasWorker, [clonedCanvasWorker]));
-
+  const resourceUrls = Array.from(Object.values(resources));
+  await canvasWorker.loadResources(resourceUrls);
   setupListeners(app);
   await app.run();
 }

@@ -1,4 +1,4 @@
-import { isArray, isFunction } from '../utilities/generic';
+import { isArray, isFunction } from '../utilities/generic.ts';
 import produce, { Draft, enableAllPlugins } from 'immer';
 enableAllPlugins()
 

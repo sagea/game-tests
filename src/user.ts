@@ -1,9 +1,10 @@
-import { Canvas } from './canvas';
-import { $$initiate, render, timeDiffS, update } from './animate'
-import { isKeyDown } from './keys'
-import { add, down, v, left, right, up, zero } from './Vector'
-import { fill, fillStyle, restore, save, rect, beginPath, closePath } from './draw'
-import { query, Component, createComponent, addEntity } from './modules/ecs';
+import { Canvas } from './canvas.ts';
+import { $$initiate, render, timeDiffS, update } from './animate.ts'
+import { isKeyDown } from './keys.ts'
+import { add, down, v, left, right, up, zero } from './Vector.ts'
+import { fill, fillStyle, restore, save, rect, beginPath, closePath, drawImage } from './draw.ts'
+import { query, Component, createComponent, addEntity } from './modules/ecs/index.ts';
+import {resources} from './resources.ts';
 
 declare module './modules/ecs' {
   export interface ComponentList {
@@ -53,11 +54,7 @@ update.add(() => {
 render.add(() => {
   for (let { Position, Size } of query(['Position', 'User', 'Size'])) {
     save()
-    beginPath()
-    rect(...Position(), ...Size());
-    fillStyle('black')
-    fill()
-    closePath();
+    drawImage(resources.USER_IMAGE, ...Position())
     restore()
   }
 })

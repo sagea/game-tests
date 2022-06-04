@@ -1,6 +1,6 @@
-import { inputs } from './animate'
-import { State } from './State/State'
-import { windowKeyDownListener, windowKeyUpListener, windowBlurListener } from './utilities/events';
+import { inputs } from './animate.ts'
+import { State } from './State/State.ts'
+import { windowKeyDownListener, windowKeyUpListener, windowBlurListener } from './utilities/events.ts';
 
 const trackedKeys = State<Record<string, boolean>>({})
 const frameSnapshotKeys = State<Record<string, boolean>>({});

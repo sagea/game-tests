@@ -1,4 +1,4 @@
-import { from, zero } from '../Vector';
+import { from, zero } from '../Vector.ts';
 
 describe('Vector.test.js', () => {
   describe('from', () => {

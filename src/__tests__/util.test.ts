@@ -1,4 +1,4 @@
-import { p } from '../util'
+import { p } from '../util.ts'
 
 describe('utils', () => {
   describe('p', () => {
