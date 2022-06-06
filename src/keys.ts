@@ -7,11 +7,11 @@ const frameSnapshotKeys = State<Record<string, boolean>>({});
 const removeAllDownKeys = () => {
   trackedKeys({});
 }
-const setKeyDown = code => {
+const setKeyDown = (code: string) => {
   trackedKeys(keys => ({ ...keys, [code]: true }));
 }
 
-const setKeyUp = code => {
+const setKeyUp = (code: string) => {
   trackedKeys(({ [code]: _, ...rest }) => (rest));
 }
 
@@ -20,12 +20,12 @@ inputs.add(() => {
 })
 
 windowKeyDownListener
-  .onValue(({ code }) => {
+  .onValue(({ code }: { code: string }) => {
     setKeyDown(code)
   })
 
 windowKeyUpListener
-  .onValue(({ code }) => {
+  .onValue(({ code }: { code: string }) => {
     setKeyUp(code)
   })
 
@@ -34,4 +34,4 @@ windowBlurListener
     removeAllDownKeys();
   });
 
-export const isKeyDown = keyString => Boolean(frameSnapshotKeys()[keyString])
+export const isKeyDown = (keyString: string) => Boolean(frameSnapshotKeys()[keyString])

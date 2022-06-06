@@ -1,27 +1,24 @@
 import { $$initiate, render, timeDiffS, timeMS, update } from './animate.ts'
-import { createHitBoxComponent, updateHitboxTransform } from './hitbox.ts'
+import { createHitBoxComponent, updateHitboxTransform, Hitbox } from './hitbox.ts'
 import { isKeyDown } from './keys.ts'
 import { add, v, right, Vector } from './Vector.ts'
 import { damageEnemy } from './enemy.ts'
 import { fill, fillStyle, restore, save, rect, beginPath } from './draw.ts'
 import { DeleteQueueManager } from './components/DeleteQueueManager.ts';
 import { Position, Size } from './components/basic.ts';
+import { User } from './user.ts';
+import { Enemy } from './enemy.ts';
 
-import { addEntity, Component, query, creator } from './modules/ecs/mod.ts';
-declare module './modules/ecs/mod.ts' {
-  export interface ComponentList {
-    UserBullet: Component<'UserBullet', {
-      speed: number;
-      status: 'ACTIVE' | 'INACTIVE';
-    }>;
-    UserBulletManager: Component<'UserBulletManager', {
-      lastBulletFiredTime: number;
-    }>
-  }
-}
+import { addEntity, Component, EntityId, query } from './modules/ecs/mod.ts';
 
-const UserBullet = creator('UserBullet');
-const UserBulletManager = creator('UserBulletManager');
+export const UserBullet = Component<{
+  speed: number;
+  status: 'ACTIVE' | 'INACTIVE';
+}>();
+
+const UserBulletManager = Component<{
+  lastBulletFiredTime: number;
+}>();
 
 $$initiate.once(() => {
   addEntity([
@@ -49,39 +46,39 @@ const createBullet = (pos: Vector) => {
 const calculateBulletSpeedForFrame = (speed: number) => speed * timeDiffS()
 
 const spawnBullet = () => {
-  for (let { UserBulletManager } of query(['UserBulletManager'])) {
+  for (const { userBulletManager } of query({ userBulletManager: UserBulletManager })) {
     if (!isKeyDown('Space')) return;
-    if ((timeMS() - UserBulletManager().lastBulletFiredTime) < 100) return;
-    UserBulletManager({ lastBulletFiredTime: timeMS() });
-    for (let { Position } of query(['User', 'Position'])) {
-      createBullet(Position())
+    if ((timeMS() - userBulletManager().lastBulletFiredTime) < 100) return;
+    userBulletManager({ lastBulletFiredTime: timeMS() });
+    for (const { position } of query({ user: User, position: Position })) {
+      createBullet(position())
     }
   }
 }
 
 const moveBullet = () => {
-  for (let { UserBullet, Position, Size, Hitbox } of query(['UserBullet', 'Position', 'Size', 'Hitbox'])) {
-    const { speed } = UserBullet();
-    Position(add(Position(), right(calculateBulletSpeedForFrame(speed))))
-    updateHitboxTransform(Hitbox, Position(), Size());
+  for (const { userBullet, position, size, hitbox } of query({ userBullet: UserBullet, position: Position, size: Size, hitbox: Hitbox })) {
+    const { speed } = userBullet();
+    position(add(position(), right(calculateBulletSpeedForFrame(speed))))
+    updateHitboxTransform(hitbox, position(), size());
   }
 }
 
 const removeBullet = () => {
-  for (let { Position, DeleteQueueManager } of query(['UserBullet', 'Position', 'DeleteQueueManager'])) {
-    if (Position().x < 1920) return;
-    DeleteQueueManager({ markedForDeletion: true });
+  for (const { position, deleteQueueManager } of query({ userBullet: Size, position: Position, deleteQueueManager: DeleteQueueManager})) {
+    if (position().x < 1920) return;
+    deleteQueueManager({ markedForDeletion: true });
   }
 }
 
 const bulletEnemyManager = () => {
-  const enemies = [...query(['Enemy', 'EntityId'])];
-  for (const { Hitbox, DeleteQueueManager } of query(['UserBullet', 'EntityId', 'Hitbox', 'DeleteQueueManager'])) {
-    const { entityInteractions } = Hitbox();
-    const firstInteractedEnemeyId = entityInteractions.find((entityId) => enemies.some(({ EntityId }) => entityId === EntityId().id));
+  const enemies = [...query({enemy: Enemy, entityId: EntityId })];
+  for (const { hitbox, deleteQueueManager } of query({ userBullet: UserBullet, entityId: EntityId, hitbox: Hitbox, deleteQueueManager: DeleteQueueManager })) {
+    const { entityInteractions } = hitbox();
+    const firstInteractedEnemeyId = entityInteractions.find((entityIdInteraction) => enemies.some(({ entityId }) => entityIdInteraction === entityId().id));
     if (firstInteractedEnemeyId) {
       damageEnemy(firstInteractedEnemeyId, 20)
-      DeleteQueueManager({ markedForDeletion: true });
+      deleteQueueManager({ markedForDeletion: true });
     }
   }
 }
@@ -97,10 +94,10 @@ update
 
 render
   .add(() => {
-    for (let { Position, Size } of query(['UserBullet', 'Position', 'Size'])) {
+    for (const { position, size } of query({ userBullet: UserBullet, position: Position, size: Size })) {
       save()
       beginPath()
-      rect(...Position(), ...Size())
+      rect(...position(), ...size())
       fillStyle('black')
       fill()
       restore()

@@ -11,10 +11,38 @@ const fileWatcher = async () => {
     lastChanged = Date.now();
   }
 }
-
-router.get('/last-change', (ctx, next) => {
+router.get('/live-reload', (ctx) => {
+  const content = `
+    const sleep = (timer) => new Promise(resolve => setTimeout(resolve, timer));
+    const check = async (loadedTime) => {
+      try {
+        const pre = await fetch('/live-reload', { method: 'post', body: loadedTime });
+        return await pre.json();
+      } catch (err) {
+        console.log('Error checking livereload', err);
+      }
+    }
+    const main = async () => {
+      const loadedTime = Date.now();
+      while(true) {
+        await sleep(500);
+        const res = await check(loadedTime)
+        if (res && res.hasChanged) { location.reload(); }
+      }
+    }
+    main();
+  `
   ctx.response.status = 200;
-  ctx.response.body = lastChanged;
+  ctx.response.headers.append('Content-Type', 'application/javascript');
+  ctx.response.body = content;
+})
+router.post('/live-reload', async (ctx, next) => {
+  const body = ctx.request.body({ type: 'text' });
+  const changed = Number(await body.value);
+  
+  ctx.response.status = 200;
+  ctx.response.headers.append('Content-Type', 'application/json')
+  ctx.response.body = { hasChanged: lastChanged > changed };
 });
 
 app.use(router.allowedMethods())

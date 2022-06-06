@@ -1,26 +1,21 @@
 import { timeDiffS, update, timeMS, render, $$initiate } from './animate.ts'
 import { beginPath, fill, fillStyle, rect, restore, save } from './draw.ts'
-import { createHitBoxComponent, updateHitboxTransform } from './hitbox.ts'
+import { createHitBoxComponent, updateHitboxTransform, Hitbox } from './hitbox.ts'
 import { random } from './utilities/generic.ts'
 import { add, v, left, up } from './Vector.ts'
-import { addEntity, Component, query, creator } from './modules/ecs/mod.ts';
+import { addEntity, Component, query } from './modules/ecs/mod.ts';
 import { DeleteQueueManager } from './components/DeleteQueueManager.ts';
 import { Position, Size } from './components/basic.ts';
-declare module './modules/ecs/mod.ts' {
-  export interface ComponentList {
-    Enemy: Component<'Enemy', {
-      speed: number;
-      health: number;
-      originalHealth: number;
-    }>;
-    EnemyManager: Component<'EnemyManager', {
-      lastSpawnTime: number;
-    }>
-  }
-}
 
-const Enemy = creator('Enemy');
-const EnemyManager = creator('EnemyManager');
+export const Enemy = Component<{
+  speed: number;
+  health: number;
+  originalHealth: number;
+}>();
+
+export const EnemyManager = Component<{
+  lastSpawnTime: number;
+}>();
 
 $$initiate.once(() => {
   addEntity([
@@ -47,34 +42,34 @@ export const createEnemy = (posX: number) => {
 }
 
 const moveEnemies = () => {
-  for (const { Enemy, Position, Size, Hitbox } of query(['Enemy', 'Position', 'Size', 'Hitbox'])) {
-    Position(add(Position(), left(Enemy().speed * timeDiffS())))
-    updateHitboxTransform(Hitbox, Position(), Size());
+  for (const { enemy, position, size, hitbox } of query({ enemy: Enemy,position: Position, size: Size, hitbox: Hitbox })) {
+    position(add(position(), left(enemy().speed * timeDiffS())))
+    updateHitboxTransform(hitbox, position(), size());
   }
 }
 
 const enemyRemover = () => {
-  for (const { Position, DeleteQueueManager } of query(['Position', 'DeleteQueueManager'])) {
-    if (Position().x < 100) {
-      DeleteQueueManager({ markedForDeletion: true });
+  for (const { position, deleteQueueManager } of query({ position: Position, deleteQueueManager: DeleteQueueManager })) {
+    if (position().x < 100) {
+      deleteQueueManager({ markedForDeletion: true });
     }
   }
 }
 
 export const spawnEnemies = () => {
-  for(let { EnemyManager } of query(['EnemyManager'])) {
-    const { lastSpawnTime } = EnemyManager();
+  for(const { enemyManager } of query({ enemyManager: EnemyManager })) {
+    const { lastSpawnTime } = enemyManager();
     if ((timeMS() - lastSpawnTime) < 1000) continue;
-    EnemyManager({ lastSpawnTime: timeMS() });
+    enemyManager({ lastSpawnTime: timeMS() });
     createEnemy(random(100, 900));
   }
 }
 
 export const damageEnemy = (entityId: number, amount: number) => {
-  for (let { Enemy, DeleteQueueManager } of query(['Enemy', 'DeleteQueueManager'], [entityId])) {
-    Enemy({ health: Math.max(0, Enemy().health - amount) });
-    if (Enemy().health === 0) {
-      DeleteQueueManager({ markedForDeletion: true });
+  for (const { enemy, deleteQueueManager } of query({enemy: Enemy, deleteQueueManager: DeleteQueueManager }, [entityId])) {
+    enemy({ health: Math.max(0, enemy().health - amount) });
+    if (enemy().health === 0) {
+      deleteQueueManager({ markedForDeletion: true });
     }
   }
 }
@@ -85,30 +80,28 @@ update.add(
   enemyRemover,
 );
 render.add(() => {
-  for (const { Enemy, Position, Size } of query(['Enemy', 'Position', 'Size'])) {
-    const { health, originalHealth } = Enemy();
+  for (const { enemy, position, size } of query({ enemy: Enemy, position: Position, size: Size })) {
+    const { health, originalHealth } = enemy();
     const healthPercentage = health / originalHealth;
     const hasTouchedBullet = false;
-    const pos = Position();
-    const size = Size();
     save()
     beginPath()
     fillStyle('red')
-    rect(...add(pos, up(50)), ...v(size.x, 20))
+    rect(...add(position(), up(50)), ...v(size().x, 20))
     fill();
     restore()
 
     save()
     beginPath()
     fillStyle('green')
-    rect(...add(pos, up(50)), ...v(size.x * healthPercentage, 20))
+    rect(...add(position(), up(50)), ...v(size().x * healthPercentage, 20))
     fill();
     restore()
 
     save()
     beginPath()
     fillStyle(hasTouchedBullet ? 'blue' : 'green')
-    rect(...pos, ...size)
+    rect(...position(), ...size())
     fill();
     restore()
 

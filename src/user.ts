@@ -3,19 +3,11 @@ import { $$initiate, render, timeDiffS, update } from './animate.ts'
 import { isKeyDown } from './keys.ts'
 import { add, down, v, left, right, up, zero } from './Vector.ts'
 import { restore, save, drawImage } from './draw.ts'
-import { query, Component, addEntity, creator } from './modules/ecs/mod.ts';
+import { query, Component, addEntity } from './modules/ecs/mod.ts';
 import { Position, Size } from './components/basic.ts'
 import {resources} from './resources.ts';
 
-declare module './modules/ecs/mod.ts' {
-  export interface ComponentList {
-    User: Component<'User', {
-      speed: number
-    }>;
-  }
-}
-
-export const User = creator('User');
+export const User = Component<{ speed: number }>();
 
 $$initiate.once(() => {
   addEntity([
@@ -30,24 +22,24 @@ $$initiate.once(() => {
 const calculateSpeedForFrame = (speed: number): number => speed * timeDiffS();
 
 update.add(() => {
-  for (let { User, Position, Size } of query(['User', 'Position', 'Size'])) {
+  for (const { user, position, size } of query({ user: User, position: Position, size: Size })) {
     if (isKeyDown('KeyW')) {
-      Position(add(Position(), up(calculateSpeedForFrame(User().speed))))
+      position(add(position(), up(calculateSpeedForFrame(user().speed))))
     }
     if (isKeyDown('KeyS')) {
-      Position(add(Position(), down(calculateSpeedForFrame(User().speed))))
+      position(add(position(), down(calculateSpeedForFrame(user().speed))))
     }
     if (isKeyDown('KeyA')) {
-      Position(add(Position(), left(calculateSpeedForFrame(User().speed))))
+      position(add(position(), left(calculateSpeedForFrame(user().speed))))
     }
 
     if (isKeyDown('KeyD')) {
-      Position(add(Position(), right(calculateSpeedForFrame(User().speed))))
+      position(add(position(), right(calculateSpeedForFrame(user().speed))))
     }
     const canvas = Canvas()
-    const [width, height] = Size();
-    const [x, y] = Position();
-    Position(v(
+    const [width, height] = size();
+    const [x, y] = position();
+    position(v(
       Math.max(0, Math.min(x, canvas.width - width)),
       Math.max(0, Math.min(y, canvas.height - height))
     ));
@@ -55,9 +47,9 @@ update.add(() => {
 })
 
 render.add(() => {
-  for (let { Position, Size } of query(['Position', 'User', 'Size'])) {
+  for (const { position } of query({ user: User, position: Position })) {
     save()
-    drawImage(resources.USER_IMAGE, ...Position())
+    drawImage(resources.USER_IMAGE, ...position())
     restore()
   }
 })

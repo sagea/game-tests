@@ -1,5 +1,5 @@
 
-export const CBTracker = <TCallback>(labelName: string) => {
+export const CBTracker = <TCallback>() => {
   const events = new Set<['once' | 'always', TCallback]>()
   const once = (...callbacks: TCallback[]) => {
     callbacks.forEach(callback => events.add(['once', callback]));

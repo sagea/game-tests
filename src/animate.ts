@@ -5,17 +5,17 @@ import { isFunction } from './utilities/generic.ts';
 
 type FinalCallback = () => any;
 
-export const $$initiate = CBTracker<() => any>('$$initiate2')
-export const inputs = CBTracker<() => any>('inputs2')
-export const preframe = CBTracker<() => any>('preframe2')
-export const physics = CBTracker<() => any>('physics2')
-export const update = CBTracker<() => any>('update2')
-export const removal = CBTracker<() => any>('removal2');
+export const $$initiate = CBTracker<() => any>()
+export const inputs = CBTracker<() => any>()
+export const preframe = CBTracker<() => any>()
+export const physics = CBTracker<() => any>()
+export const update = CBTracker<() => any>()
+export const removal = CBTracker<() => any>();
 
-export const prerender = CBTracker<(() => any) | [number, (() => any)]>('prerender')
-export const render = CBTracker<(() => any) | [number, (() => any)]>('render')
+export const prerender = CBTracker<(() => any) | [number, (() => any)]>()
+export const render = CBTracker<(() => any) | [number, (() => any)]>()
 
-export const final = CBTracker<FinalCallback>('final')
+export const final = CBTracker<FinalCallback>()
 
 export const timeMS = State(0);
 export const timeDiffMS = State(0);

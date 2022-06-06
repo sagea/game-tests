@@ -3622,7 +3622,7 @@ const mod = {
     windowKeyUpListener: windowKeyUpListener,
     windowBlurListener: windowBlurListener
 };
-const CBTracker = (labelName)=>{
+const CBTracker = ()=>{
     const events = new Set();
     const once1 = (...callbacks)=>{
         callbacks.forEach((callback)=>events.add([
@@ -5096,61 +5096,61 @@ var _Set = function() {
     };
     return _Set1;
 }();
-function hasOrAdd(item, shouldAdd, set3) {
+function hasOrAdd(item, shouldAdd, set) {
     var type4 = typeof item;
     var prevSize, newSize;
     switch(type4){
         case 'string':
         case 'number':
             if (item === 0 && 1 / item === -Infinity) {
-                if (set3._items['-0']) {
+                if (set._items['-0']) {
                     return true;
                 } else {
                     if (shouldAdd) {
-                        set3._items['-0'] = true;
+                        set._items['-0'] = true;
                     }
                     return false;
                 }
             }
-            if (set3._nativeSet !== null) {
+            if (set._nativeSet !== null) {
                 if (shouldAdd) {
-                    prevSize = set3._nativeSet.size;
-                    set3._nativeSet.add(item);
-                    newSize = set3._nativeSet.size;
+                    prevSize = set._nativeSet.size;
+                    set._nativeSet.add(item);
+                    newSize = set._nativeSet.size;
                     return newSize === prevSize;
                 } else {
-                    return set3._nativeSet.has(item);
+                    return set._nativeSet.has(item);
                 }
             } else {
-                if (!(type4 in set3._items)) {
+                if (!(type4 in set._items)) {
                     if (shouldAdd) {
-                        set3._items[type4] = {};
-                        set3._items[type4][item] = true;
+                        set._items[type4] = {};
+                        set._items[type4][item] = true;
                     }
                     return false;
-                } else if (item in set3._items[type4]) {
+                } else if (item in set._items[type4]) {
                     return true;
                 } else {
                     if (shouldAdd) {
-                        set3._items[type4][item] = true;
+                        set._items[type4][item] = true;
                     }
                     return false;
                 }
             }
         case 'boolean':
-            if (type4 in set3._items) {
+            if (type4 in set._items) {
                 var bIdx = item ? 1 : 0;
-                if (set3._items[type4][bIdx]) {
+                if (set._items[type4][bIdx]) {
                     return true;
                 } else {
                     if (shouldAdd) {
-                        set3._items[type4][bIdx] = true;
+                        set._items[type4][bIdx] = true;
                     }
                     return false;
                 }
             } else {
                 if (shouldAdd) {
-                    set3._items[type4] = item ? [
+                    set._items[type4] = item ? [
                         false,
                         true
                     ] : [
@@ -5161,46 +5161,46 @@ function hasOrAdd(item, shouldAdd, set3) {
                 return false;
             }
         case 'function':
-            if (set3._nativeSet !== null) {
+            if (set._nativeSet !== null) {
                 if (shouldAdd) {
-                    prevSize = set3._nativeSet.size;
-                    set3._nativeSet.add(item);
-                    newSize = set3._nativeSet.size;
+                    prevSize = set._nativeSet.size;
+                    set._nativeSet.add(item);
+                    newSize = set._nativeSet.size;
                     return newSize === prevSize;
                 } else {
-                    return set3._nativeSet.has(item);
+                    return set._nativeSet.has(item);
                 }
             } else {
-                if (!(type4 in set3._items)) {
+                if (!(type4 in set._items)) {
                     if (shouldAdd) {
-                        set3._items[type4] = [
+                        set._items[type4] = [
                             item
                         ];
                     }
                     return false;
                 }
-                if (!_includes(item, set3._items[type4])) {
+                if (!_includes(item, set._items[type4])) {
                     if (shouldAdd) {
-                        set3._items[type4].push(item);
+                        set._items[type4].push(item);
                     }
                     return false;
                 }
                 return true;
             }
         case 'undefined':
-            if (set3._items[type4]) {
+            if (set._items[type4]) {
                 return true;
             } else {
                 if (shouldAdd) {
-                    set3._items[type4] = true;
+                    set._items[type4] = true;
                 }
                 return false;
             }
         case 'object':
             if (item === null) {
-                if (!set3._items['null']) {
+                if (!set._items['null']) {
                     if (shouldAdd) {
-                        set3._items['null'] = true;
+                        set._items['null'] = true;
                     }
                     return false;
                 }
@@ -5208,17 +5208,17 @@ function hasOrAdd(item, shouldAdd, set3) {
             }
         default:
             type4 = Object.prototype.toString.call(item);
-            if (!(type4 in set3._items)) {
+            if (!(type4 in set._items)) {
                 if (shouldAdd) {
-                    set3._items[type4] = [
+                    set._items[type4] = [
                         item
                     ];
                 }
                 return false;
             }
-            if (!_includes(item, set3._items[type4])) {
+            if (!_includes(item, set._items[type4])) {
                 if (shouldAdd) {
-                    set3._items[type4].push(item);
+                    set._items[type4].push(item);
                 }
                 return false;
             }
@@ -5815,14 +5815,14 @@ var _xuniqBy = _curry2(function _xuniqBy(f145, xf) {
     return new XUniqBy(f145, xf);
 });
 var uniqBy = _curry2(_dispatchable([], _xuniqBy, function(fn44, list) {
-    var set4 = new _Set();
+    var set = new _Set();
     var result = [];
     var idx = 0;
     var appliedItem, item;
     while(idx < list.length){
         item = list[idx];
         appliedItem = fn44(item);
-        if (set4.add(appliedItem)) {
+        if (set.add(appliedItem)) {
             result.push(item);
         }
         idx += 1;
@@ -8007,15 +8007,15 @@ drawHandlers.set(e.textBaseline, hs());
 drawHandlers.set(e.textRendering, hs());
 drawHandlers.set(e.wordSpacing, hs());
 new Map();
-const $$initiate = CBTracker('$$initiate2');
-const inputs = CBTracker('inputs2');
-const preframe = CBTracker('preframe2');
-const physics = CBTracker('physics2');
-const update1 = CBTracker('update2');
-const removal = CBTracker('removal2');
-const prerender = CBTracker('prerender');
-const render = CBTracker('render');
-const __final = CBTracker('final');
+const $$initiate = CBTracker();
+const inputs = CBTracker();
+const preframe = CBTracker();
+const physics = CBTracker();
+const update1 = CBTracker();
+const removal = CBTracker();
+const prerender = CBTracker();
+const render = CBTracker();
+const __final = CBTracker();
 const timeMS = State(0);
 const timeDiffMS = State(0);
 const timeS = State(0);
@@ -8082,7 +8082,16 @@ function activate(canvasWorker1) {
     }
     frame(animate);
 }
-const ComponentNameSymbol = Symbol('ECS_Component_Name');
+const cns = Symbol('__Component_Symbol__');
+const Component = ()=>{
+    const returnMethod = (data)=>{
+        return {
+            [cns]: returnMethod,
+            ...data
+        };
+    };
+    return returnMethod;
+};
 const ComponentStateManager = (initialState)=>{
     let internalState = initialState;
     return (changes)=>{
@@ -8095,71 +8104,70 @@ const ComponentStateManager = (initialState)=>{
         return internalState;
     };
 };
-const creator = (item)=>(data)=>({
-            [ComponentNameSymbol]: item,
-            ...data
-        })
-;
-const createEntityId = (data)=>({
-        [ComponentNameSymbol]: 'EntityId',
-        ...data
-    })
-;
+class ComponentEntityManager extends Map {
+    get(component) {
+        const list = super.get(component);
+        if (list) {
+            return list;
+        }
+        const newList = [];
+        super.set(component, newList);
+        return newList;
+    }
+    appendItem(component, item) {
+        this.get(component).push(item);
+    }
+    removeItem(component, item) {
+        const list = this.get(component);
+        this.set(component, list.filter((i37)=>i37 !== item
+        ));
+    }
+}
 const Counter = ()=>{
     let number = 0;
     return ()=>number++
     ;
 };
+const EntityId = Component();
 const EntityList = ()=>{
     const entityIdCounter = Counter();
     const entities = new Map();
-    const componentEntityMapping = new Map();
+    const componentEntityMapping = new ComponentEntityManager();
     const addEntity1 = (components)=>{
         const id5 = entityIdCounter();
         const entity = {
             id: id5,
-            components: {}
+            components: new Map()
         };
-        const defaultComponents = [
-            createEntityId({
-                id: id5
-            })
-        ];
         entities.set(entity.id, entity);
-        for (const component of [
-            ...components,
-            ...defaultComponents
-        ]){
+        addComponentToEntity1(id5, EntityId({
+            id: id5
+        }));
+        for (const component of components){
             addComponentToEntity1(id5, component);
         }
         return entity;
     };
     const addComponentToEntity1 = (entityId, component)=>{
-        const componentName = component[ComponentNameSymbol];
-        const componentMapping = componentEntityMapping.get(componentName) || [];
+        const componentName = component[cns];
         const entity = entities.get(entityId);
         if (!entity) return;
-        entity.components[componentName] = ComponentStateManager(component);
-        componentEntityMapping.set(componentName, [
-            ...componentMapping,
-            entityId
-        ]);
+        entity.components.set(componentName, ComponentStateManager(component));
+        componentEntityMapping.appendItem(componentName, entityId);
     };
     function removeEntity1(id6) {
         const entity = entities.get(id6);
         if (!entity) return;
         const { components  } = entity;
         entities.delete(id6);
-        for (const componentName of Object.keys(components)){
-            const idmappings = (componentEntityMapping.get(componentName) || []).filter((i37)=>i37 !== id6
-            );
-            componentEntityMapping.set(componentName, idmappings);
+        for (const [componentName] of components){
+            componentEntityMapping.removeItem(componentName, id6);
         }
     }
     function count1(componentFilter) {
         const componentMapping = [];
         for (const componentName of componentFilter){
-            const component = componentEntityMapping.get(componentName) || [];
+            const component = componentEntityMapping.get(componentName);
             if (component.length === 0) {
                 return 0;
             }
@@ -8173,7 +8181,7 @@ const EntityList = ()=>{
         if (filteredUserIds) {
             componentMapping.push(filteredUserIds);
         }
-        for (const componentName of componentFilter){
+        for (const [, componentName] of Object.entries(componentFilter)){
             const component = componentEntityMapping.get(componentName) || [];
             if (!component || component.length === 0) {
                 return;
@@ -8189,8 +8197,8 @@ const EntityList = ()=>{
                 continue;
             }
             const components = {};
-            for (const componentName of componentFilter){
-                components[componentName] = entity.components[componentName];
+            for (const [remappedName, componentName] of Object.entries(componentFilter)){
+                components[remappedName] = entity.components.get(componentName);
             }
             yield components;
         }
@@ -8239,21 +8247,21 @@ const intersectionBetweenOrderedIntegerLists = (intLists)=>{
     }
     return last3;
 };
-const DeleteQueueManager = creator('DeleteQueueManager');
+const DeleteQueueManager = Component();
 removal.add(()=>{
-    for (let { DeleteQueueManager: DeleteQueueManager1 , EntityId  } of query([
-        'DeleteQueueManager',
-        'EntityId'
-    ])){
-        const { markedForDeletion  } = DeleteQueueManager1();
+    for (const { deleteQueueManager , entityId  } of query({
+        deleteQueueManager: DeleteQueueManager,
+        entityId: EntityId
+    })){
+        const { markedForDeletion  } = deleteQueueManager();
         if (markedForDeletion) {
-            removeEntity(EntityId().id);
+            removeEntity(entityId().id);
         }
     }
 });
-const Position = creator('Position');
-const Size = creator('Size');
-const Hitbox = creator('Hitbox');
+const Position = Component();
+const Size = Component();
+const Hitbox = Component();
 const createHitBoxComponent = (label, [x71, y9], [width, height])=>{
     return Hitbox({
         label,
@@ -8266,8 +8274,8 @@ const createHitBoxComponent = (label, [x71, y9], [width, height])=>{
         entityInteractions: []
     });
 };
-const updateHitboxTransform = (Hitbox1, [x72, y10], [width, height])=>{
-    Hitbox1({
+const updateHitboxTransform = (hitbox, [x72, y10], [width, height])=>{
+    hitbox({
         x: x72,
         y: y10,
         x2: x72 + width,
@@ -8288,27 +8296,27 @@ const hittest = (hitboxA, hitboxB)=>{
 };
 const checkHitboxes = ()=>{
     const ht = [
-        ...query([
-            'EntityId',
-            'Hitbox'
-        ])
+        ...query({
+            entityId: EntityId,
+            hitbox: Hitbox
+        })
     ];
     for(let i39 = 0; i39 < ht.length; i39++){
         const a51 = ht[i39];
         for(let j6 = i39 + 1; j6 < ht.length; j6++){
             const b42 = ht[j6];
-            const aHitbox = a51.Hitbox();
-            const bHitbox = b42.Hitbox();
+            const aHitbox = a51.hitbox();
+            const bHitbox = b42.hitbox();
             if (hittest(aHitbox, bHitbox)) {
-                const aid = a51.EntityId().id;
-                const bid = b42.EntityId().id;
-                a51.Hitbox({
+                const aid = a51.entityId().id;
+                const bid = b42.entityId().id;
+                a51.hitbox({
                     entityInteractions: [
                         ...aHitbox.entityInteractions,
                         bid
                     ]
                 });
-                b42.Hitbox({
+                b42.hitbox({
                     entityInteractions: [
                         ...bHitbox.entityInteractions,
                         aid
@@ -8319,10 +8327,10 @@ const checkHitboxes = ()=>{
     }
 };
 const clearHitboxInteractions = ()=>{
-    for (let { Hitbox: Hitbox2  } of query([
-        'Hitbox'
-    ])){
-        Hitbox2({
+    for (const { hitbox  } of query({
+        hitbox: Hitbox
+    })){
+        hitbox({
             entityInteractions: []
         });
     }
@@ -8359,28 +8367,6 @@ const Canvas = State({
     width: 1920,
     height: 1080
 });
-const call = curry((key, args, actions)=>[
-        ...actions,
-        [
-            'c',
-            key,
-            args
-        ]
-    ]
-);
-const set = curry((key, value, actions)=>[
-        ...actions,
-        [
-            's',
-            key,
-            value
-        ]
-    ]
-);
-call('save');
-call('fillRect');
-call('restore');
-set('fillStyle');
 prerender.add(()=>{
     const { width , height  } = Canvas();
     clearRect(...zero(), width, height);
@@ -8419,7 +8405,7 @@ const resources = {
     USER_IMAGE: '/sprites/MainPlayerWalkDown.png'
 };
 new Map();
-const User = creator('User');
+const User = Component();
 $$initiate.once(()=>{
     addEntity([
         User({
@@ -8432,42 +8418,41 @@ $$initiate.once(()=>{
 const calculateSpeedForFrame = (speed)=>speed * timeDiffS()
 ;
 update1.add(()=>{
-    for (let { User: User1 , Position: Position1 , Size: Size1  } of query([
-        'User',
-        'Position',
-        'Size'
-    ])){
+    for (const { user , position , size  } of query({
+        user: User,
+        position: Position,
+        size: Size
+    })){
         if (isKeyDown('KeyW')) {
-            Position1(add1(Position1(), up(calculateSpeedForFrame(User1().speed))));
+            position(add1(position(), up(calculateSpeedForFrame(user().speed))));
         }
         if (isKeyDown('KeyS')) {
-            Position1(add1(Position1(), down(calculateSpeedForFrame(User1().speed))));
+            position(add1(position(), down(calculateSpeedForFrame(user().speed))));
         }
         if (isKeyDown('KeyA')) {
-            Position1(add1(Position1(), left(calculateSpeedForFrame(User1().speed))));
+            position(add1(position(), left(calculateSpeedForFrame(user().speed))));
         }
         if (isKeyDown('KeyD')) {
-            Position1(add1(Position1(), right(calculateSpeedForFrame(User1().speed))));
+            position(add1(position(), right(calculateSpeedForFrame(user().speed))));
         }
         const canvas = Canvas();
-        const [width, height] = Size1();
-        const [x74, y12] = Position1();
-        Position1(v1(Math.max(0, Math.min(x74, canvas.width - width)), Math.max(0, Math.min(y12, canvas.height - height))));
+        const [width, height] = size();
+        const [x74, y12] = position();
+        position(v1(Math.max(0, Math.min(x74, canvas.width - width)), Math.max(0, Math.min(y12, canvas.height - height))));
     }
 });
 render.add(()=>{
-    for (let { Position: Position2 , Size  } of query([
-        'Position',
-        'User',
-        'Size'
-    ])){
+    for (const { position  } of query({
+        user: User,
+        position: Position
+    })){
         save();
-        drawImage(resources.USER_IMAGE, ...Position2());
+        drawImage(resources.USER_IMAGE, ...position());
         restore();
     }
 });
-const Enemy = creator('Enemy');
-const EnemyManager = creator('EnemyManager');
+const Enemy = Component();
+const EnemyManager = Component();
 $$initiate.once(()=>{
     addEntity([
         EnemyManager({
@@ -8493,52 +8478,52 @@ const createEnemy = (posX)=>{
     ]);
 };
 const moveEnemies = ()=>{
-    for (const { Enemy: Enemy1 , Position: Position1 , Size: Size1 , Hitbox: Hitbox3  } of query([
-        'Enemy',
-        'Position',
-        'Size',
-        'Hitbox'
-    ])){
-        Position1(add1(Position1(), left(Enemy1().speed * timeDiffS())));
-        updateHitboxTransform(Hitbox3, Position1(), Size1());
+    for (const { enemy , position , size , hitbox  } of query({
+        enemy: Enemy,
+        position: Position,
+        size: Size,
+        hitbox: Hitbox
+    })){
+        position(add1(position(), left(enemy().speed * timeDiffS())));
+        updateHitboxTransform(hitbox, position(), size());
     }
 };
 const enemyRemover = ()=>{
-    for (const { Position: Position2 , DeleteQueueManager: DeleteQueueManager1  } of query([
-        'Position',
-        'DeleteQueueManager'
-    ])){
-        if (Position2().x < 100) {
-            DeleteQueueManager1({
+    for (const { position , deleteQueueManager  } of query({
+        position: Position,
+        deleteQueueManager: DeleteQueueManager
+    })){
+        if (position().x < 100) {
+            deleteQueueManager({
                 markedForDeletion: true
             });
         }
     }
 };
 const spawnEnemies = ()=>{
-    for (let { EnemyManager: EnemyManager1  } of query([
-        'EnemyManager'
-    ])){
-        const { lastSpawnTime  } = EnemyManager1();
+    for (const { enemyManager  } of query({
+        enemyManager: EnemyManager
+    })){
+        const { lastSpawnTime  } = enemyManager();
         if (timeMS() - lastSpawnTime < 1000) continue;
-        EnemyManager1({
+        enemyManager({
             lastSpawnTime: timeMS()
         });
         createEnemy(random(100, 900));
     }
 };
 const damageEnemy = (entityId, amount)=>{
-    for (let { Enemy: Enemy2 , DeleteQueueManager: DeleteQueueManager2  } of query([
-        'Enemy',
-        'DeleteQueueManager'
-    ], [
+    for (const { enemy , deleteQueueManager  } of query({
+        enemy: Enemy,
+        deleteQueueManager: DeleteQueueManager
+    }, [
         entityId
     ])){
-        Enemy2({
-            health: Math.max(0, Enemy2().health - amount)
+        enemy({
+            health: Math.max(0, enemy().health - amount)
         });
-        if (Enemy2().health === 0) {
-            DeleteQueueManager2({
+        if (enemy().health === 0) {
+            deleteQueueManager({
                 markedForDeletion: true
             });
         }
@@ -8546,37 +8531,35 @@ const damageEnemy = (entityId, amount)=>{
 };
 update1.add(spawnEnemies, moveEnemies, enemyRemover);
 render.add(()=>{
-    for (const { Enemy: Enemy3 , Position: Position3 , Size: Size2  } of query([
-        'Enemy',
-        'Position',
-        'Size'
-    ])){
-        const { health , originalHealth  } = Enemy3();
+    for (const { enemy , position , size  } of query({
+        enemy: Enemy,
+        position: Position,
+        size: Size
+    })){
+        const { health , originalHealth  } = enemy();
         const healthPercentage = health / originalHealth;
-        const pos = Position3();
-        const size = Size2();
         save();
         beginPath();
         fillStyle('red');
-        rect(...add1(pos, up(50)), ...v1(size.x, 20));
+        rect(...add1(position(), up(50)), ...v1(size().x, 20));
         fill();
         restore();
         save();
         beginPath();
         fillStyle('green');
-        rect(...add1(pos, up(50)), ...v1(size.x * healthPercentage, 20));
+        rect(...add1(position(), up(50)), ...v1(size().x * healthPercentage, 20));
         fill();
         restore();
         save();
         beginPath();
         fillStyle(false ? 'blue' : 'green');
-        rect(...pos, ...size);
+        rect(...position(), ...size());
         fill();
         restore();
     }
 });
-const UserBullet = creator('UserBullet');
-const UserBulletManager = creator('UserBulletManager');
+const UserBullet = Component();
+const UserBulletManager = Component();
 $$initiate.once(()=>{
     addEntity([
         UserBulletManager({
@@ -8602,66 +8585,66 @@ const createBullet = (pos)=>{
 const calculateBulletSpeedForFrame = (speed)=>speed * timeDiffS()
 ;
 const spawnBullet = ()=>{
-    for (let { UserBulletManager: UserBulletManager1  } of query([
-        'UserBulletManager'
-    ])){
+    for (const { userBulletManager  } of query({
+        userBulletManager: UserBulletManager
+    })){
         if (!isKeyDown('Space')) return;
-        if (timeMS() - UserBulletManager1().lastBulletFiredTime < 100) return;
-        UserBulletManager1({
+        if (timeMS() - userBulletManager().lastBulletFiredTime < 100) return;
+        userBulletManager({
             lastBulletFiredTime: timeMS()
         });
-        for (let { Position: Position1  } of query([
-            'User',
-            'Position'
-        ])){
-            createBullet(Position1());
+        for (const { position  } of query({
+            user: User,
+            position: Position
+        })){
+            createBullet(position());
         }
     }
 };
 const moveBullet = ()=>{
-    for (let { UserBullet: UserBullet1 , Position: Position2 , Size: Size1 , Hitbox: Hitbox4  } of query([
-        'UserBullet',
-        'Position',
-        'Size',
-        'Hitbox'
-    ])){
-        const { speed  } = UserBullet1();
-        Position2(add1(Position2(), right(calculateBulletSpeedForFrame(speed))));
-        updateHitboxTransform(Hitbox4, Position2(), Size1());
+    for (const { userBullet , position , size , hitbox  } of query({
+        userBullet: UserBullet,
+        position: Position,
+        size: Size,
+        hitbox: Hitbox
+    })){
+        const { speed  } = userBullet();
+        position(add1(position(), right(calculateBulletSpeedForFrame(speed))));
+        updateHitboxTransform(hitbox, position(), size());
     }
 };
 const removeBullet = ()=>{
-    for (let { Position: Position3 , DeleteQueueManager: DeleteQueueManager1  } of query([
-        'UserBullet',
-        'Position',
-        'DeleteQueueManager'
-    ])){
-        if (Position3().x < 1920) return;
-        DeleteQueueManager1({
+    for (const { position , deleteQueueManager  } of query({
+        userBullet: Size,
+        position: Position,
+        deleteQueueManager: DeleteQueueManager
+    })){
+        if (position().x < 1920) return;
+        deleteQueueManager({
             markedForDeletion: true
         });
     }
 };
 const bulletEnemyManager = ()=>{
     const enemies = [
-        ...query([
-            'Enemy',
-            'EntityId'
-        ])
+        ...query({
+            enemy: Enemy,
+            entityId: EntityId
+        })
     ];
-    for (const { Hitbox: Hitbox5 , DeleteQueueManager: DeleteQueueManager2  } of query([
-        'UserBullet',
-        'EntityId',
-        'Hitbox',
-        'DeleteQueueManager'
-    ])){
-        const { entityInteractions  } = Hitbox5();
-        const firstInteractedEnemeyId = entityInteractions.find((entityId)=>enemies.some(({ EntityId  })=>entityId === EntityId().id
+    for (const { hitbox , deleteQueueManager  } of query({
+        userBullet: UserBullet,
+        entityId: EntityId,
+        hitbox: Hitbox,
+        deleteQueueManager: DeleteQueueManager
+    })){
+        const { entityInteractions  } = hitbox();
+        const firstInteractedEnemeyId = entityInteractions.find((entityIdInteraction)=>enemies.some(({ entityId  })=>entityIdInteraction === entityId().id
             )
         );
         if (firstInteractedEnemeyId) {
             damageEnemy(firstInteractedEnemeyId, 20);
-            DeleteQueueManager2({
+            deleteQueueManager({
                 markedForDeletion: true
             });
         }
@@ -8669,14 +8652,14 @@ const bulletEnemyManager = ()=>{
 };
 update1.add(spawnBullet, moveBullet, bulletEnemyManager, removeBullet);
 render.add(()=>{
-    for (let { Position: Position4 , Size: Size2  } of query([
-        'UserBullet',
-        'Position',
-        'Size'
-    ])){
+    for (const { position , size  } of query({
+        userBullet: UserBullet,
+        position: Position,
+        size: Size
+    })){
         save();
         beginPath();
-        rect(...Position4(), ...Size2());
+        rect(...position(), ...size());
         fillStyle('black');
         fill();
         restore();
@@ -8691,19 +8674,19 @@ render.add(()=>{
         [
             'bullets',
             count([
-                'UserBullet'
+                UserBullet
             ])
         ],
         [
             'enemies',
             count([
-                'Enemy'
+                Enemy
             ])
         ],
         [
             'hitboxes',
             count([
-                'Hitbox'
+                Hitbox
             ])
         ], 
     ];
@@ -8720,10 +8703,10 @@ render.add(()=>{
 render.add([
     99999,
     ()=>{
-        for (let { Hitbox: Hitbox6  } of query([
-            'Hitbox'
-        ])){
-            const { x: x75 , x2 , y: y13 , y2  } = Hitbox6();
+        for (const { hitbox  } of query({
+            hitbox: Hitbox
+        })){
+            const { x: x75 , x2 , y: y13 , y2  } = hitbox();
             save();
             beginPath();
             moveTo(x75, y13);

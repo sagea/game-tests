@@ -1,18 +1,9 @@
 import { prerender } from './animate.ts'
 import { clearRect } from './draw.ts'
-import { curry } from 'ramda'
 import { zero } from './Vector.ts'
 import { State } from './State/State.ts'
 
 export const Canvas = State({ width: 1920, height: 1080 });
-
-export const call = curry((key, args, actions) => [...actions, ['c', key, args]])
-export const set = curry((key, value, actions) => [...actions, ['s', key, value]])
-
-export const save = call('save')
-export const fillRect = call('fillRect')
-export const restore = call('restore')
-export const fillStyle = set('fillStyle')
 
 export const createCanvas = () => {
   const canvas = document.createElement('canvas')

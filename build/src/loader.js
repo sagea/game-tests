@@ -317,7 +317,7 @@ function generateUUID() {
     return new Array(4).fill(0).map(()=>Math.floor(Math.random() * Number.MAX_SAFE_INTEGER).toString(16)
     ).join("-");
 }
-const CBTracker = (labelName)=>{
+const CBTracker = ()=>{
     const events = new Set();
     const once = (...callbacks)=>{
         callbacks.forEach((callback)=>events.add([
@@ -1791,61 +1791,61 @@ var _Set = function() {
     };
     return _Set1;
 }();
-function hasOrAdd(item, shouldAdd, set3) {
+function hasOrAdd(item, shouldAdd, set) {
     var type4 = typeof item;
     var prevSize, newSize;
     switch(type4){
         case 'string':
         case 'number':
             if (item === 0 && 1 / item === -Infinity) {
-                if (set3._items['-0']) {
+                if (set._items['-0']) {
                     return true;
                 } else {
                     if (shouldAdd) {
-                        set3._items['-0'] = true;
+                        set._items['-0'] = true;
                     }
                     return false;
                 }
             }
-            if (set3._nativeSet !== null) {
+            if (set._nativeSet !== null) {
                 if (shouldAdd) {
-                    prevSize = set3._nativeSet.size;
-                    set3._nativeSet.add(item);
-                    newSize = set3._nativeSet.size;
+                    prevSize = set._nativeSet.size;
+                    set._nativeSet.add(item);
+                    newSize = set._nativeSet.size;
                     return newSize === prevSize;
                 } else {
-                    return set3._nativeSet.has(item);
+                    return set._nativeSet.has(item);
                 }
             } else {
-                if (!(type4 in set3._items)) {
+                if (!(type4 in set._items)) {
                     if (shouldAdd) {
-                        set3._items[type4] = {};
-                        set3._items[type4][item] = true;
+                        set._items[type4] = {};
+                        set._items[type4][item] = true;
                     }
                     return false;
-                } else if (item in set3._items[type4]) {
+                } else if (item in set._items[type4]) {
                     return true;
                 } else {
                     if (shouldAdd) {
-                        set3._items[type4][item] = true;
+                        set._items[type4][item] = true;
                     }
                     return false;
                 }
             }
         case 'boolean':
-            if (type4 in set3._items) {
+            if (type4 in set._items) {
                 var bIdx = item ? 1 : 0;
-                if (set3._items[type4][bIdx]) {
+                if (set._items[type4][bIdx]) {
                     return true;
                 } else {
                     if (shouldAdd) {
-                        set3._items[type4][bIdx] = true;
+                        set._items[type4][bIdx] = true;
                     }
                     return false;
                 }
             } else {
                 if (shouldAdd) {
-                    set3._items[type4] = item ? [
+                    set._items[type4] = item ? [
                         false,
                         true
                     ] : [
@@ -1856,46 +1856,46 @@ function hasOrAdd(item, shouldAdd, set3) {
                 return false;
             }
         case 'function':
-            if (set3._nativeSet !== null) {
+            if (set._nativeSet !== null) {
                 if (shouldAdd) {
-                    prevSize = set3._nativeSet.size;
-                    set3._nativeSet.add(item);
-                    newSize = set3._nativeSet.size;
+                    prevSize = set._nativeSet.size;
+                    set._nativeSet.add(item);
+                    newSize = set._nativeSet.size;
                     return newSize === prevSize;
                 } else {
-                    return set3._nativeSet.has(item);
+                    return set._nativeSet.has(item);
                 }
             } else {
-                if (!(type4 in set3._items)) {
+                if (!(type4 in set._items)) {
                     if (shouldAdd) {
-                        set3._items[type4] = [
+                        set._items[type4] = [
                             item
                         ];
                     }
                     return false;
                 }
-                if (!_includes(item, set3._items[type4])) {
+                if (!_includes(item, set._items[type4])) {
                     if (shouldAdd) {
-                        set3._items[type4].push(item);
+                        set._items[type4].push(item);
                     }
                     return false;
                 }
                 return true;
             }
         case 'undefined':
-            if (set3._items[type4]) {
+            if (set._items[type4]) {
                 return true;
             } else {
                 if (shouldAdd) {
-                    set3._items[type4] = true;
+                    set._items[type4] = true;
                 }
                 return false;
             }
         case 'object':
             if (item === null) {
-                if (!set3._items['null']) {
+                if (!set._items['null']) {
                     if (shouldAdd) {
-                        set3._items['null'] = true;
+                        set._items['null'] = true;
                     }
                     return false;
                 }
@@ -1903,17 +1903,17 @@ function hasOrAdd(item, shouldAdd, set3) {
             }
         default:
             type4 = Object.prototype.toString.call(item);
-            if (!(type4 in set3._items)) {
+            if (!(type4 in set._items)) {
                 if (shouldAdd) {
-                    set3._items[type4] = [
+                    set._items[type4] = [
                         item
                     ];
                 }
                 return false;
             }
-            if (!_includes(item, set3._items[type4])) {
+            if (!_includes(item, set._items[type4])) {
                 if (shouldAdd) {
-                    set3._items[type4].push(item);
+                    set._items[type4].push(item);
                 }
                 return false;
             }
@@ -2510,14 +2510,14 @@ var _xuniqBy = _curry2(function _xuniqBy(f34, xf) {
     return new XUniqBy(f34, xf);
 });
 var uniqBy = _curry2(_dispatchable([], _xuniqBy, function(fn43, list) {
-    var set4 = new _Set();
+    var set = new _Set();
     var result = [];
     var idx = 0;
     var appliedItem, item;
     while(idx < list.length){
         item = list[idx];
         appliedItem = fn43(item);
-        if (set4.add(appliedItem)) {
+        if (set.add(appliedItem)) {
             result.push(item);
         }
         idx += 1;
@@ -4690,15 +4690,15 @@ drawHandlers.set(e.textBaseline, hs());
 drawHandlers.set(e.textRendering, hs());
 drawHandlers.set(e.wordSpacing, hs());
 new Map();
-CBTracker('$$initiate2');
-CBTracker('inputs2');
-CBTracker('preframe2');
-CBTracker('physics2');
-CBTracker('update2');
-CBTracker('removal2');
-const prerender = CBTracker('prerender');
-CBTracker('render');
-CBTracker('final');
+CBTracker();
+CBTracker();
+CBTracker();
+CBTracker();
+CBTracker();
+CBTracker();
+const prerender = CBTracker();
+CBTracker();
+CBTracker();
 State(0);
 State(0);
 State(0);
@@ -4727,28 +4727,6 @@ const Canvas = State({
     width: 1920,
     height: 1080
 });
-const call = curry((key, args, actions)=>[
-        ...actions,
-        [
-            'c',
-            key,
-            args
-        ]
-    ]
-);
-const set = curry((key, value, actions)=>[
-        ...actions,
-        [
-            's',
-            key,
-            value
-        ]
-    ]
-);
-call('save');
-call('fillRect');
-call('restore');
-set('fillStyle');
 const createCanvas = ()=>{
     const canvas = document.createElement('canvas');
     const { width , height  } = Canvas();

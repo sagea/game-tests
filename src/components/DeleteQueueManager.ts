@@ -1,21 +1,13 @@
 import { removal } from '../animate.ts';
-import { query, Component, removeEntity, creator, ComponentNameSymbol } from '../modules/ecs/mod.ts';
+import { query, Component, removeEntity, EntityId } from '../modules/ecs/mod.ts';
 
-type f = ReturnType<typeof DeleteQueueManager>[typeof ComponentNameSymbol];
-
-declare module '../modules/ecs/mod.ts' {
-  export interface ComponentList {
-    DeleteQueueManager: Component<'DeleteQueueManager', { markedForDeletion: boolean }>;
-  }
-}
-
-export const DeleteQueueManager = creator('DeleteQueueManager');
+export const DeleteQueueManager = Component<{ markedForDeletion: boolean }>();
 
 removal.add(() => {
-  for (let { DeleteQueueManager, EntityId } of query(['DeleteQueueManager', 'EntityId'])) {
-    const { markedForDeletion } = DeleteQueueManager();
+  for (const { deleteQueueManager, entityId } of query({ deleteQueueManager: DeleteQueueManager, entityId: EntityId})) {
+    const { markedForDeletion } = deleteQueueManager();
     if (markedForDeletion) {
-      removeEntity(EntityId().id);
+      removeEntity(entityId().id);
     }
   }
 });

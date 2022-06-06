@@ -1,39 +1,38 @@
-import { ComponentList, ComponentStateManager, ComponentNameSymbol, ComponentListStateManagers } from './components.ts';
-import { createEntityId } from './components/EntityId.component.ts';
+import { ComponentEntityManager, ComponentStateManager, AnyComponentMethod, ComponentInstance, cns, ComponentEditor } from './components.ts';
 import { Counter } from '../../utilities/counter.ts';
+import { EntityId } from './components/EntityId.component.ts';
 
 export type Entity = {
   id: number;
-  components: Partial<ComponentListStateManagers>;
+  components: Map<AnyComponentMethod, ComponentEditor<ComponentInstance<AnyComponentMethod>>>;
 }
 
 export const EntityList = () => {
   const entityIdCounter = Counter();
   const entities = new Map<number, Entity>();
-  const componentEntityMapping = new Map<string, number[]>();
+  const componentEntityMapping = new ComponentEntityManager();
 
-  const addEntity = <T extends ComponentList[keyof ComponentList]>(
+  const addEntity = <T extends ComponentInstance<AnyComponentMethod>>(
     components: T[],
   ) => {
     const id = entityIdCounter() as number;
     const entity: Entity = {
       id,
-      components: {},
+      components: new Map(),
     }
-    const defaultComponents = [createEntityId({ id })];
     entities.set(entity.id, entity);
-    for (const component of [...components, ...defaultComponents]) {
+    addComponentToEntity(id, EntityId({ id }));
+      for (const component of components) {
       addComponentToEntity(id, component);
     }
     return entity;
   }
-  const addComponentToEntity = <T extends ComponentList[keyof ComponentList]>(entityId: number, component: T) => {
-    const componentName = component[ComponentNameSymbol];
-    const componentMapping = componentEntityMapping.get(componentName) || [];
+  const addComponentToEntity = <T extends ComponentInstance<AnyComponentMethod>>(entityId: number, component: T) => {
+    const componentName = component[cns];
     const entity = entities.get(entityId);
     if (!entity) return;
-    entity.components[componentName] = ComponentStateManager(component);
-    componentEntityMapping.set(componentName, [...componentMapping, entityId]);
+    entity.components.set(componentName, ComponentStateManager(component));
+    componentEntityMapping.appendItem(componentName, entityId);
   }
 
   function removeEntity(id: number) {
@@ -41,19 +40,17 @@ export const EntityList = () => {
     if (!entity) return
     const { components } = entity;
     entities.delete(id);
-    for (const componentName of Object.keys(components)) {
-      const idmappings = (componentEntityMapping.get(componentName) || [])
-        .filter(i => i !== id);
-      componentEntityMapping.set(componentName, idmappings);
+    for (const [componentName] of components) {
+      componentEntityMapping.removeItem(componentName, id);
     }
   }
 
-  function count<T extends keyof ComponentListStateManagers>(
+  function count<T extends AnyComponentMethod>(
     componentFilter: T[],
   ): number {
     const componentMapping: number[][] = []
     for (const componentName of componentFilter) {
-      const component = componentEntityMapping.get(componentName) || [];
+      const component = componentEntityMapping.get(componentName);
       if (component.length === 0) {
         return 0
       }
@@ -62,18 +59,21 @@ export const EntityList = () => {
     const entityIds = intersectionBetweenOrderedIntegerLists(componentMapping);
     return entityIds.length;
   }
-  function* query<T extends keyof ComponentListStateManagers>(
-    componentFilter: T[],
+
+  function* query<T extends Record<string, AnyComponentMethod>>(
+    componentFilter: T,
     filteredUserIds?: number[],
   ): Generator<
-    { [id in T]: ComponentListStateManagers[id] },
+    {
+      [K in keyof T]: ComponentEditor<ComponentInstance<T[K]>>
+    },
     void,
     unknown> {
       let componentMapping: number[][] = []
       if (filteredUserIds) {
         componentMapping.push(filteredUserIds);
       }
-      for (const componentName of componentFilter) {
+      for (const [, componentName] of Object.entries(componentFilter)) {
         const component = componentEntityMapping.get(componentName) || [];
         if (!component || component.length === 0) {
           return
@@ -89,8 +89,8 @@ export const EntityList = () => {
           continue;
         }
         const components: any = {};
-        for (const componentName of componentFilter) {
-          components[componentName] = entity.components[componentName];
+        for (const [remappedName, componentName] of Object.entries(componentFilter)) {
+          components[remappedName] = entity.components.get(componentName);
         }
         yield components;
       }

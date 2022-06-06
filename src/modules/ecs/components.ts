@@ -1,26 +1,30 @@
 import { NormalizeUnion } from '../../utilities/types.ts';
 
-export const ComponentNameSymbol = Symbol('ECS_Component_Name');
+export const cns = Symbol('__Component_Symbol__');
 
-export type Component<Name extends string, T> = NormalizeUnion<{ [ComponentNameSymbol]: Name } & T>
-export type DataOnly<T> = Omit<T, typeof ComponentNameSymbol>;
-export interface ComponentList {
+export const Component = <T>() => {
+  const returnMethod = (data: T) => {
+    return {
+      [cns]: returnMethod,
+      ...data,
+    }
+  }
+  return returnMethod;
 }
 
-export type ComponentListStateManagers = {
-  [id in keyof ComponentList]: ComponentStateManagerGetSetMethod<ComponentList[id]>
-}
-
-type O<T> = Omit<T, typeof ComponentNameSymbol>;
-type PO<T> = Partial<O<T>>;
-
-export type ComponentStateManagerGetSetMethod<T> = (
+export type AnyComponentMethod = (...args: any[]) => Record<typeof cns | string, any>;
+export type ComponentInstance<T extends AnyComponentMethod> = ReturnType<T>;
+export type ComponentEditor<T> = (
   handler?: NormalizeUnion<PO<T>>
 ) => T;
+export type ComponentInstanceEditor<T extends AnyComponentMethod> = ComponentEditor<ComponentInstance<T>>;
 
-export const ComponentStateManager = <T extends ComponentList[keyof ComponentList]>(
+type O<T> = Omit<T, typeof cns>;
+type PO<T> = Partial<O<T>>;
+
+export const ComponentStateManager = <T>(
   initialState: T
-): ComponentStateManagerGetSetMethod<T> => {
+): ComponentEditor<T> => {
   let internalState: T = initialState;
   return (changes?) => {
     if (changes) {
@@ -33,7 +37,21 @@ export const ComponentStateManager = <T extends ComponentList[keyof ComponentLis
   };
 }
 
-export const creator = <T extends keyof ComponentList>(item: T) => (data: DataOnly<ComponentList[T]>): ComponentList[T] => ({
-  [ComponentNameSymbol]: item,
-  ...data,
-});
+export class ComponentEntityManager extends Map<AnyComponentMethod, number[]> {
+  get(component: AnyComponentMethod): number[] {
+    const list = super.get(component);
+    if (list) {
+      return list;
+    }
+    const newList: number[] = []
+    super.set(component, newList);
+    return newList;
+  }
+  appendItem(component: AnyComponentMethod, item: number) {
+    this.get(component).push(item);
+  }
+  removeItem(component: AnyComponentMethod, item: number) {
+    const list = this.get(component);
+    this.set(component, list.filter(i => i !== item));
+  }
+}
