@@ -4796,7 +4796,7 @@ const createComlinkSharedWorker = (path7, options)=>{
     });
 };
 const resources = {
-    USER_IMAGE: 'https://kybernetik.com.au/animancer/docs/manual/tools/modify-sprites/mage-sprite-big.png'
+    USER_IMAGE: '/sprites/MainPlayerWalkDown.png'
 };
 new Map();
 const loadApp = async ({ useWorker =false  })=>{

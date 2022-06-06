@@ -2,11 +2,12 @@ import { Canvas } from './canvas.ts';
 import { $$initiate, render, timeDiffS, update } from './animate.ts'
 import { isKeyDown } from './keys.ts'
 import { add, down, v, left, right, up, zero } from './Vector.ts'
-import { fill, fillStyle, restore, save, rect, beginPath, closePath, drawImage } from './draw.ts'
-import { query, Component, createComponent, addEntity } from './modules/ecs/index.ts';
+import { restore, save, drawImage } from './draw.ts'
+import { query, Component, addEntity, creator } from './modules/ecs/mod.ts';
+import { Position, Size } from './components/basic.ts'
 import {resources} from './resources.ts';
 
-declare module './modules/ecs' {
+declare module './modules/ecs/mod.ts' {
   export interface ComponentList {
     User: Component<'User', {
       speed: number
@@ -14,13 +15,15 @@ declare module './modules/ecs' {
   }
 }
 
+export const User = creator('User');
+
 $$initiate.once(() => {
   addEntity([
-    createComponent('User', {
+    User({
       speed: 400,
     }),
-    createComponent('Position', zero()),
-    createComponent('Size', v(50, 50)),
+    Position(zero()),
+    Size(v(50, 50)),
   ]);
 })
 

@@ -2,10 +2,9 @@ import { NormalizeUnion } from '../../utilities/types.ts';
 
 export const ComponentNameSymbol = Symbol('ECS_Component_Name');
 
-export type Component<Name extends string, T> = NormalizeUnion<{ readonly [ComponentNameSymbol]: Name } & T>
-
+export type Component<Name extends string, T> = NormalizeUnion<{ [ComponentNameSymbol]: Name } & T>
+export type DataOnly<T> = Omit<T, typeof ComponentNameSymbol>;
 export interface ComponentList {
-  EntityId: Component<'EntityId', { id: number }>;
 }
 
 export type ComponentListStateManagers = {
@@ -34,10 +33,7 @@ export const ComponentStateManager = <T extends ComponentList[keyof ComponentLis
   };
 }
 
-export const createComponent = <
-  TName extends keyof ComponentList,
-  T extends NormalizeUnion<O<ComponentList[TName]>>
->(name: TName, def: T): ComponentList[TName] => ({
-  [ComponentNameSymbol]: name,
-  ...def,
+export const creator = <T extends keyof ComponentList>(item: T) => (data: DataOnly<ComponentList[T]>): ComponentList[T] => ({
+  [ComponentNameSymbol]: item,
+  ...data,
 });

@@ -1,8 +1,3 @@
-
-
-
-
-
 import { transfer } from 'comlink';
 import { createCanvas } from './canvas.ts'
 import { createComlinkSharedWorker, createComlinkWorker } from './utilities/worker.ts';

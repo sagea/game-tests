@@ -4,9 +4,11 @@ import { isKeyDown } from './keys.ts'
 import { add, v, right, Vector } from './Vector.ts'
 import { damageEnemy } from './enemy.ts'
 import { fill, fillStyle, restore, save, rect, beginPath } from './draw.ts'
+import { DeleteQueueManager } from './components/DeleteQueueManager.ts';
+import { Position, Size } from './components/basic.ts';
 
-import { addEntity, Component, createComponent, query } from './modules/ecs/index.ts';
-declare module './modules/ecs' {
+import { addEntity, Component, query, creator } from './modules/ecs/mod.ts';
+declare module './modules/ecs/mod.ts' {
   export interface ComponentList {
     UserBullet: Component<'UserBullet', {
       speed: number;
@@ -18,9 +20,12 @@ declare module './modules/ecs' {
   }
 }
 
+const UserBullet = creator('UserBullet');
+const UserBulletManager = creator('UserBulletManager');
+
 $$initiate.once(() => {
   addEntity([
-    createComponent('UserBulletManager', {
+    UserBulletManager({
       lastBulletFiredTime: 0,
     }),
   ])
@@ -29,13 +34,13 @@ $$initiate.once(() => {
 const createBullet = (pos: Vector) => {
   const size = v(10, 10);
   addEntity([
-    createComponent('UserBullet', {
+    UserBullet({
       speed: 700,
       status: 'ACTIVE',
     }),
-    createComponent('Position', pos),
-    createComponent('Size', size),
-    createComponent('DeleteQueueManager', { markedForDeletion: false }),
+    Position(pos),
+    Size(size),
+    DeleteQueueManager({ markedForDeletion: false }),
     createHitBoxComponent('UserBullet', pos, size),
   ]);
   

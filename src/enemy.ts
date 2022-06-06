@@ -3,8 +3,10 @@ import { beginPath, fill, fillStyle, rect, restore, save } from './draw.ts'
 import { createHitBoxComponent, updateHitboxTransform } from './hitbox.ts'
 import { random } from './utilities/generic.ts'
 import { add, v, left, up } from './Vector.ts'
-import { addEntity, Component, createComponent, query } from './modules/ecs/index.ts';
-declare module './modules/ecs' {
+import { addEntity, Component, query, creator } from './modules/ecs/mod.ts';
+import { DeleteQueueManager } from './components/DeleteQueueManager.ts';
+import { Position, Size } from './components/basic.ts';
+declare module './modules/ecs/mod.ts' {
   export interface ComponentList {
     Enemy: Component<'Enemy', {
       speed: number;
@@ -17,9 +19,12 @@ declare module './modules/ecs' {
   }
 }
 
+const Enemy = creator('Enemy');
+const EnemyManager = creator('EnemyManager');
+
 $$initiate.once(() => {
   addEntity([
-    createComponent('EnemyManager', {
+    EnemyManager ({
       lastSpawnTime: 0,
     }),
   ])
@@ -29,14 +34,14 @@ export const createEnemy = (posX: number) => {
   const startingPosition = v(1800, posX);
   const startingSize = v(100, 50);
   addEntity([
-    createComponent('Enemy', {
+    Enemy({
       speed: 350,
       health: 100,
       originalHealth: 100,
     }),
-    createComponent('Position', startingPosition),
-    createComponent('Size', startingSize),
-    createComponent('DeleteQueueManager', { markedForDeletion: false }),
+    Position(startingPosition),
+    Size(startingSize),
+    DeleteQueueManager({ markedForDeletion: false }),
     createHitBoxComponent('Enemy', startingPosition, startingSize),
   ])
 }

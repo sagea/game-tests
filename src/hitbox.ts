@@ -1,9 +1,9 @@
 import { physics, removal } from './animate.ts'
-import { Component, createComponent, query } from './modules/ecs/index.ts'
+import { Component, query, creator } from './modules/ecs/mod.ts'
 import { Vector } from './Vector.ts'
 import { ComponentListStateManagers } from './modules/ecs/components.ts'
 
-declare module './modules/ecs' {
+declare module './modules/ecs/mod.ts' {
   export interface ComponentList {
     Hitbox: Component<'Hitbox', {
       label: string;
@@ -18,12 +18,14 @@ declare module './modules/ecs' {
   }
 }
 
+export const Hitbox = creator('Hitbox');
+
 export const createHitBoxComponent = (
   label: string,
   [x, y]: Vector,
   [width, height]: Vector,
 ) => {
-  return createComponent('Hitbox', {
+  return Hitbox({
     label,
     x, y,
     x2: x + width,

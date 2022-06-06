@@ -1,5 +1,5 @@
 export const resources = {
-  USER_IMAGE: 'https://kybernetik.com.au/animancer/docs/manual/tools/modify-sprites/mage-sprite-big.png',
+  USER_IMAGE: '/sprites/MainPlayerWalkDown.png',
 } as const;
 
 type ResourceNames = keyof typeof resources;

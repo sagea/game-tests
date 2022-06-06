@@ -1,4 +1,5 @@
-import { ComponentList, ComponentStateManager, ComponentNameSymbol, ComponentListStateManagers, createComponent } from './components.ts';
+import { ComponentList, ComponentStateManager, ComponentNameSymbol, ComponentListStateManagers } from './components.ts';
+import { createEntityId } from './components/EntityId.component.ts';
 import { Counter } from '../../utilities/counter.ts';
 
 export type Entity = {
@@ -19,7 +20,7 @@ export const EntityList = () => {
       id,
       components: {},
     }
-    const defaultComponents = [createComponent('EntityId', { id })];
+    const defaultComponents = [createEntityId({ id })];
     entities.set(entity.id, entity);
     for (const component of [...components, ...defaultComponents]) {
       addComponentToEntity(id, component);

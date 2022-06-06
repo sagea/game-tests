@@ -8095,9 +8095,14 @@ const ComponentStateManager = (initialState)=>{
         return internalState;
     };
 };
-const createComponent = (name, def)=>({
-        [ComponentNameSymbol]: name,
-        ...def
+const creator = (item)=>(data)=>({
+            [ComponentNameSymbol]: item,
+            ...data
+        })
+;
+const createEntityId = (data)=>({
+        [ComponentNameSymbol]: 'EntityId',
+        ...data
     })
 ;
 const Counter = ()=>{
@@ -8116,7 +8121,7 @@ const EntityList = ()=>{
             components: {}
         };
         const defaultComponents = [
-            createComponent('EntityId', {
+            createEntityId({
                 id: id5
             })
         ];
@@ -8234,19 +8239,23 @@ const intersectionBetweenOrderedIntegerLists = (intLists)=>{
     }
     return last3;
 };
+const DeleteQueueManager = creator('DeleteQueueManager');
 removal.add(()=>{
-    for (let { DeleteQueueManager , EntityId  } of query([
+    for (let { DeleteQueueManager: DeleteQueueManager1 , EntityId  } of query([
         'DeleteQueueManager',
         'EntityId'
     ])){
-        const { markedForDeletion  } = DeleteQueueManager();
+        const { markedForDeletion  } = DeleteQueueManager1();
         if (markedForDeletion) {
             removeEntity(EntityId().id);
         }
     }
 });
+const Position = creator('Position');
+const Size = creator('Size');
+const Hitbox = creator('Hitbox');
 const createHitBoxComponent = (label, [x71, y9], [width, height])=>{
-    return createComponent('Hitbox', {
+    return Hitbox({
         label,
         x: x71,
         y: y9,
@@ -8257,8 +8266,8 @@ const createHitBoxComponent = (label, [x71, y9], [width, height])=>{
         entityInteractions: []
     });
 };
-const updateHitboxTransform = (Hitbox, [x72, y10], [width, height])=>{
-    Hitbox({
+const updateHitboxTransform = (Hitbox1, [x72, y10], [width, height])=>{
+    Hitbox1({
         x: x72,
         y: y10,
         x2: x72 + width,
@@ -8310,10 +8319,10 @@ const checkHitboxes = ()=>{
     }
 };
 const clearHitboxInteractions = ()=>{
-    for (let { Hitbox  } of query([
+    for (let { Hitbox: Hitbox2  } of query([
         'Hitbox'
     ])){
-        Hitbox({
+        Hitbox2({
             entityInteractions: []
         });
     }
@@ -8407,58 +8416,61 @@ windowBlurListener.onValue(()=>{
 const isKeyDown = (keyString)=>Boolean(frameSnapshotKeys()[keyString])
 ;
 const resources = {
-    USER_IMAGE: 'https://kybernetik.com.au/animancer/docs/manual/tools/modify-sprites/mage-sprite-big.png'
+    USER_IMAGE: '/sprites/MainPlayerWalkDown.png'
 };
 new Map();
+const User = creator('User');
 $$initiate.once(()=>{
     addEntity([
-        createComponent('User', {
+        User({
             speed: 400
         }),
-        createComponent('Position', zero()),
-        createComponent('Size', v1(50, 50)), 
+        Position(zero()),
+        Size(v1(50, 50)), 
     ]);
 });
 const calculateSpeedForFrame = (speed)=>speed * timeDiffS()
 ;
 update1.add(()=>{
-    for (let { User , Position , Size  } of query([
+    for (let { User: User1 , Position: Position1 , Size: Size1  } of query([
         'User',
         'Position',
         'Size'
     ])){
         if (isKeyDown('KeyW')) {
-            Position(add1(Position(), up(calculateSpeedForFrame(User().speed))));
+            Position1(add1(Position1(), up(calculateSpeedForFrame(User1().speed))));
         }
         if (isKeyDown('KeyS')) {
-            Position(add1(Position(), down(calculateSpeedForFrame(User().speed))));
+            Position1(add1(Position1(), down(calculateSpeedForFrame(User1().speed))));
         }
         if (isKeyDown('KeyA')) {
-            Position(add1(Position(), left(calculateSpeedForFrame(User().speed))));
+            Position1(add1(Position1(), left(calculateSpeedForFrame(User1().speed))));
         }
         if (isKeyDown('KeyD')) {
-            Position(add1(Position(), right(calculateSpeedForFrame(User().speed))));
+            Position1(add1(Position1(), right(calculateSpeedForFrame(User1().speed))));
         }
         const canvas = Canvas();
-        const [width, height] = Size();
-        const [x74, y12] = Position();
-        Position(v1(Math.max(0, Math.min(x74, canvas.width - width)), Math.max(0, Math.min(y12, canvas.height - height))));
+        const [width, height] = Size1();
+        const [x74, y12] = Position1();
+        Position1(v1(Math.max(0, Math.min(x74, canvas.width - width)), Math.max(0, Math.min(y12, canvas.height - height))));
     }
 });
 render.add(()=>{
-    for (let { Position , Size  } of query([
+    for (let { Position: Position2 , Size  } of query([
         'Position',
         'User',
         'Size'
     ])){
         save();
-        drawImage(resources.USER_IMAGE, ...Position());
+        drawImage(resources.USER_IMAGE, ...Position2());
         restore();
     }
 });
+const Enemy = creator('Enemy');
+const EnemyManager = creator('EnemyManager');
 $$initiate.once(()=>{
     addEntity([
-        createComponent('EnemyManager', {
+        EnemyManager({
             lastSpawnTime: 0
         }), 
     ]);
@@ -8467,66 +8479,66 @@ const createEnemy = (posX)=>{
     const startingPosition = v1(1800, posX);
     const startingSize = v1(100, 50);
     addEntity([
-        createComponent('Enemy', {
+        Enemy({
             speed: 350,
             health: 100,
             originalHealth: 100
         }),
-        createComponent('Position', startingPosition),
-        createComponent('Size', startingSize),
-        createComponent('DeleteQueueManager', {
+        Position(startingPosition),
+        Size(startingSize),
+        DeleteQueueManager({
             markedForDeletion: false
         }),
         createHitBoxComponent('Enemy', startingPosition, startingSize), 
     ]);
 };
 const moveEnemies = ()=>{
-    for (const { Enemy , Position , Size , Hitbox  } of query([
+    for (const { Enemy: Enemy1 , Position: Position1 , Size: Size1 , Hitbox: Hitbox3  } of query([
         'Enemy',
         'Position',
         'Size',
         'Hitbox'
     ])){
-        Position(add1(Position(), left(Enemy().speed * timeDiffS())));
-        updateHitboxTransform(Hitbox, Position(), Size());
+        Position1(add1(Position1(), left(Enemy1().speed * timeDiffS())));
+        updateHitboxTransform(Hitbox3, Position1(), Size1());
     }
 };
 const enemyRemover = ()=>{
-    for (const { Position , DeleteQueueManager  } of query([
+    for (const { Position: Position2 , DeleteQueueManager: DeleteQueueManager1  } of query([
         'Position',
         'DeleteQueueManager'
     ])){
-        if (Position().x < 100) {
-            DeleteQueueManager({
+        if (Position2().x < 100) {
+            DeleteQueueManager1({
                 markedForDeletion: true
             });
         }
     }
 };
 const spawnEnemies = ()=>{
-    for (let { EnemyManager  } of query([
+    for (let { EnemyManager: EnemyManager1  } of query([
         'EnemyManager'
     ])){
-        const { lastSpawnTime  } = EnemyManager();
+        const { lastSpawnTime  } = EnemyManager1();
         if (timeMS() - lastSpawnTime < 1000) continue;
-        EnemyManager({
+        EnemyManager1({
             lastSpawnTime: timeMS()
         });
         createEnemy(random(100, 900));
     }
 };
 const damageEnemy = (entityId, amount)=>{
-    for (let { Enemy , DeleteQueueManager  } of query([
+    for (let { Enemy: Enemy2 , DeleteQueueManager: DeleteQueueManager2  } of query([
         'Enemy',
         'DeleteQueueManager'
     ], [
         entityId
     ])){
-        Enemy({
-            health: Math.max(0, Enemy().health - amount)
+        Enemy2({
+            health: Math.max(0, Enemy2().health - amount)
         });
-        if (Enemy().health === 0) {
-            DeleteQueueManager({
+        if (Enemy2().health === 0) {
+            DeleteQueueManager2({
                 markedForDeletion: true
             });
         }
@@ -8534,15 +8546,15 @@ const damageEnemy = (entityId, amount)=>{
 };
 update1.add(spawnEnemies, moveEnemies, enemyRemover);
 render.add(()=>{
-    for (const { Enemy , Position , Size  } of query([
+    for (const { Enemy: Enemy3 , Position: Position3 , Size: Size2  } of query([
         'Enemy',
         'Position',
         'Size'
     ])){
-        const { health , originalHealth  } = Enemy();
+        const { health , originalHealth  } = Enemy3();
         const healthPercentage = health / originalHealth;
-        const pos = Position();
-        const size = Size();
+        const pos = Position3();
+        const size = Size2();
         save();
         beginPath();
         fillStyle('red');
@@ -8563,9 +8575,11 @@ render.add(()=>{
         restore();
     }
 });
+const UserBullet = creator('UserBullet');
+const UserBulletManager = creator('UserBulletManager');
 $$initiate.once(()=>{
     addEntity([
-        createComponent('UserBulletManager', {
+        UserBulletManager({
             lastBulletFiredTime: 0
         }), 
     ]);
@@ -8573,13 +8587,13 @@ $$initiate.once(()=>{
 const createBullet = (pos)=>{
     const size = v1(10, 10);
     addEntity([
-        createComponent('UserBullet', {
+        UserBullet({
             speed: 700,
             status: 'ACTIVE'
         }),
-        createComponent('Position', pos),
-        createComponent('Size', size),
-        createComponent('DeleteQueueManager', {
+        Position(pos),
+        Size(size),
+        DeleteQueueManager({
             markedForDeletion: false
         }),
         createHitBoxComponent('UserBullet', pos, size), 
@@ -8588,42 +8602,42 @@ const createBullet = (pos)=>{
 const calculateBulletSpeedForFrame = (speed)=>speed * timeDiffS()
 ;
 const spawnBullet = ()=>{
-    for (let { UserBulletManager  } of query([
+    for (let { UserBulletManager: UserBulletManager1  } of query([
         'UserBulletManager'
     ])){
         if (!isKeyDown('Space')) return;
-        if (timeMS() - UserBulletManager().lastBulletFiredTime < 100) return;
-        UserBulletManager({
+        if (timeMS() - UserBulletManager1().lastBulletFiredTime < 100) return;
+        UserBulletManager1({
             lastBulletFiredTime: timeMS()
         });
-        for (let { Position  } of query([
+        for (let { Position: Position1  } of query([
             'User',
             'Position'
         ])){
-            createBullet(Position());
+            createBullet(Position1());
         }
     }
 };
 const moveBullet = ()=>{
-    for (let { UserBullet , Position , Size , Hitbox  } of query([
+    for (let { UserBullet: UserBullet1 , Position: Position2 , Size: Size1 , Hitbox: Hitbox4  } of query([
         'UserBullet',
         'Position',
         'Size',
         'Hitbox'
     ])){
-        const { speed  } = UserBullet();
-        Position(add1(Position(), right(calculateBulletSpeedForFrame(speed))));
-        updateHitboxTransform(Hitbox, Position(), Size());
+        const { speed  } = UserBullet1();
+        Position2(add1(Position2(), right(calculateBulletSpeedForFrame(speed))));
+        updateHitboxTransform(Hitbox4, Position2(), Size1());
     }
 };
 const removeBullet = ()=>{
-    for (let { Position , DeleteQueueManager  } of query([
+    for (let { Position: Position3 , DeleteQueueManager: DeleteQueueManager1  } of query([
         'UserBullet',
         'Position',
         'DeleteQueueManager'
     ])){
-        if (Position().x < 1920) return;
-        DeleteQueueManager({
+        if (Position3().x < 1920) return;
+        DeleteQueueManager1({
             markedForDeletion: true
         });
     }
@@ -8635,19 +8649,19 @@ const bulletEnemyManager = ()=>{
             'EntityId'
         ])
     ];
-    for (const { Hitbox , DeleteQueueManager  } of query([
+    for (const { Hitbox: Hitbox5 , DeleteQueueManager: DeleteQueueManager2  } of query([
         'UserBullet',
         'EntityId',
         'Hitbox',
         'DeleteQueueManager'
     ])){
-        const { entityInteractions  } = Hitbox();
+        const { entityInteractions  } = Hitbox5();
         const firstInteractedEnemeyId = entityInteractions.find((entityId)=>enemies.some(({ EntityId  })=>entityId === EntityId().id
             )
         );
         if (firstInteractedEnemeyId) {
             damageEnemy(firstInteractedEnemeyId, 20);
-            DeleteQueueManager({
+            DeleteQueueManager2({
                 markedForDeletion: true
             });
         }
@@ -8655,14 +8669,14 @@ const bulletEnemyManager = ()=>{
 };
 update1.add(spawnBullet, moveBullet, bulletEnemyManager, removeBullet);
 render.add(()=>{
-    for (let { Position , Size  } of query([
+    for (let { Position: Position4 , Size: Size2  } of query([
         'UserBullet',
         'Position',
         'Size'
     ])){
         save();
         beginPath();
-        rect(...Position(), ...Size());
+        rect(...Position4(), ...Size2());
         fillStyle('black');
         fill();
         restore();
@@ -8706,10 +8720,10 @@ render.add(()=>{
 render.add([
     99999,
     ()=>{
-        for (let { Hitbox  } of query([
+        for (let { Hitbox: Hitbox6  } of query([
             'Hitbox'
         ])){
-            const { x: x75 , x2 , y: y13 , y2  } = Hitbox();
+            const { x: x75 , x2 , y: y13 , y2  } = Hitbox6();
             save();
             beginPath();
             moveTo(x75, y13);

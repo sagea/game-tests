@@ -1,9 +1,13 @@
-import * as ecs from '../modules/ecs/index.ts';
+import { Component, creator } from '../modules/ecs/mod.ts';
 import { Vector } from '../Vector.ts';
 
-declare module '../modules/ecs' {
+declare module '../modules/ecs/mod.ts' {
   export interface ComponentList {
-    Position: ecs.Component<'Position', Vector>;
-    Size: ecs.Component<'Size', Vector>;
+    Position: Component<'Position', Vector>;
+    Size: Component<'Size', Vector>;
   }
 }
+
+
+export const Position = creator('Position');
+export const Size = creator('Size');
