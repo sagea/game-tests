@@ -1,4 +1,4 @@
-import { wrap } from 'comlink';
+import { wrap } from './comlink-wrapper.ts';
 
 export const createComlinkWorker = (path, options) => {
   const worker = new Worker(path, options);

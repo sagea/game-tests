@@ -317,6 +317,20 @@ function generateUUID() {
     return new Array(4).fill(0).map(()=>Math.floor(Math.random() * Number.MAX_SAFE_INTEGER).toString(16)
     ).join("-");
 }
+const exposedMethods = new Map();
+const expose1 = (a, b)=>{
+    const event = new Event('message', {});
+    event.data = {
+        id: Math.random(),
+        type: 'RELEASE'
+    };
+    self.dispatchEvent(event);
+    for (const [name, method] of Object.entries(a)){
+        exposedMethods.set(name, method);
+    }
+    const items = Object.fromEntries(exposedMethods);
+    expose(items, b);
+};
 function _isPlaceholder(a) {
     return a != null && typeof a === 'object' && a['@@functional/placeholder'] === true;
 }
@@ -3819,5 +3833,5 @@ const comlinkObj = {
 self.onconnect = (event)=>{
     console.log('connected');
     const port = event.ports[0];
-    expose(comlinkObj, port);
+    expose1(comlinkObj, port);
 };

@@ -1,6 +1,6 @@
 import { $$initiate, render, timeDiffS, timeMS, update } from './animate.ts'
 import { createHitBoxComponent, updateHitboxTransform, Hitbox } from './hitbox.ts'
-import { isKeyDown } from './keys.ts'
+import { keyDown, KeyCodes } from './modules/Keyboard/mod.ts'
 import { add, v, right, Vector } from './Vector.ts'
 import { damageEnemy } from './enemy.ts'
 import { fill, fillStyle, restore, save, rect, beginPath } from './draw.ts'
@@ -47,7 +47,7 @@ const calculateBulletSpeedForFrame = (speed: number) => speed * timeDiffS()
 
 const spawnBullet = () => {
   for (const { userBulletManager } of query({ userBulletManager: UserBulletManager })) {
-    if (!isKeyDown('Space')) return;
+    if (!keyDown(KeyCodes.Space)) return;
     if ((timeMS() - userBulletManager().lastBulletFiredTime) < 100) return;
     userBulletManager({ lastBulletFiredTime: timeMS() });
     for (const { position } of query({ user: User, position: Position })) {

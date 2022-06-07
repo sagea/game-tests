@@ -1,5 +1,5 @@
 import { CBTracker } from './CBTracker.ts'
-import { State } from './State/State.ts';
+import { State } from './modules/State/mod.ts';
 import { renderContext } from './draw.ts';
 import { isFunction } from './utilities/generic.ts';
 
@@ -22,9 +22,9 @@ export const timeDiffMS = State(0);
 export const timeS = State(0);
 export const timeDiffS = State(0);
 export const fps = State(0);
-const calculateFpsFromDiff = (timeDiff) => Math.round(1 / timeDiff);
+const calculateFpsFromDiff = (timeDiff: number) => Math.round(1 / timeDiff);
 
-const attachTimes = (animateTimeMs) => {
+const attachTimes = (animateTimeMs: number) => {
   const lastTimeMs = timeMS();
   const diffTimeMs = animateTimeMs - lastTimeMs;
   timeMS(animateTimeMs);
@@ -34,14 +34,14 @@ const attachTimes = (animateTimeMs) => {
   fps(calculateFpsFromDiff(timeDiffS()))
 }
 
-const frame = (method) => {
+const frame = (method: (t: number) => any) => {
   // return setTimeout(method, 200);
   return requestAnimationFrame(method)
 }
 export const sentTracker = new WeakSet();
 
 export function activate(canvasWorker) {
-  async function animate(t) {
+  async function animate(t: number) {
     attachTimes(t)
     const stateMethods = [...$$initiate, ...inputs, ...preframe, ...physics, ...update]
     const endMethods = [...removal, ...final];

@@ -1,4 +1,4 @@
-import { expose } from 'comlink';
+import { expose } from './modules/Workers/mod.ts';
 import { executeOnCanvas } from './draw.ts'
 import { loadImage, addResource } from './resources.ts';
 

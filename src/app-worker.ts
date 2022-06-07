@@ -1,5 +1,6 @@
-import { expose, wrap } from 'comlink';
+import { expose, wrap } from './modules/Workers/mod.ts';
 import * as events from './utilities/events.ts';
+import { attachListeners } from './modules/Keyboard/mod.ts'
 import './components/DeleteQueueManager.ts';
 import './components/basic.ts';
 import './hitbox.ts';
@@ -19,12 +20,16 @@ export const attachCanvasWorker = (transferredCanvasWorker) => {
 }
 
 export const fireEvent = (key, data) => {
+  console.log('fireEvent')
   events[key].push(data);
 }
 
 export const run = async () => {
-  if (!canvasWorker) throw new Error('canvasWorker has not been setup yet');
-  activate(canvasWorker);
+  console.log('run')
+  if (!canvasWorker) {
+    throw new Error('canvasWorker has not been setup yet')
+  };
+  await activate(canvasWorker);
 }
 
 const methods = {
@@ -33,5 +38,6 @@ const methods = {
   run,
 }
 
-expose(methods);
+
+expose({ ...methods, ...attachListeners() });
 export default methods;

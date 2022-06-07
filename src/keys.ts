@@ -1,37 +1,43 @@
-import { inputs } from './animate.ts'
-import { State } from './State/State.ts'
-import { windowKeyDownListener, windowKeyUpListener, windowBlurListener } from './utilities/events.ts';
+import { inputs, final } from './animate.ts'
+// import { State } from './modules/State/mod.ts'
+// import { windowKeyDownListener, windowKeyUpListener, windowBlurListener } from './utilities/events.ts';
+import { applySnapshot } from './modules/Keyboard/mod.ts'
 
-const trackedKeys = State<Record<string, boolean>>({})
-const frameSnapshotKeys = State<Record<string, boolean>>({});
-const removeAllDownKeys = () => {
-  trackedKeys({});
-}
-const setKeyDown = (code: string) => {
-  trackedKeys(keys => ({ ...keys, [code]: true }));
-}
+// const trackedKeys = State<Record<string, boolean>>({});
+// const trackedJustPressed = State<Record<string, boolean>>({});
+// const frameSnapshotKeys = State<Record<string, boolean>>({});
 
-const setKeyUp = (code: string) => {
-  trackedKeys(({ [code]: _, ...rest }) => (rest));
-}
+// const removeAllDownKeys = () => {
+//   trackedKeys({});
+// }
+// const setKeyDown = (code: string) => {
+//   trackedJustPressed(keys => ({ ...keys, [code]: true }));
+//   trackedKeys(keys => ({ ...keys, [code]: true }));
+// }
 
+// const setKeyUp = (code: string) => {
+//   trackedKeys(({ [code]: _, ...rest }) => (rest));
+// }
 inputs.add(() => {
-  frameSnapshotKeys(trackedKeys())
+  applySnapshot();
 })
+// final.add(() => {
+//   trackedJustPressed({});
+// })
+// windowKeyDownListener
+//   .onValue(({ code }: { code: string }) => {
+//     setKeyDown(code)
+//   })
 
-windowKeyDownListener
-  .onValue(({ code }: { code: string }) => {
-    setKeyDown(code)
-  })
+// windowKeyUpListener
+//   .onValue(({ code }: { code: string }) => {
+//     setKeyUp(code)
+//   })
 
-windowKeyUpListener
-  .onValue(({ code }: { code: string }) => {
-    setKeyUp(code)
-  })
+// windowBlurListener
+//   .onValue(() => {
+//     removeAllDownKeys();
+//   });
 
-windowBlurListener
-  .onValue(() => {
-    removeAllDownKeys();
-  });
-
-export const isKeyDown = (keyString: string) => Boolean(frameSnapshotKeys()[keyString])
+// export const isKeyDown = (keyString: string): boolean => Boolean(frameSnapshotKeys()[keyString])
+// export const justPressed = (keyString: string): boolean => Boolean(trackedJustPressed()[keyString]);

@@ -1,7 +1,7 @@
 import { prerender } from './animate.ts'
 import { clearRect } from './draw.ts'
 import { zero } from './Vector.ts'
-import { State } from './State/State.ts'
+import { State } from './modules/State/mod.ts'
 
 export const Canvas = State({ width: 1920, height: 1080 });
 
