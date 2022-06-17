@@ -1,4 +1,4 @@
-import { $$initiate, render, timeDiffS, timeMS, update } from './animate.ts'
+import { timeDiffS, timeMS } from './modules/loop/mod.ts'
 import { createHitBoxComponent, updateHitboxTransform, Hitbox } from './hitbox.ts'
 import { keyDown, KeyCodes } from './modules/Keyboard/mod.ts'
 import { add, v, right, Vector } from './Vector.ts'
@@ -9,7 +9,7 @@ import { Position, Size } from './components/basic.ts';
 import { User } from './user.ts';
 import { Enemy } from './enemy.ts';
 
-import { addEntity, Component, EntityId, query } from './modules/ecs/mod.ts';
+import { AppPlugin, addEntity, Component, EntityId, query } from './modules/ecs/mod.ts';
 
 export const UserBullet = Component<{
   speed: number;
@@ -19,14 +19,6 @@ export const UserBullet = Component<{
 const UserBulletManager = Component<{
   lastBulletFiredTime: number;
 }>();
-
-$$initiate.once(() => {
-  addEntity([
-    UserBulletManager({
-      lastBulletFiredTime: 0,
-    }),
-  ])
-})
 
 const createBullet = (pos: Vector) => {
   const size = v(10, 10);
@@ -83,23 +75,33 @@ const bulletEnemyManager = () => {
   }
 }
 
-update
-  .add(
-    spawnBullet,
-    moveBullet,
-    bulletEnemyManager,
-    removeBullet,
-  )
+const bulletManagerSystem = () => {
+  addEntity([
+    UserBulletManager({
+      lastBulletFiredTime: 0,
+    }),
+  ])
+}
 
+export const bulletRenderSystem = () => {
+  for (const { position, size } of query({ userBullet: UserBullet, position: Position, size: Size })) {
+    save()
+    beginPath()
+    rect(...position(), ...size())
+    fillStyle('black')
+    fill()
+    restore()
+  }
+}
 
-render
-  .add(() => {
-    for (const { position, size } of query({ userBullet: UserBullet, position: Position, size: Size })) {
-      save()
-      beginPath()
-      rect(...position(), ...size())
-      fillStyle('black')
-      fill()
-      restore()
-    }
-  });
+export const bulletPlugin: AppPlugin = (app) => {
+  app
+    .addInitSystem(bulletManagerSystem)
+    .addSystem(
+      spawnBullet,
+      moveBullet,
+      bulletEnemyManager,
+      removeBullet,
+    )
+    .addRenderSystem(bulletRenderSystem)
+}

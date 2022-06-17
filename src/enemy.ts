@@ -1,4 +1,4 @@
-import { timeDiffS, update, timeMS, render, $$initiate } from './animate.ts'
+import { timeDiffS, timeMS } from './modules/loop/mod.ts'
 import { beginPath, fill, fillStyle, rect, restore, save } from './draw.ts'
 import { createHitBoxComponent, updateHitboxTransform, Hitbox } from './hitbox.ts'
 import { random } from './utilities/generic.ts'
@@ -6,6 +6,7 @@ import { add, v, left, up } from './Vector.ts'
 import { addEntity, Component, query } from './modules/ecs/mod.ts';
 import { DeleteQueueManager } from './components/DeleteQueueManager.ts';
 import { Position, Size } from './components/basic.ts';
+import { AppPlugin, System } from './modules/ecs/mod.ts'
 
 export const Enemy = Component<{
   speed: number;
@@ -17,13 +18,6 @@ export const EnemyManager = Component<{
   lastSpawnTime: number;
 }>();
 
-$$initiate.once(() => {
-  addEntity([
-    EnemyManager ({
-      lastSpawnTime: 0,
-    }),
-  ])
-});
 
 export const createEnemy = (posX: number) => {
   const startingPosition = v(1800, posX);
@@ -74,12 +68,15 @@ export const damageEnemy = (entityId: number, amount: number) => {
   }
 }
 
-update.add(
-  spawnEnemies,
-  moveEnemies,
-  enemyRemover,
-);
-render.add(() => {
+export const spawnEntityManagerSystem: System = () => {
+  addEntity([
+    EnemyManager ({
+      lastSpawnTime: 0,
+    }),
+  ])
+}
+
+export const renderEnemiesSystem: System = () => {
   for (const { enemy, position, size } of query({ enemy: Enemy, position: Position, size: Size })) {
     const { health, originalHealth } = enemy();
     const healthPercentage = health / originalHealth;
@@ -104,6 +101,17 @@ render.add(() => {
     rect(...position(), ...size())
     fill();
     restore()
-
   }
-})
+}
+
+
+export const EnemyPlugin: AppPlugin = (app) => {
+  app
+    .addInitSystem(spawnEntityManagerSystem)
+    .addSystem(
+      spawnEnemies,
+      moveEnemies,
+      enemyRemover,
+    )
+    .addRenderSystem(renderEnemiesSystem);
+}

@@ -2,36 +2,6 @@
 // deno-lint-ignore-file
 // This code was bundled using `deno bundle` and it's not recommended to edit it manually
 
-const CBTracker = ()=>{
-    const events = new Set();
-    const once = (...callbacks)=>{
-        callbacks.forEach((callback)=>events.add([
-                'once',
-                callback
-            ])
-        );
-    };
-    const add1 = (...callbacks)=>{
-        callbacks.forEach((callback)=>events.add([
-                'always',
-                callback
-            ])
-        );
-    };
-    return {
-        once,
-        add: add1,
-        *[Symbol.iterator] () {
-            for (const ev of events){
-                const [type1, callback] = ev;
-                if (type1 === 'once') {
-                    events.delete(ev);
-                }
-                yield callback;
-            }
-        }
-    };
-};
 function _isPlaceholder(a) {
     return a != null && typeof a === 'object' && a['@@functional/placeholder'] === true;
 }
@@ -777,8 +747,8 @@ _curry1(function binary(fn) {
     return nAry(2, fn);
 });
 function _isFunction(x) {
-    var type2 = Object.prototype.toString.call(x);
-    return type2 === '[object Function]' || type2 === '[object AsyncFunction]' || type2 === '[object GeneratorFunction]' || type2 === '[object AsyncGeneratorFunction]';
+    var type1 = Object.prototype.toString.call(x);
+    return type1 === '[object Function]' || type1 === '[object AsyncFunction]' || type1 === '[object GeneratorFunction]' || type1 === '[object AsyncGeneratorFunction]';
 }
 var liftN = _curry2(function liftN(arity, fn) {
     var lifted = curryN(arity, fn);
@@ -1477,9 +1447,9 @@ var _Set = function() {
     return _Set1;
 }();
 function hasOrAdd(item, shouldAdd, set) {
-    var type3 = typeof item;
+    var type2 = typeof item;
     var prevSize, newSize;
-    switch(type3){
+    switch(type2){
         case 'string':
         case 'number':
             if (item === 0 && 1 / item === -Infinity) {
@@ -1502,35 +1472,35 @@ function hasOrAdd(item, shouldAdd, set) {
                     return set._nativeSet.has(item);
                 }
             } else {
-                if (!(type3 in set._items)) {
+                if (!(type2 in set._items)) {
                     if (shouldAdd) {
-                        set._items[type3] = {};
-                        set._items[type3][item] = true;
+                        set._items[type2] = {};
+                        set._items[type2][item] = true;
                     }
                     return false;
-                } else if (item in set._items[type3]) {
+                } else if (item in set._items[type2]) {
                     return true;
                 } else {
                     if (shouldAdd) {
-                        set._items[type3][item] = true;
+                        set._items[type2][item] = true;
                     }
                     return false;
                 }
             }
         case 'boolean':
-            if (type3 in set._items) {
+            if (type2 in set._items) {
                 var bIdx = item ? 1 : 0;
-                if (set._items[type3][bIdx]) {
+                if (set._items[type2][bIdx]) {
                     return true;
                 } else {
                     if (shouldAdd) {
-                        set._items[type3][bIdx] = true;
+                        set._items[type2][bIdx] = true;
                     }
                     return false;
                 }
             } else {
                 if (shouldAdd) {
-                    set._items[type3] = item ? [
+                    set._items[type2] = item ? [
                         false,
                         true
                     ] : [
@@ -1551,28 +1521,28 @@ function hasOrAdd(item, shouldAdd, set) {
                     return set._nativeSet.has(item);
                 }
             } else {
-                if (!(type3 in set._items)) {
+                if (!(type2 in set._items)) {
                     if (shouldAdd) {
-                        set._items[type3] = [
+                        set._items[type2] = [
                             item
                         ];
                     }
                     return false;
                 }
-                if (!_includes(item, set._items[type3])) {
+                if (!_includes(item, set._items[type2])) {
                     if (shouldAdd) {
-                        set._items[type3].push(item);
+                        set._items[type2].push(item);
                     }
                     return false;
                 }
                 return true;
             }
         case 'undefined':
-            if (set._items[type3]) {
+            if (set._items[type2]) {
                 return true;
             } else {
                 if (shouldAdd) {
-                    set._items[type3] = true;
+                    set._items[type2] = true;
                 }
                 return false;
             }
@@ -1587,18 +1557,18 @@ function hasOrAdd(item, shouldAdd, set) {
                 return true;
             }
         default:
-            type3 = Object.prototype.toString.call(item);
-            if (!(type3 in set._items)) {
+            type2 = Object.prototype.toString.call(item);
+            if (!(type2 in set._items)) {
                 if (shouldAdd) {
-                    set._items[type3] = [
+                    set._items[type2] = [
                         item
                     ];
                 }
                 return false;
             }
-            if (!_includes(item, set._items[type3])) {
+            if (!_includes(item, set._items[type2])) {
                 if (shouldAdd) {
-                    set._items[type3].push(item);
+                    set._items[type2].push(item);
                 }
                 return false;
             }
@@ -1890,8 +1860,8 @@ _curry2(function either(f, g) {
     } : lift(or)(f, g);
 });
 function _isTypedArray(val) {
-    var type4 = Object.prototype.toString.call(val);
-    return type4 === '[object Uint8ClampedArray]' || type4 === '[object Int8Array]' || type4 === '[object Uint8Array]' || type4 === '[object Int16Array]' || type4 === '[object Uint16Array]' || type4 === '[object Int32Array]' || type4 === '[object Uint32Array]' || type4 === '[object Float32Array]' || type4 === '[object Float64Array]' || type4 === '[object BigInt64Array]' || type4 === '[object BigUint64Array]';
+    var type3 = Object.prototype.toString.call(val);
+    return type3 === '[object Uint8ClampedArray]' || type3 === '[object Int8Array]' || type3 === '[object Uint8Array]' || type3 === '[object Int16Array]' || type3 === '[object Uint16Array]' || type3 === '[object Int32Array]' || type3 === '[object Uint32Array]' || type3 === '[object Float32Array]' || type3 === '[object Float64Array]' || type3 === '[object BigInt64Array]' || type3 === '[object BigUint64Array]';
 }
 var empty = _curry1(function empty(x) {
     return x != null && typeof x['fantasy-land/empty'] === 'function' ? x['fantasy-land/empty']() : x != null && x.constructor != null && typeof x.constructor['fantasy-land/empty'] === 'function' ? x.constructor['fantasy-land/empty']() : x != null && typeof x.empty === 'function' ? x.empty() : x != null && x.constructor != null && typeof x.constructor.empty === 'function' ? x.constructor.empty() : __default(x) ? [] : _isString(x) ? '' : _isObject(x) ? {} : _isArguments(x) ? function() {
@@ -1915,11 +1885,11 @@ _curry2(function evolve1(transformations, object) {
         return object;
     }
     var result = object instanceof Array ? [] : {};
-    var transformation, key, type5;
+    var transformation, key, type4;
     for(key in object){
         transformation = transformations[key];
-        type5 = typeof transformation;
-        result[key] = type5 === 'function' ? transformation(object[key]) : transformation && type5 === 'object' ? evolve1(transformation, object[key]) : object[key];
+        type4 = typeof transformation;
+        result[key] = type4 === 'function' ? transformation(object[key]) : transformation && type4 === 'object' ? evolve1(transformation, object[key]) : object[key];
     }
     return result;
 });
@@ -2797,8 +2767,8 @@ _curry3(_dispatchable([
 _curry3(function propEq(name, val, obj) {
     return equals(val, prop(name, obj));
 });
-_curry3(function propIs(type6, name, obj) {
-    return is(type6, prop(name, obj));
+_curry3(function propIs(type5, name, obj) {
+    return is(type5, prop(name, obj));
 });
 _curry3(function propOr(val, p, obj) {
     return defaultTo(val, prop(p, obj));
@@ -3319,12 +3289,741 @@ const State = (initialState)=>{
         return internalState;
     };
 };
+State(0);
+State(0);
+State(0);
+State(0);
+State(0);
+const cns = Symbol('__Component_Symbol__');
+const Component = ()=>{
+    const returnMethod = (data)=>{
+        return {
+            [cns]: returnMethod,
+            ...data
+        };
+    };
+    return returnMethod;
+};
+const ComponentStateManager = (initialState)=>{
+    let internalState = initialState;
+    return (changes)=>{
+        if (changes) {
+            internalState = {
+                ...internalState,
+                ...changes
+            };
+        }
+        return internalState;
+    };
+};
+class ComponentEntityManager extends Map {
+    get(component) {
+        const list = super.get(component);
+        if (list) {
+            return list;
+        }
+        const newList = [];
+        super.set(component, newList);
+        return newList;
+    }
+    appendItem(component, item) {
+        this.get(component).push(item);
+    }
+    removeItem(component, item) {
+        const list = this.get(component);
+        this.set(component, list.filter((i)=>i !== item
+        ));
+    }
+}
+const Counter = ()=>{
+    let number = 0;
+    return ()=>number++
+    ;
+};
+const EntityId = Component();
+const EntityList = ()=>{
+    const entityIdCounter = Counter();
+    const entities = new Map();
+    const componentEntityMapping = new ComponentEntityManager();
+    const addEntity1 = (components)=>{
+        const id = entityIdCounter();
+        const entity = {
+            id,
+            components: new Map()
+        };
+        entities.set(entity.id, entity);
+        addComponentToEntity1(id, EntityId({
+            id
+        }));
+        for (const component of components){
+            addComponentToEntity1(id, component);
+        }
+        return entity;
+    };
+    const addComponentToEntity1 = (entityId, component)=>{
+        const componentName = component[cns];
+        const entity = entities.get(entityId);
+        if (!entity) return;
+        entity.components.set(componentName, ComponentStateManager(component));
+        componentEntityMapping.appendItem(componentName, entityId);
+    };
+    function removeEntity1(id) {
+        const entity = entities.get(id);
+        if (!entity) return;
+        const { components  } = entity;
+        entities.delete(id);
+        for (const [componentName] of components){
+            componentEntityMapping.removeItem(componentName, id);
+        }
+    }
+    function count1(componentFilter) {
+        const componentMapping = [];
+        for (const componentName of componentFilter){
+            const component = componentEntityMapping.get(componentName);
+            if (component.length === 0) {
+                return 0;
+            }
+            componentMapping.push(component);
+        }
+        const entityIds = intersectionBetweenOrderedIntegerLists(componentMapping);
+        return entityIds.length;
+    }
+    function* query1(componentFilter, filteredUserIds) {
+        let componentMapping = [];
+        if (filteredUserIds) {
+            componentMapping.push(filteredUserIds);
+        }
+        for (const [, componentName] of Object.entries(componentFilter)){
+            const component = componentEntityMapping.get(componentName) || [];
+            if (!component || component.length === 0) {
+                return;
+            }
+            componentMapping.push(component);
+        }
+        componentMapping = componentMapping.sort((a, b)=>a.length - b.length
+        );
+        const entityIds = intersectionBetweenOrderedIntegerLists(componentMapping);
+        for (const entityId of entityIds){
+            const entity = entities.get(entityId);
+            if (!entity) {
+                continue;
+            }
+            const components = {};
+            for (const [remappedName, componentName] of Object.entries(componentFilter)){
+                components[remappedName] = entity.components.get(componentName);
+            }
+            yield components;
+        }
+    }
+    return {
+        addEntity: addEntity1,
+        removeEntity: removeEntity1,
+        addComponentToEntity: addComponentToEntity1,
+        count: count1,
+        query: query1
+    };
+};
+const globalEntityList = EntityList();
+globalEntityList.addEntity;
+globalEntityList.removeEntity;
+globalEntityList.addComponentToEntity;
+globalEntityList.count;
+globalEntityList.query;
+const intersectionBetweenOrderedIntegerLists = (intLists)=>{
+    let last1 = intLists[0];
+    for(let i = 1; i < intLists.length; i++){
+        const current = intLists[i];
+        const matches = [];
+        const lastLength = last1.length;
+        const currentLength = current.length;
+        let currentIndexStartingPoint = 0;
+        for(let lastIndex = 0; lastIndex < lastLength; lastIndex++){
+            const lastId = last1[lastIndex];
+            for(let currentIndex = currentIndexStartingPoint; currentIndex < currentLength; currentIndex++){
+                const currentId = current[currentIndex];
+                if (lastId === currentId) {
+                    currentIndexStartingPoint = currentIndex + 1;
+                    matches.push(lastId);
+                    break;
+                } else if (lastId < currentId) {
+                    break;
+                } else if (lastId > currentId) {
+                    currentIndexStartingPoint = currentIndex;
+                }
+            }
+        }
+        if (matches.length === 0) {
+            return [];
+        }
+        last1 = matches;
+    }
+    return last1;
+};
+Component();
+function* it() {
+    yield this.x;
+    yield this.y;
+}
+const v = (x, y)=>{
+    return {
+        x,
+        y,
+        [0]: x,
+        [1]: x,
+        [Symbol.iterator]: it
+    };
+};
+curry(([x1, y1], [x2, y2])=>{
+    return v(x1 + x2, y1 + y2);
+});
+Component();
+Component();
+Component();
+const immutable = (t)=>{
+    const obj = Object.freeze(t);
+    if (Array.isArray(obj)) {
+        obj.forEach((item)=>immutable(item)
+        );
+    } else if (typeof obj === 'object' && obj !== null) {
+        for (let value of Object.values(obj)){
+            immutable(value);
+        }
+    }
+    return obj;
+};
+class EMap extends Map {
+    creator;
+    constructor(creator){
+        super();
+        this.creator = creator;
+    }
+    get(key) {
+        const value = super.get(key);
+        if (value) return value;
+        const created = this.creator();
+        super.set(key, created);
+        return created;
+    }
+    has() {
+        return true;
+    }
+}
+const NativeKeyCodes = immutable({
+    AltLeft: 'AltLeft',
+    AltRight: 'AltRight',
+    ArrowDown: 'ArrowDown',
+    ArrowLeft: 'ArrowLeft',
+    ArrowRight: 'ArrowRight',
+    ArrowUp: 'ArrowUp',
+    Backquote: 'Backquote',
+    Backslash: 'Backslash',
+    Backspace: 'Backspace',
+    BracketLeft: 'BracketLeft',
+    BracketRight: 'BracketRight',
+    CapsLock: 'CapsLock',
+    Comma: 'Comma',
+    ControlLeft: 'ControlLeft',
+    Digit0: 'Digit0',
+    Digit1: 'Digit1',
+    Digit2: 'Digit2',
+    Digit3: 'Digit3',
+    Digit4: 'Digit4',
+    Digit5: 'Digit5',
+    Digit6: 'Digit6',
+    Digit7: 'Digit7',
+    Digit8: 'Digit8',
+    Digit9: 'Digit9',
+    Enter: 'Enter',
+    Equal: 'Equal',
+    Escape: 'Escape',
+    KeyA: 'KeyA',
+    KeyB: 'KeyB',
+    KeyC: 'KeyC',
+    KeyD: 'KeyD',
+    KeyE: 'KeyE',
+    KeyF: 'KeyF',
+    KeyG: 'KeyG',
+    KeyH: 'KeyH',
+    KeyI: 'KeyI',
+    KeyJ: 'KeyJ',
+    KeyK: 'KeyK',
+    KeyL: 'KeyL',
+    KeyM: 'KeyM',
+    KeyN: 'KeyN',
+    KeyO: 'KeyO',
+    KeyP: 'KeyP',
+    KeyQ: 'KeyQ',
+    KeyR: 'KeyR',
+    KeyS: 'KeyS',
+    KeyT: 'KeyT',
+    KeyU: 'KeyU',
+    KeyV: 'KeyV',
+    KeyW: 'KeyW',
+    KeyX: 'KeyX',
+    KeyY: 'KeyY',
+    KeyZ: 'KeyZ',
+    MetaLeft: 'MetaLeft',
+    MetaRight: 'MetaRight',
+    Minus: 'Minus',
+    Period: 'Period',
+    Quote: 'Quote',
+    Semicolon: 'Semicolon',
+    ShiftLeft: 'ShiftLeft',
+    ShiftRight: 'ShiftRight',
+    Slash: 'Slash',
+    Space: 'Space',
+    Tab: 'Tab'
+});
+const AliasKeyCodes = immutable({
+    'Shift': [
+        'ShiftLeft',
+        'ShiftRight'
+    ],
+    'Meta': [
+        'MetaLeft',
+        'MetaRight'
+    ],
+    'Alt': [
+        'AltLeft',
+        'AltRight'
+    ]
+});
+immutable({
+    ...NativeKeyCodes,
+    ...AliasKeyCodes
+});
+const isWorkerContext = ()=>{
+    if (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope) {
+        return true;
+    } else {
+        return false;
+    }
+};
+const proxyMarker = Symbol("Comlink.proxy");
+const createEndpoint = Symbol("Comlink.endpoint");
+const releaseProxy = Symbol("Comlink.releaseProxy");
+const throwMarker = Symbol("Comlink.thrown");
+const isObject = (val)=>typeof val === "object" && val !== null || typeof val === "function"
+;
+const proxyTransferHandler = {
+    canHandle: (val)=>isObject(val) && val[proxyMarker]
+    ,
+    serialize (obj) {
+        const { port1 , port2  } = new MessageChannel();
+        expose(obj, port1);
+        return [
+            port2,
+            [
+                port2
+            ]
+        ];
+    },
+    deserialize (port) {
+        port.start();
+        return wrap(port);
+    }
+};
+const throwTransferHandler = {
+    canHandle: (value)=>isObject(value) && throwMarker in value
+    ,
+    serialize ({ value  }) {
+        let serialized;
+        if (value instanceof Error) {
+            serialized = {
+                isError: true,
+                value: {
+                    message: value.message,
+                    name: value.name,
+                    stack: value.stack
+                }
+            };
+        } else {
+            serialized = {
+                isError: false,
+                value
+            };
+        }
+        return [
+            serialized,
+            []
+        ];
+    },
+    deserialize (serialized) {
+        if (serialized.isError) {
+            throw Object.assign(new Error(serialized.value.message), serialized.value);
+        }
+        throw serialized.value;
+    }
+};
+const transferHandlers = new Map([
+    [
+        "proxy",
+        proxyTransferHandler
+    ],
+    [
+        "throw",
+        throwTransferHandler
+    ], 
+]);
+function expose(obj1, ep = self) {
+    ep.addEventListener("message", function callback(ev) {
+        if (!ev || !ev.data) {
+            return;
+        }
+        const { id , type: type6 , path: path4  } = Object.assign({
+            path: []
+        }, ev.data);
+        const argumentList = (ev.data.argumentList || []).map(fromWireValue);
+        let returnValue1;
+        try {
+            const parent = path4.slice(0, -1).reduce((obj, prop21)=>obj[prop21]
+            , obj1);
+            const rawValue = path4.reduce((obj, prop22)=>obj[prop22]
+            , obj1);
+            switch(type6){
+                case "GET":
+                    {
+                        returnValue1 = rawValue;
+                    }
+                    break;
+                case "SET":
+                    {
+                        parent[path4.slice(-1)[0]] = fromWireValue(ev.data.value);
+                        returnValue1 = true;
+                    }
+                    break;
+                case "APPLY":
+                    {
+                        returnValue1 = rawValue.apply(parent, argumentList);
+                    }
+                    break;
+                case "CONSTRUCT":
+                    {
+                        const value = new rawValue(...argumentList);
+                        returnValue1 = proxy(value);
+                    }
+                    break;
+                case "ENDPOINT":
+                    {
+                        const { port1 , port2  } = new MessageChannel();
+                        expose(obj1, port2);
+                        returnValue1 = transfer(port1, [
+                            port1
+                        ]);
+                    }
+                    break;
+                case "RELEASE":
+                    {
+                        returnValue1 = undefined;
+                    }
+                    break;
+                default:
+                    return;
+            }
+        } catch (value1) {
+            returnValue1 = {
+                value: value1,
+                [throwMarker]: 0
+            };
+        }
+        Promise.resolve(returnValue1).catch((value)=>{
+            return {
+                value,
+                [throwMarker]: 0
+            };
+        }).then((returnValue)=>{
+            const [wireValue, transferables] = toWireValue(returnValue);
+            ep.postMessage(Object.assign(Object.assign({}, wireValue), {
+                id
+            }), transferables);
+            if (type6 === "RELEASE") {
+                ep.removeEventListener("message", callback);
+                closeEndPoint(ep);
+            }
+        });
+    });
+    if (ep.start) {
+        ep.start();
+    }
+}
+function isMessagePort(endpoint) {
+    return endpoint.constructor.name === "MessagePort";
+}
+function closeEndPoint(endpoint) {
+    if (isMessagePort(endpoint)) endpoint.close();
+}
+function wrap(ep, target) {
+    return createProxy(ep, [], target);
+}
+function throwIfProxyReleased(isReleased) {
+    if (isReleased) {
+        throw new Error("Proxy has been released and is not useable");
+    }
+}
+function createProxy(ep, path5 = [], target = function() {}) {
+    let isProxyReleased = false;
+    const proxy1 = new Proxy(target, {
+        get (_target, prop23) {
+            throwIfProxyReleased(isProxyReleased);
+            if (prop23 === releaseProxy) {
+                return ()=>{
+                    return requestResponseMessage(ep, {
+                        type: "RELEASE",
+                        path: path5.map((p)=>p.toString()
+                        )
+                    }).then(()=>{
+                        closeEndPoint(ep);
+                        isProxyReleased = true;
+                    });
+                };
+            }
+            if (prop23 === "then") {
+                if (path5.length === 0) {
+                    return {
+                        then: ()=>proxy1
+                    };
+                }
+                const r = requestResponseMessage(ep, {
+                    type: "GET",
+                    path: path5.map((p)=>p.toString()
+                    )
+                }).then(fromWireValue);
+                return r.then.bind(r);
+            }
+            return createProxy(ep, [
+                ...path5,
+                prop23
+            ]);
+        },
+        set (_target, prop24, rawValue) {
+            throwIfProxyReleased(isProxyReleased);
+            const [value, transferables] = toWireValue(rawValue);
+            return requestResponseMessage(ep, {
+                type: "SET",
+                path: [
+                    ...path5,
+                    prop24
+                ].map((p)=>p.toString()
+                ),
+                value
+            }, transferables).then(fromWireValue);
+        },
+        apply (_target, _thisArg, rawArgumentList) {
+            throwIfProxyReleased(isProxyReleased);
+            const last2 = path5[path5.length - 1];
+            if (last2 === createEndpoint) {
+                return requestResponseMessage(ep, {
+                    type: "ENDPOINT"
+                }).then(fromWireValue);
+            }
+            if (last2 === "bind") {
+                return createProxy(ep, path5.slice(0, -1));
+            }
+            const [argumentList, transferables] = processArguments(rawArgumentList);
+            return requestResponseMessage(ep, {
+                type: "APPLY",
+                path: path5.map((p)=>p.toString()
+                ),
+                argumentList
+            }, transferables).then(fromWireValue);
+        },
+        construct (_target, rawArgumentList) {
+            throwIfProxyReleased(isProxyReleased);
+            const [argumentList, transferables] = processArguments(rawArgumentList);
+            return requestResponseMessage(ep, {
+                type: "CONSTRUCT",
+                path: path5.map((p)=>p.toString()
+                ),
+                argumentList
+            }, transferables).then(fromWireValue);
+        }
+    });
+    return proxy1;
+}
+function myFlat(arr) {
+    return Array.prototype.concat.apply([], arr);
+}
+function processArguments(argumentList) {
+    const processed = argumentList.map(toWireValue);
+    return [
+        processed.map((v4)=>v4[0]
+        ),
+        myFlat(processed.map((v5)=>v5[1]
+        ))
+    ];
+}
+const transferCache = new WeakMap();
+function transfer(obj, transfers) {
+    transferCache.set(obj, transfers);
+    return obj;
+}
+function proxy(obj) {
+    return Object.assign(obj, {
+        [proxyMarker]: true
+    });
+}
+function toWireValue(value) {
+    for (const [name, handler] of transferHandlers){
+        if (handler.canHandle(value)) {
+            const [serializedValue, transferables] = handler.serialize(value);
+            return [
+                {
+                    type: "HANDLER",
+                    name,
+                    value: serializedValue
+                },
+                transferables, 
+            ];
+        }
+    }
+    return [
+        {
+            type: "RAW",
+            value
+        },
+        transferCache.get(value) || [], 
+    ];
+}
+function fromWireValue(value) {
+    switch(value.type){
+        case "HANDLER":
+            return transferHandlers.get(value.name).deserialize(value.value);
+        case "RAW":
+            return value.value;
+    }
+}
+function requestResponseMessage(ep, msg, transfers) {
+    return new Promise((resolve)=>{
+        const id = generateUUID();
+        ep.addEventListener("message", function l(ev) {
+            if (!ev.data || !ev.data.id || ev.data.id !== id) {
+                return;
+            }
+            ep.removeEventListener("message", l);
+            resolve(ev.data);
+        });
+        if (ep.start) {
+            ep.start();
+        }
+        ep.postMessage(Object.assign({
+            id
+        }, msg), transfers);
+    });
+}
+function generateUUID() {
+    return new Array(4).fill(0).map(()=>Math.floor(Math.random() * Number.MAX_SAFE_INTEGER).toString(16)
+    ).join("-");
+}
+const wrap1 = (...args)=>{
+    return wrap(...args);
+};
+const transfer1 = (...args)=>{
+    return transfer(...args);
+};
+new Map();
+const createComlinkWorker = (path6, options)=>{
+    const worker = new Worker(path6, options);
+    console.log('worker', worker);
+    const comlinkWorker = wrap1(worker);
+    return comlinkWorker;
+};
+const createComlinkSharedWorker = (path7, options)=>{
+    const worker1 = new SharedWorker(path7, options);
+    worker1.port.start();
+    const workerComlink = wrap1(worker1.port);
+    const base = {
+        get port () {
+            return worker1.port;
+        },
+        clonePort () {
+            const worker = new SharedWorker(path7, options);
+            worker.port.start();
+            return worker.port;
+        }
+    };
+    return new Proxy(base, {
+        get (obj, key) {
+            if (obj.hasOwnProperty(key)) {
+                return Reflect.get(obj, key);
+            }
+            return Reflect.get(workerComlink, key);
+        }
+    });
+};
+const activeKeys = new Set();
+const justActivated = new Set();
+let activeKeysSnapshot = new Set();
+let justActivatedSnapshot = new Set();
+const justPressed = (codes)=>{
+    if (Array.isArray(codes)) {
+        return codes.some((code)=>justPressed(code)
+        );
+    }
+    return justActivatedSnapshot.has(codes);
+};
+const triggerKeyDown = (keyCode)=>{
+    const alreadyDown = activeKeys.has(keyCode);
+    activeKeys.add(keyCode);
+    if (!alreadyDown) {
+        justActivated.add(keyCode);
+    }
+};
+const triggerKeyUp = (keyCode)=>{
+    activeKeys.delete(keyCode);
+};
+const clearKeys = ()=>{
+    activeKeys.clear();
+    activeKeysSnapshot.clear();
+    justActivated.clear();
+    justActivatedSnapshot.clear();
+};
+const attachListeners = (worker)=>{
+    if (!isWorkerContext()) {
+        const keydownEvent = worker ? (event)=>worker['module:Keyboard:event:window:keydown'](event.code)
+         : triggerKeyDown;
+        const keyUpEvent = worker ? (event)=>worker['module:Keyboard:event:window:keyup'](event.code)
+         : triggerKeyUp;
+        const blurEvent = worker ? ()=>worker['module:Keyboard:event:window:blur']()
+         : triggerKeyUp;
+        window.addEventListener('keydown', keydownEvent);
+        window.addEventListener('keyup', keyUpEvent);
+        window.addEventListener('blur', blurEvent);
+    }
+    return {
+        'module:Keyboard:event:window:keydown': triggerKeyDown,
+        'module:Keyboard:event:window:keyup': triggerKeyUp,
+        'module:Keyboard:event:window:blur': clearKeys
+    };
+};
+new Map();
+Component();
+const Canvas = State({
+    width: 1920,
+    height: 1080
+});
 let activeContext = null;
+Component();
+Component();
+Component();
+const createCanvas = ()=>{
+    const canvas = document.createElement('canvas');
+    const { width , height  } = Canvas();
+    Object.assign(canvas, {
+        width,
+        height
+    });
+    Object.assign(canvas.style, {
+        border: '1px solid #ccc',
+        maxWidth: '100%'
+    });
+    document.body.appendChild(canvas);
+    return canvas;
+};
 const sendToContext = (item)=>{
     if (!activeContext) throw new Error('Outside of context');
     activeContext.push(item);
 };
-const e = createEnum('arcTo', 'beginPath', 'bezierCurveTo', 'clearRect', 'clip', 'closePath', 'createConicGradient', 'createImageData', 'createLinearGradient', 'createPattern', 'createRadialGradient', 'drawFocusIfNeeded', 'drawImage', 'ellipse', 'fill', 'fillRect', 'fillText', 'getContextAttributes', 'getImageData', 'getLineDash', 'getTransform', 'isContextLost', 'isPointInPath', 'isPointInStroke', 'lineTo', 'measureText', 'moveTo', 'putImageData', 'quadraticCurveTo', 'rect', 'reset', 'resetTransform', 'restore', 'rotate', 'roundRect', 'save', 'scale', 'setLineDash', 'setTransform', 'stroke', 'strokeRect', 'strokeText', 'transform', 'translate', 'direction', 'fillStyle', 'filter', 'font', 'fontKerning', 'fontStretch', 'fontVariantCaps', 'globalAlpha', 'globalCompositeOperation', 'imageSmoothingEnabled', 'imageSmoothingQuality', 'letterSpacing', 'lineCap', 'lineDashOffset', 'lineJoin', 'lineWidth', 'miterLimit', 'shadowBlur', 'shadowColor', 'shadowOffsetX', 'shadowOffsetY', 'strokeStyle', 'textAlign', 'textBaseline', 'textRendering', 'wordSpacing');
+const e = createEnum('markStart', 'markEnd', 'arcTo', 'beginPath', 'bezierCurveTo', 'clearRect', 'clip', 'closePath', 'createConicGradient', 'createImageData', 'createLinearGradient', 'createPattern', 'createRadialGradient', 'drawFocusIfNeeded', 'drawImage', 'ellipse', 'fill', 'fillRect', 'fillText', 'getContextAttributes', 'getImageData', 'getLineDash', 'getTransform', 'isContextLost', 'isPointInPath', 'isPointInStroke', 'lineTo', 'measureText', 'moveTo', 'putImageData', 'quadraticCurveTo', 'rect', 'reset', 'resetTransform', 'restore', 'rotate', 'roundRect', 'save', 'scale', 'setLineDash', 'setTransform', 'stroke', 'strokeRect', 'strokeText', 'transform', 'translate', 'direction', 'fillStyle', 'filter', 'font', 'fontKerning', 'fontStretch', 'fontVariantCaps', 'globalAlpha', 'globalCompositeOperation', 'imageSmoothingEnabled', 'imageSmoothingQuality', 'letterSpacing', 'lineCap', 'lineDashOffset', 'lineJoin', 'lineWidth', 'miterLimit', 'shadowBlur', 'shadowColor', 'shadowOffsetX', 'shadowOffsetY', 'strokeStyle', 'textAlign', 'textBaseline', 'textRendering', 'wordSpacing');
 const c = (e1)=>{
     return (...args)=>sendToContext([
             e1,
@@ -3341,10 +4040,29 @@ const hs = ()=>(ctx, enumber, [value])=>{
     }
 ;
 const drawHandlers = new Map();
+c(e.markStart);
+c(e.markEnd);
 c(e.arcTo);
 c(e.beginPath);
 c(e.bezierCurveTo);
-const clearRect = c(e.clearRect);
+c(e.clearRect);
+new Map();
+const markStart = (label)=>{
+    performance.mark(label, {
+        detail: [
+            'debug',
+            'start'
+        ]
+    });
+};
+const markEnd = (label)=>{
+    performance.mark(label, {
+        detail: [
+            'debug',
+            'end'
+        ]
+    });
+};
 c(e.clip);
 c(e.closePath);
 c(e.createConicGradient);
@@ -3481,569 +4199,17 @@ drawHandlers.set(e.textAlign, hs());
 drawHandlers.set(e.textBaseline, hs());
 drawHandlers.set(e.textRendering, hs());
 drawHandlers.set(e.wordSpacing, hs());
+drawHandlers.set(e.markStart, (ctx, en, args)=>{
+    markStart(...args);
+});
+drawHandlers.set(e.markEnd, (ctx, en, args)=>{
+    markEnd(...args);
+});
 new Map();
-CBTracker();
-CBTracker();
-CBTracker();
-CBTracker();
-CBTracker();
-CBTracker();
-const prerender = CBTracker();
-CBTracker();
-CBTracker();
-State(0);
-State(0);
-State(0);
-State(0);
-State(0);
-new WeakSet();
-function* it() {
-    yield this.x;
-    yield this.y;
-}
-const v = (x, y)=>{
-    return {
-        x,
-        y,
-        [0]: x,
-        [1]: x,
-        [Symbol.iterator]: it
-    };
-};
-const zero = ()=>v(0, 0)
-;
-curry(([x1, y1], [x2, y2])=>{
-    return v(x1 + x2, y1 + y2);
-});
-const Canvas = State({
-    width: 1920,
-    height: 1080
-});
-const createCanvas = ()=>{
-    const canvas = document.createElement('canvas');
-    const { width , height  } = Canvas();
-    Object.assign(canvas, {
-        width,
-        height
-    });
-    Object.assign(canvas.style, {
-        border: '1px solid #ccc',
-        maxWidth: '100%'
-    });
-    document.body.appendChild(canvas);
-    return canvas;
-};
-prerender.add(()=>{
-    const { width , height  } = Canvas();
-    clearRect(...zero(), width, height);
-});
-const isWorkerContext = ()=>{
-    if (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope) {
-        return true;
-    } else {
-        return false;
-    }
-};
-const proxyMarker = Symbol("Comlink.proxy");
-const createEndpoint = Symbol("Comlink.endpoint");
-const releaseProxy = Symbol("Comlink.releaseProxy");
-const throwMarker = Symbol("Comlink.thrown");
-const isObject = (val)=>typeof val === "object" && val !== null || typeof val === "function"
-;
-const proxyTransferHandler = {
-    canHandle: (val)=>isObject(val) && val[proxyMarker]
-    ,
-    serialize (obj) {
-        const { port1 , port2  } = new MessageChannel();
-        expose(obj, port1);
-        return [
-            port2,
-            [
-                port2
-            ]
-        ];
-    },
-    deserialize (port) {
-        port.start();
-        return wrap(port);
-    }
-};
-const throwTransferHandler = {
-    canHandle: (value)=>isObject(value) && throwMarker in value
-    ,
-    serialize ({ value  }) {
-        let serialized;
-        if (value instanceof Error) {
-            serialized = {
-                isError: true,
-                value: {
-                    message: value.message,
-                    name: value.name,
-                    stack: value.stack
-                }
-            };
-        } else {
-            serialized = {
-                isError: false,
-                value
-            };
-        }
-        return [
-            serialized,
-            []
-        ];
-    },
-    deserialize (serialized) {
-        if (serialized.isError) {
-            throw Object.assign(new Error(serialized.value.message), serialized.value);
-        }
-        throw serialized.value;
-    }
-};
-const transferHandlers = new Map([
-    [
-        "proxy",
-        proxyTransferHandler
-    ],
-    [
-        "throw",
-        throwTransferHandler
-    ], 
-]);
-function expose(obj1, ep = self) {
-    ep.addEventListener("message", function callback(ev) {
-        if (!ev || !ev.data) {
-            return;
-        }
-        const { id , type: type7 , path: path4  } = Object.assign({
-            path: []
-        }, ev.data);
-        const argumentList = (ev.data.argumentList || []).map(fromWireValue);
-        let returnValue1;
-        try {
-            const parent = path4.slice(0, -1).reduce((obj, prop21)=>obj[prop21]
-            , obj1);
-            const rawValue = path4.reduce((obj, prop22)=>obj[prop22]
-            , obj1);
-            switch(type7){
-                case "GET":
-                    {
-                        returnValue1 = rawValue;
-                    }
-                    break;
-                case "SET":
-                    {
-                        parent[path4.slice(-1)[0]] = fromWireValue(ev.data.value);
-                        returnValue1 = true;
-                    }
-                    break;
-                case "APPLY":
-                    {
-                        returnValue1 = rawValue.apply(parent, argumentList);
-                    }
-                    break;
-                case "CONSTRUCT":
-                    {
-                        const value = new rawValue(...argumentList);
-                        returnValue1 = proxy(value);
-                    }
-                    break;
-                case "ENDPOINT":
-                    {
-                        const { port1 , port2  } = new MessageChannel();
-                        expose(obj1, port2);
-                        returnValue1 = transfer(port1, [
-                            port1
-                        ]);
-                    }
-                    break;
-                case "RELEASE":
-                    {
-                        returnValue1 = undefined;
-                    }
-                    break;
-                default:
-                    return;
-            }
-        } catch (value1) {
-            returnValue1 = {
-                value: value1,
-                [throwMarker]: 0
-            };
-        }
-        Promise.resolve(returnValue1).catch((value)=>{
-            return {
-                value,
-                [throwMarker]: 0
-            };
-        }).then((returnValue)=>{
-            const [wireValue, transferables] = toWireValue(returnValue);
-            ep.postMessage(Object.assign(Object.assign({}, wireValue), {
-                id
-            }), transferables);
-            if (type7 === "RELEASE") {
-                ep.removeEventListener("message", callback);
-                closeEndPoint(ep);
-            }
-        });
-    });
-    if (ep.start) {
-        ep.start();
-    }
-}
-function isMessagePort(endpoint) {
-    return endpoint.constructor.name === "MessagePort";
-}
-function closeEndPoint(endpoint) {
-    if (isMessagePort(endpoint)) endpoint.close();
-}
-function wrap(ep, target) {
-    return createProxy(ep, [], target);
-}
-function throwIfProxyReleased(isReleased) {
-    if (isReleased) {
-        throw new Error("Proxy has been released and is not useable");
-    }
-}
-function createProxy(ep, path5 = [], target = function() {}) {
-    let isProxyReleased = false;
-    const proxy1 = new Proxy(target, {
-        get (_target, prop23) {
-            throwIfProxyReleased(isProxyReleased);
-            if (prop23 === releaseProxy) {
-                return ()=>{
-                    return requestResponseMessage(ep, {
-                        type: "RELEASE",
-                        path: path5.map((p)=>p.toString()
-                        )
-                    }).then(()=>{
-                        closeEndPoint(ep);
-                        isProxyReleased = true;
-                    });
-                };
-            }
-            if (prop23 === "then") {
-                if (path5.length === 0) {
-                    return {
-                        then: ()=>proxy1
-                    };
-                }
-                const r = requestResponseMessage(ep, {
-                    type: "GET",
-                    path: path5.map((p)=>p.toString()
-                    )
-                }).then(fromWireValue);
-                return r.then.bind(r);
-            }
-            return createProxy(ep, [
-                ...path5,
-                prop23
-            ]);
-        },
-        set (_target, prop24, rawValue) {
-            throwIfProxyReleased(isProxyReleased);
-            const [value, transferables] = toWireValue(rawValue);
-            return requestResponseMessage(ep, {
-                type: "SET",
-                path: [
-                    ...path5,
-                    prop24
-                ].map((p)=>p.toString()
-                ),
-                value
-            }, transferables).then(fromWireValue);
-        },
-        apply (_target, _thisArg, rawArgumentList) {
-            throwIfProxyReleased(isProxyReleased);
-            const last1 = path5[path5.length - 1];
-            if (last1 === createEndpoint) {
-                return requestResponseMessage(ep, {
-                    type: "ENDPOINT"
-                }).then(fromWireValue);
-            }
-            if (last1 === "bind") {
-                return createProxy(ep, path5.slice(0, -1));
-            }
-            const [argumentList, transferables] = processArguments(rawArgumentList);
-            return requestResponseMessage(ep, {
-                type: "APPLY",
-                path: path5.map((p)=>p.toString()
-                ),
-                argumentList
-            }, transferables).then(fromWireValue);
-        },
-        construct (_target, rawArgumentList) {
-            throwIfProxyReleased(isProxyReleased);
-            const [argumentList, transferables] = processArguments(rawArgumentList);
-            return requestResponseMessage(ep, {
-                type: "CONSTRUCT",
-                path: path5.map((p)=>p.toString()
-                ),
-                argumentList
-            }, transferables).then(fromWireValue);
-        }
-    });
-    return proxy1;
-}
-function myFlat(arr) {
-    return Array.prototype.concat.apply([], arr);
-}
-function processArguments(argumentList) {
-    const processed = argumentList.map(toWireValue);
-    return [
-        processed.map((v4)=>v4[0]
-        ),
-        myFlat(processed.map((v5)=>v5[1]
-        ))
-    ];
-}
-const transferCache = new WeakMap();
-function transfer(obj, transfers) {
-    transferCache.set(obj, transfers);
-    return obj;
-}
-function proxy(obj) {
-    return Object.assign(obj, {
-        [proxyMarker]: true
-    });
-}
-function toWireValue(value) {
-    for (const [name, handler] of transferHandlers){
-        if (handler.canHandle(value)) {
-            const [serializedValue, transferables] = handler.serialize(value);
-            return [
-                {
-                    type: "HANDLER",
-                    name,
-                    value: serializedValue
-                },
-                transferables, 
-            ];
-        }
-    }
-    return [
-        {
-            type: "RAW",
-            value
-        },
-        transferCache.get(value) || [], 
-    ];
-}
-function fromWireValue(value) {
-    switch(value.type){
-        case "HANDLER":
-            return transferHandlers.get(value.name).deserialize(value.value);
-        case "RAW":
-            return value.value;
-    }
-}
-function requestResponseMessage(ep, msg, transfers) {
-    return new Promise((resolve)=>{
-        const id = generateUUID();
-        ep.addEventListener("message", function l(ev) {
-            if (!ev.data || !ev.data.id || ev.data.id !== id) {
-                return;
-            }
-            ep.removeEventListener("message", l);
-            resolve(ev.data);
-        });
-        if (ep.start) {
-            ep.start();
-        }
-        ep.postMessage(Object.assign({
-            id
-        }, msg), transfers);
-    });
-}
-function generateUUID() {
-    return new Array(4).fill(0).map(()=>Math.floor(Math.random() * Number.MAX_SAFE_INTEGER).toString(16)
-    ).join("-");
-}
-const wrap1 = (...args)=>{
-    return wrap(...args);
-};
-const transfer1 = (...args)=>{
-    return transfer(...args);
-};
-new Map();
-const createComlinkWorker = (path6, options)=>{
-    const worker = new Worker(path6, options);
-    const comlinkWorker = wrap1(worker);
-    return comlinkWorker;
-};
-const createComlinkSharedWorker = (path7, options)=>{
-    const worker1 = new SharedWorker(path7, options);
-    worker1.port.start();
-    const workerComlink = wrap1(worker1.port);
-    const base = {
-        get port () {
-            return worker1.port;
-        },
-        clonePort () {
-            const worker = new SharedWorker(path7, options);
-            worker.port.start();
-            return worker.port;
-        }
-    };
-    return new Proxy(base, {
-        get (obj, key) {
-            if (obj.hasOwnProperty(key)) {
-                return Reflect.get(obj, key);
-            }
-            return Reflect.get(workerComlink, key);
-        }
-    });
-};
-const resources = {
-    USER_IMAGE: '/sprites/MainPlayerWalkDown.png'
-};
-new Map();
-const immutable = (t)=>{
-    const obj = Object.freeze(t);
-    if (Array.isArray(obj)) {
-        obj.forEach((item)=>immutable(item)
-        );
-    } else if (typeof obj === 'object' && obj !== null) {
-        for (let value of Object.values(obj)){
-            immutable(value);
-        }
-    }
-    return obj;
-};
-const NativeKeyCodes = immutable({
-    AltLeft: 'AltLeft',
-    AltRight: 'AltRight',
-    ArrowDown: 'ArrowDown',
-    ArrowLeft: 'ArrowLeft',
-    ArrowRight: 'ArrowRight',
-    ArrowUp: 'ArrowUp',
-    Backquote: 'Backquote',
-    Backslash: 'Backslash',
-    Backspace: 'Backspace',
-    BracketLeft: 'BracketLeft',
-    BracketRight: 'BracketRight',
-    CapsLock: 'CapsLock',
-    Comma: 'Comma',
-    ControlLeft: 'ControlLeft',
-    Digit0: 'Digit0',
-    Digit1: 'Digit1',
-    Digit2: 'Digit2',
-    Digit3: 'Digit3',
-    Digit4: 'Digit4',
-    Digit5: 'Digit5',
-    Digit6: 'Digit6',
-    Digit7: 'Digit7',
-    Digit8: 'Digit8',
-    Digit9: 'Digit9',
-    Enter: 'Enter',
-    Equal: 'Equal',
-    Escape: 'Escape',
-    KeyA: 'KeyA',
-    KeyB: 'KeyB',
-    KeyC: 'KeyC',
-    KeyD: 'KeyD',
-    KeyE: 'KeyE',
-    KeyF: 'KeyF',
-    KeyG: 'KeyG',
-    KeyH: 'KeyH',
-    KeyI: 'KeyI',
-    KeyJ: 'KeyJ',
-    KeyK: 'KeyK',
-    KeyL: 'KeyL',
-    KeyM: 'KeyM',
-    KeyN: 'KeyN',
-    KeyO: 'KeyO',
-    KeyP: 'KeyP',
-    KeyQ: 'KeyQ',
-    KeyR: 'KeyR',
-    KeyS: 'KeyS',
-    KeyT: 'KeyT',
-    KeyU: 'KeyU',
-    KeyV: 'KeyV',
-    KeyW: 'KeyW',
-    KeyX: 'KeyX',
-    KeyY: 'KeyY',
-    KeyZ: 'KeyZ',
-    MetaLeft: 'MetaLeft',
-    MetaRight: 'MetaRight',
-    Minus: 'Minus',
-    Period: 'Period',
-    Quote: 'Quote',
-    Semicolon: 'Semicolon',
-    ShiftLeft: 'ShiftLeft',
-    ShiftRight: 'ShiftRight',
-    Slash: 'Slash',
-    Space: 'Space',
-    Tab: 'Tab'
-});
-const AliasKeyCodes = immutable({
-    'Shift': [
-        'ShiftLeft',
-        'ShiftRight'
-    ],
-    'Meta': [
-        'MetaLeft',
-        'MetaRight'
-    ],
-    'Alt': [
-        'AltLeft',
-        'AltRight'
-    ]
-});
-immutable({
-    ...NativeKeyCodes,
-    ...AliasKeyCodes
-});
-const activeKeys = new Set();
-const justActivated = new Set();
-let activeKeysSnapshot = new Set();
-let justActivatedSnapshot = new Set();
-const justPressed = (codes)=>{
-    if (Array.isArray(codes)) {
-        return codes.some((code)=>justPressed(code)
-        );
-    }
-    return justActivatedSnapshot.has(codes);
-};
-const triggerKeyDown = (keyCode)=>{
-    const alreadyDown = activeKeys.has(keyCode);
-    activeKeys.add(keyCode);
-    if (!alreadyDown) {
-        justActivated.add(keyCode);
-    }
-};
-const triggerKeyUp = (keyCode)=>{
-    activeKeys.delete(keyCode);
-};
-const clearKeys = ()=>{
-    activeKeys.clear();
-    activeKeysSnapshot.clear();
-    justActivated.clear();
-    justActivatedSnapshot.clear();
-};
-const attachListeners = (worker)=>{
-    if (isWorkerContext()) {
-        return {
-            'module:Keyboard:event:window:keydown': triggerKeyDown,
-            'module:Keyboard:event:window:keyup': triggerKeyUp,
-            'module:Keyboard:event:window:blur': clearKeys
-        };
-    } else {
-        const keydownEvent = worker ? (event)=>worker['module:Keyboard:event:window:keydown'](event.code)
-         : triggerKeyDown;
-        const keyUpEvent = worker ? (event)=>worker['module:Keyboard:event:window:keyup'](event.code)
-         : triggerKeyUp;
-        const blurEvent = worker ? ()=>worker['module:Keyboard:event:window:blur']()
-         : triggerKeyUp;
-        window.addEventListener('keydown', (e3)=>{
-            keydownEvent({
-                code: e3.code
-            });
-        });
-        window.addEventListener('keyup', keyUpEvent);
-        window.addEventListener('blur', blurEvent);
-    }
-};
+new EMap(()=>[]
+);
+Component();
+Component();
 const loadApp = async ({ useWorker =false  })=>{
     if (useWorker === false) return await import('./app-worker.ts');
     const appWorker = createComlinkWorker('/src/app-worker.js', {
@@ -4063,12 +4229,10 @@ const run = async ()=>{
     const app = await loadApp({
         useWorker: true
     });
-    const clonedCanvasWorker = canvasWorker.clonePort();
-    await app.attachCanvasWorker(transfer1(clonedCanvasWorker, [
-        clonedCanvasWorker
+    console.log('hello!');
+    await app.attachCanvasWorker(transfer1(canvasWorker.port, [
+        canvasWorker.port
     ]));
-    const resourceUrls = Array.from(Object.values(resources));
-    await canvasWorker.loadResources(resourceUrls);
     attachListeners(app);
     await app.run();
 };

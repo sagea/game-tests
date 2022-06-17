@@ -17,9 +17,6 @@ export const expose = (a: any, b?: any) => {
   self.dispatchEvent(event);
 
   for (const [name, method] of Object.entries(a)) {
-    // if (exposedMethods.has(name)) {
-    //   throw new Error(`Worker already exposed method with name ${name}`);
-    // }
     exposedMethods.set(name, method);
   }
   const items = Object.fromEntries(exposedMethods);

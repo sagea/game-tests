@@ -19,14 +19,25 @@ const setCanvas = (offscreenCanvas) => {
   ctx = canvas.getContext('2d');
 }
 
-const newRenderer2 = (handlers) => {
+const draw = (time, now, handlers) => {
+  const offset = Date.now() - time;
+  const canvperf = performance.now();
   for (let handler of handlers) {
     executeOnCanvas(ctx, handler);
   }
+  const entries = performance.getEntries()
+  const perf = [...entries].map(e => [
+    e.name,
+    e.detail,
+    (e.startTime - canvperf) + offset + now,
+  ]);
+  // console.log([...entries][3])
+  performance.clearMarks();
+  performance.clearMeasures();
+  return perf;
 }
 
-const comlinkObj = { setCanvas, newRenderer2, loadResources };
-
+const comlinkObj = { setCanvas, draw, loadResources };
 self.onconnect = (event) => {
   console.log('connected')
   const port = event.ports[0]

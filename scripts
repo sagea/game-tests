@@ -1,5 +1,5 @@
 #!/usr/bin/env -S deno run --no-check --allow-run --allow-read
-import { command, pre, runCommand } from 'https://raw.githubusercontent.com/sagea/deno-utilities/main/command-runners.ts';
+import { command, pre, runCommand, args } from 'https://raw.githubusercontent.com/sagea/deno-utilities/main/command-runners.ts';
 
 pre('build', 'build:watch') `
   ./scripts clean
@@ -23,7 +23,8 @@ echo "starting build"
   trap 'kill 0' SIGINT;
   deno bundle --import-map=import_maps.json --no-check src/loader.ts build/src/loader.js &
   deno bundle --import-map=import_maps.json --no-check ./src/app-worker.ts build/src/app-worker.js &
-  deno bundle --import-map=import_maps.json --no-check ./src/canvas-worker.ts build/src/canvas-worker.js
+  deno bundle --import-map=import_maps.json --no-check ./src/canvas-worker.ts build/src/canvas-worker.js &
+  wait
 )
 `;
 
@@ -32,7 +33,8 @@ command('build:watch') `
   trap 'kill 0' SIGINT;
   deno bundle --watch --import-map=import_maps.json --no-check src/loader.ts build/src/loader.js &
   deno bundle --watch --import-map=import_maps.json --no-check ./src/app-worker.ts build/src/app-worker.js &
-  deno bundle --watch --import-map=import_maps.json --no-check ./src/canvas-worker.ts build/src/canvas-worker.js
+  deno bundle --watch --import-map=import_maps.json --no-check ./src/canvas-worker.ts build/src/canvas-worker.js &
+  wait
 )
 `;
 
@@ -47,9 +49,14 @@ command('dev') `
 (
   trap 'kill 0' SIGINT;
   ./scripts build:watch &
-  ./scripts dev-server
+  ./scripts dev-server &
+  wait
 )
 `
+command('test') `
+  deno test --import-map=import_maps.json --no-check ${args(Deno.args.slice(1))} src/
+`
+
 runCommand(Deno.args);
 
 

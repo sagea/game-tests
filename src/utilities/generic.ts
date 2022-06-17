@@ -5,7 +5,6 @@ export type DeepPartial<T> = T extends object ? {
 } : T;
 
 export const isFunction = (item: any): item is Function => typeof item === 'function'
-export const isNumber = (item): item is number => typeof item === 'number'
 export const isString = (item): item is string => typeof item === 'string'
 export const isArray = (item): item is Array<any> => Array.isArray(item);
 export const isObject = (item) => typeof item === 'object' && item !== null;

@@ -80,7 +80,7 @@ function expose(obj1, ep = self) {
         if (!ev || !ev.data) {
             return;
         }
-        const { id: id1 , type: type1 , path: path1  } = Object.assign({
+        const { id , type: type1 , path: path1  } = Object.assign({
             path: []
         }, ev.data);
         const argumentList = (ev.data.argumentList || []).map(fromWireValue);
@@ -144,7 +144,7 @@ function expose(obj1, ep = self) {
         }).then((returnValue)=>{
             const [wireValue, transferables] = toWireValue(returnValue);
             ep.postMessage(Object.assign(Object.assign({}, wireValue), {
-                id: id1
+                id
             }), transferables);
             if (type1 === "RELEASE") {
                 ep.removeEventListener("message", callback);
@@ -220,13 +220,13 @@ function createProxy(ep, path2 = [], target = function() {}) {
         },
         apply (_target, _thisArg, rawArgumentList) {
             throwIfProxyReleased(isProxyReleased);
-            const last2 = path2[path2.length - 1];
-            if (last2 === createEndpoint) {
+            const last1 = path2[path2.length - 1];
+            if (last1 === createEndpoint) {
                 return requestResponseMessage(ep, {
                     type: "ENDPOINT"
                 }).then(fromWireValue);
             }
-            if (last2 === "bind") {
+            if (last1 === "bind") {
                 return createProxy(ep, path2.slice(0, -1));
             }
             const [argumentList, transferables] = processArguments(rawArgumentList);
@@ -304,9 +304,9 @@ function fromWireValue(value) {
 }
 function requestResponseMessage(ep, msg, transfers) {
     return new Promise((resolve)=>{
-        const id2 = generateUUID();
+        const id = generateUUID();
         ep.addEventListener("message", function l(ev) {
-            if (!ev.data || !ev.data.id || ev.data.id !== id2) {
+            if (!ev.data || !ev.data.id || ev.data.id !== id) {
                 return;
             }
             ep.removeEventListener("message", l);
@@ -316,7 +316,7 @@ function requestResponseMessage(ep, msg, transfers) {
             ep.start();
         }
         ep.postMessage(Object.assign({
-            id: id2
+            id
         }, msg), transfers);
     });
 }
@@ -341,3311 +341,6 @@ const expose1 = (a, b)=>{
     const items = Object.fromEntries(exposedMethods);
     expose(items, b);
 };
-function nop() {}
-const isArray = Array.isArray || function(xs) {
-    return xs instanceof Array;
-};
-function isObservable(x) {
-    return x && x._isObservable;
-}
-function all(xs, f) {
-    for(var i = 0, x; i < xs.length; i++){
-        x = xs[i];
-        if (!f(x)) {
-            return false;
-        }
-    }
-    return true;
-}
-function always(x) {
-    return ()=>x
-    ;
-}
-function any(xs, f) {
-    for(var i = 0, x; i < xs.length; i++){
-        x = xs[i];
-        if (f(x)) {
-            return true;
-        }
-    }
-    return false;
-}
-function bind(fn, me) {
-    return function() {
-        return fn.apply(me, arguments);
-    };
-}
-function contains(xs, x) {
-    return indexOf(xs, x) !== -1;
-}
-function each(xs, f) {
-    for(var key in xs){
-        if (Object.prototype.hasOwnProperty.call(xs, key)) {
-            var value = xs[key];
-            f(key, value);
-        }
-    }
-}
-function empty(xs) {
-    return xs.length === 0;
-}
-function filter(f, xs) {
-    var filtered = [];
-    for(var i = 0, x; i < xs.length; i++){
-        x = xs[i];
-        if (f(x)) {
-            filtered.push(x);
-        }
-    }
-    return filtered;
-}
-function flatMap(f, xs) {
-    return fold(xs, [], function(ys, x) {
-        return ys.concat(f(x));
-    });
-}
-function flip(f) {
-    return (a, b)=>f(b, a)
-    ;
-}
-function fold(xs, seed, f) {
-    for(var i = 0, x; i < xs.length; i++){
-        x = xs[i];
-        seed = f(seed, x);
-    }
-    return seed;
-}
-function head(xs) {
-    return xs[0];
-}
-function id(x) {
-    return x;
-}
-function indexOfDefault(xs, x) {
-    return xs.indexOf(x);
-}
-function indexOfFallback(xs, x) {
-    for(var i = 0, y; i < xs.length; i++){
-        y = xs[i];
-        if (x === y) {
-            return i;
-        }
-    }
-    return -1;
-}
-const indexOf = Array.prototype.indexOf ? indexOfDefault : indexOfFallback;
-function indexWhere(xs, f) {
-    for(var i = 0, y; i < xs.length; i++){
-        y = xs[i];
-        if (f(y)) {
-            return i;
-        }
-    }
-    return -1;
-}
-function isFunction(f) {
-    return typeof f === "function";
-}
-function last(xs) {
-    return xs[xs.length - 1];
-}
-function map(f, xs) {
-    var result = [];
-    for(var i = 0, x; i < xs.length; i++){
-        x = xs[i];
-        result.push(f(x));
-    }
-    return result;
-}
-function negate(f) {
-    return function(x) {
-        return !f(x);
-    };
-}
-function remove(x, xs) {
-    var i = indexOf(xs, x);
-    if (i >= 0) {
-        return xs.splice(i, 1);
-    }
-}
-function tail(xs) {
-    return xs.slice(1, xs.length);
-}
-function toArray(xs) {
-    return isArray(xs) ? xs : [
-        xs
-    ];
-}
-function toFunction(f) {
-    if (typeof f == "function") {
-        return f;
-    }
-    return (x)=>f
-    ;
-}
-function toString(obj) {
-    var hasProp = {}.hasOwnProperty;
-    try {
-        recursionDepth++;
-        if (obj == null) {
-            return "undefined";
-        } else if (isFunction(obj)) {
-            return "function";
-        } else if (isArray(obj)) {
-            if (recursionDepth > 5) {
-                return "[..]";
-            }
-            return "[" + map(toString, obj).toString() + "]";
-        } else if ((obj != null ? obj.toString : void 0) != null && obj.toString !== Object.prototype.toString) {
-            return obj.toString();
-        } else if (typeof obj === "object") {
-            if (recursionDepth > 5) {
-                return "{..}";
-            }
-            var results = [];
-            for(var key in obj){
-                if (!hasProp.call(obj, key)) continue;
-                let value = function() {
-                    try {
-                        return obj[key];
-                    } catch (error) {
-                        return error;
-                    }
-                }();
-                results.push(toString(key) + ":" + toString(value));
-            }
-            return "{" + results + "}";
-        } else {
-            return obj;
-        }
-    } finally{
-        recursionDepth--;
-    }
-}
-function without(x, xs) {
-    return filter(function(y) {
-        return y !== x;
-    }, xs);
-}
-var _ = {
-    indexOf,
-    indexWhere,
-    head,
-    always,
-    negate,
-    empty,
-    tail,
-    filter,
-    map,
-    each,
-    toArray,
-    contains,
-    id,
-    last,
-    all,
-    any,
-    without,
-    remove,
-    fold,
-    flatMap,
-    bind,
-    isFunction,
-    toFunction,
-    toString
-};
-var recursionDepth = 0;
-const more = undefined;
-const noMore = "<no-more>";
-function assert(message, condition) {
-    if (!condition) {
-        throw new Error(message);
-    }
-}
-function assertEventStream(event) {
-    if (!(event != null ? event._isEventStream : void 0)) {
-        throw new Error("not an EventStream : " + event);
-    }
-}
-function assertObservable(observable) {
-    if (!(observable != null ? observable._isObservable : void 0)) {
-        throw new Error("not an Observable : " + observable);
-    }
-}
-function assertFunction(f) {
-    return assert("not a function : " + f, _.isFunction(f));
-}
-function assertNoArguments(args) {
-    return assert("no arguments supported", args.length === 0);
-}
-const defaultScheduler = {
-    setTimeout (f, d) {
-        return setTimeout(f, d);
-    },
-    setInterval (f, i) {
-        return setInterval(f, i);
-    },
-    clearInterval (id1) {
-        return clearInterval(id1);
-    },
-    clearTimeout (id2) {
-        return clearTimeout(id2);
-    },
-    now () {
-        return new Date().getTime();
-    }
-};
-const GlobalScheduler = {
-    scheduler: defaultScheduler
-};
-var rootEvent = undefined;
-var waiterObs = [];
-var waiters = {};
-var aftersStack = [];
-var aftersStackHeight = 0;
-var flushed = {};
-var processingAfters = false;
-function toString$1() {
-    return _.toString({
-        rootEvent,
-        processingAfters,
-        waiterObs,
-        waiters,
-        aftersStack,
-        aftersStackHeight,
-        flushed
-    });
-}
-function ensureStackHeight(h) {
-    if (h <= aftersStackHeight) return;
-    if (!aftersStack[h - 1]) {
-        aftersStack[h - 1] = [
-            [],
-            0
-        ];
-    }
-    aftersStackHeight = h;
-}
-function isInTransaction() {
-    return rootEvent !== undefined;
-}
-function soonButNotYet(obs, f) {
-    if (rootEvent) {
-        whenDoneWith(obs, f);
-    } else {
-        GlobalScheduler.scheduler.setTimeout(f, 0);
-    }
-}
-function afterTransaction(obs, f) {
-    if (rootEvent || processingAfters) {
-        ensureStackHeight(1);
-        var stackIndexForThisObs = 0;
-        while(stackIndexForThisObs < aftersStackHeight - 1){
-            if (containsObs(obs, aftersStack[stackIndexForThisObs][0])) {
-                break;
-            }
-            stackIndexForThisObs++;
-        }
-        var listFromStack = aftersStack[stackIndexForThisObs][0];
-        listFromStack.push([
-            obs,
-            f
-        ]);
-        if (!rootEvent) {
-            processAfters();
-        }
-    } else {
-        return f();
-    }
-}
-function containsObs(obs, aftersList) {
-    for(var i = 0; i < aftersList.length; i++){
-        if (aftersList[i][0].id == obs.id) return true;
-    }
-    return false;
-}
-function processAfters() {
-    let stackSizeAtStart = aftersStackHeight;
-    if (!stackSizeAtStart) return;
-    let isRoot = !processingAfters;
-    processingAfters = true;
-    try {
-        while(aftersStackHeight >= stackSizeAtStart){
-            var topOfStack = aftersStack[aftersStackHeight - 1];
-            if (!topOfStack) throw new Error("Unexpected stack top: " + topOfStack);
-            var [topAfters, index] = topOfStack;
-            if (index < topAfters.length) {
-                var [, after] = topAfters[index];
-                topOfStack[1]++;
-                ensureStackHeight(aftersStackHeight + 1);
-                var callSuccess = false;
-                try {
-                    after();
-                    callSuccess = true;
-                    while(aftersStackHeight > stackSizeAtStart && aftersStack[aftersStackHeight - 1][0].length == 0){
-                        aftersStackHeight--;
-                    }
-                } finally{
-                    if (!callSuccess) {
-                        aftersStack = [];
-                        aftersStackHeight = 0;
-                    }
-                }
-            } else {
-                topOfStack[0] = [];
-                topOfStack[1] = 0;
-                break;
-            }
-        }
-    } finally{
-        if (isRoot) processingAfters = false;
-    }
-}
-function whenDoneWith(obs, f) {
-    if (rootEvent) {
-        var obsWaiters = waiters[obs.id];
-        if (obsWaiters === undefined) {
-            obsWaiters = waiters[obs.id] = [
-                f
-            ];
-            return waiterObs.push(obs);
-        } else {
-            return obsWaiters.push(f);
-        }
-    } else {
-        return f();
-    }
-}
-function flush() {
-    while(waiterObs.length > 0){
-        flushWaiters(0, true);
-    }
-    flushed = {};
-}
-function flushWaiters(index, deps) {
-    var obs = waiterObs[index];
-    var obsId = obs.id;
-    var obsWaiters = waiters[obsId];
-    waiterObs.splice(index, 1);
-    delete waiters[obsId];
-    if (deps && waiterObs.length > 0) {
-        flushDepsOf(obs);
-    }
-    for(var i = 0, f; i < obsWaiters.length; i++){
-        f = obsWaiters[i];
-        f();
-    }
-}
-function flushDepsOf(obs) {
-    if (flushed[obs.id]) return;
-    var deps = obs.internalDeps();
-    for(var i = 0, dep; i < deps.length; i++){
-        dep = deps[i];
-        flushDepsOf(dep);
-        if (waiters[dep.id]) {
-            var index = _.indexOf(waiterObs, dep);
-            flushWaiters(index, false);
-        }
-    }
-    flushed[obs.id] = true;
-}
-function inTransaction(event, context, f, args) {
-    if (rootEvent) {
-        return f.apply(context, args);
-    } else {
-        rootEvent = event;
-        try {
-            var result = f.apply(context, args);
-            flush();
-        } finally{
-            rootEvent = undefined;
-            processAfters();
-        }
-        return result;
-    }
-}
-function currentEventId() {
-    return rootEvent ? rootEvent.id : undefined;
-}
-function wrappedSubscribe(obs, subscribe, sink) {
-    assertFunction(sink);
-    let unsubd = false;
-    let shouldUnsub = false;
-    let doUnsub = ()=>{
-        shouldUnsub = true;
-    };
-    let unsub = ()=>{
-        unsubd = true;
-        doUnsub();
-    };
-    doUnsub = subscribe(function(event) {
-        afterTransaction(obs, function() {
-            if (!unsubd) {
-                var reply = sink(event);
-                if (reply === noMore) {
-                    unsub();
-                }
-            }
-        });
-        return more;
-    });
-    if (shouldUnsub) {
-        doUnsub();
-    }
-    return unsub;
-}
-function hasWaiters() {
-    return waiterObs.length > 0;
-}
-var UpdateBarrier = {
-    toString: toString$1,
-    whenDoneWith,
-    hasWaiters,
-    inTransaction,
-    currentEventId,
-    wrappedSubscribe,
-    afterTransaction,
-    soonButNotYet,
-    isInTransaction
-};
-class Desc {
-    constructor(context, method, args = []){
-        this._isDesc = true;
-        this.context = context;
-        this.method = method;
-        this.args = args;
-    }
-    deps() {
-        if (!this.cachedDeps) {
-            this.cachedDeps = findDeps([
-                this.context
-            ].concat(this.args));
-        }
-        return this.cachedDeps;
-    }
-    toString() {
-        let args = _.map(_.toString, this.args);
-        return _.toString(this.context) + "." + _.toString(this.method) + "(" + args + ")";
-    }
-}
-function describe(context, method, ...args) {
-    const ref = context || method;
-    if (ref && ref._isDesc) {
-        return context || method;
-    } else {
-        return new Desc(context, method, args);
-    }
-}
-function findDeps(x) {
-    if (isArray(x)) {
-        return _.flatMap(findDeps, x);
-    } else if (isObservable(x)) {
-        return [
-            x
-        ];
-    } else if (typeof x !== "undefined" && x !== null ? x._isSource : undefined) {
-        return [
-            x.obs
-        ];
-    } else {
-        return [];
-    }
-}
-const nullSink = ()=>more
-;
-const nullVoidSink = ()=>more
-;
-function withStateMachine(initState, f, src) {
-    return src.transform(withStateMachineT(initState, f), new Desc(src, "withStateMachine", [
-        initState,
-        f
-    ]));
-}
-function withStateMachineT(initState, f) {
-    let state = initState;
-    return (event, sink)=>{
-        var fromF = f(state, event);
-        var [newState, outputs] = fromF;
-        state = newState;
-        var reply = more;
-        for(var i = 0; i < outputs.length; i++){
-            let output = outputs[i];
-            reply = sink(output);
-            if (reply === noMore) {
-                return reply;
-            }
-        }
-        return reply;
-    };
-}
-class Some {
-    constructor(value){
-        this._isSome = true;
-        this.isDefined = true;
-        this.value = value;
-    }
-    getOrElse(arg) {
-        return this.value;
-    }
-    get() {
-        return this.value;
-    }
-    filter(f) {
-        if (f(this.value)) {
-            return new Some(this.value);
-        } else {
-            return None;
-        }
-    }
-    map(f) {
-        return new Some(f(this.value));
-    }
-    forEach(f) {
-        f(this.value);
-    }
-    toArray() {
-        return [
-            this.value
-        ];
-    }
-    inspect() {
-        return "Some(" + this.value + ")";
-    }
-    toString() {
-        return this.inspect();
-    }
-}
-const None = {
-    _isNone: true,
-    getOrElse (value) {
-        return value;
-    },
-    get () {
-        throw new Error("None.get()");
-    },
-    filter () {
-        return None;
-    },
-    map () {
-        return None;
-    },
-    forEach () {},
-    isDefined: false,
-    toArray () {
-        return [];
-    },
-    inspect () {
-        return "None";
-    },
-    toString () {
-        return this.inspect();
-    }
-};
-function none() {
-    return None;
-}
-function toOption(v3) {
-    if (v3 && (v3._isSome || v3._isNone)) {
-        return v3;
-    } else {
-        return new Some(v3);
-    }
-}
-function isNone(object) {
-    return typeof object !== "undefined" && object !== null ? object._isNone : false;
-}
-var eventIdCounter = 0;
-class Event1 {
-    constructor(){
-        this.id = ++eventIdCounter;
-        this.isEvent = true;
-        this._isEvent = true;
-        this.isEnd = false;
-        this.isInitial = false;
-        this.isNext = false;
-        this.isError = false;
-        this.hasValue = false;
-    }
-    filter(f) {
-        return true;
-    }
-    inspect() {
-        return this.toString();
-    }
-    log() {
-        return this.toString();
-    }
-    toNext() {
-        return this;
-    }
-}
-class Value extends Event1 {
-    constructor(value){
-        super();
-        this.hasValue = true;
-        if (value instanceof Event1) {
-            throw new Error$1("Wrapping an event inside other event");
-        }
-        this.value = value;
-    }
-    fmap(f) {
-        return this.apply(f(this.value));
-    }
-    filter(f) {
-        return f(this.value);
-    }
-    toString() {
-        return _.toString(this.value);
-    }
-    log() {
-        return this.value;
-    }
-}
-class Next extends Value {
-    constructor(value){
-        super(value);
-        this.isNext = true;
-        this._isNext = true;
-    }
-    apply(value) {
-        return new Next(value);
-    }
-}
-class Initial extends Value {
-    constructor(value){
-        super(value);
-        this.isInitial = true;
-        this._isInitial = true;
-    }
-    apply(value) {
-        return new Initial(value);
-    }
-    toNext() {
-        return new Next(this.value);
-    }
-}
-class NoValue extends Event1 {
-    constructor(){
-        super(...arguments);
-        this.hasValue = false;
-    }
-    fmap(f) {
-        return this;
-    }
-}
-class End extends NoValue {
-    constructor(){
-        super(...arguments);
-        this.isEnd = true;
-    }
-    toString() {
-        return "<end>";
-    }
-}
-class Error$1 extends NoValue {
-    constructor(error){
-        super();
-        this.isError = true;
-        this.error = error;
-    }
-    toString() {
-        return "<error> " + _.toString(this.error);
-    }
-}
-function initialEvent(value) {
-    return new Initial(value);
-}
-function nextEvent(value) {
-    return new Next(value);
-}
-function endEvent() {
-    return new End();
-}
-function toEvent(x) {
-    if (x && x._isEvent) {
-        return x;
-    } else {
-        return nextEvent(x);
-    }
-}
-function isEvent(e1) {
-    return e1 && e1._isEvent;
-}
-function isInitial(e2) {
-    return e2 && e2._isInitial;
-}
-function isError(e3) {
-    return e3.isError;
-}
-function hasValue(e4) {
-    return e4.hasValue;
-}
-function isEnd(e5) {
-    return e5.isEnd;
-}
-function equals(a, b) {
-    return a === b;
-}
-function skipDuplicates(src, isEqual = equals) {
-    let desc = new Desc(src, "skipDuplicates", []);
-    return withStateMachine(none(), function(prev, event) {
-        if (!hasValue(event)) {
-            return [
-                prev,
-                [
-                    event
-                ]
-            ];
-        } else if (event.isInitial || isNone(prev) || !isEqual(prev.get(), event.value)) {
-            return [
-                new Some(event.value),
-                [
-                    event
-                ]
-            ];
-        } else {
-            return [
-                prev,
-                []
-            ];
-        }
-    }, src).withDesc(desc);
-}
-function take(count1, src, desc) {
-    return src.transform(takeT(count1), desc || new Desc(src, "take", [
-        count1
-    ]));
-}
-function takeT(count2) {
-    return (e6, sink)=>{
-        if (!e6.hasValue) {
-            return sink(e6);
-        } else {
-            count2--;
-            if (count2 > 0) {
-                return sink(e6);
-            } else {
-                if (count2 === 0) {
-                    sink(e6);
-                }
-                sink(endEvent());
-                return noMore;
-            }
-        }
-    };
-}
-function log(args, src) {
-    src.subscribe(function(event) {
-        if (typeof console !== "undefined" && typeof console.log === "function") {
-            console.log(...args.concat([
-                event.log()
-            ]));
-        }
-        return more;
-    });
-}
-function doLogT(args) {
-    return (event, sink)=>{
-        if (typeof console !== "undefined" && console !== null && typeof console.log === "function") {
-            console.log(...args.concat([
-                event.log()
-            ]));
-        }
-        return sink(event);
-    };
-}
-function doErrorT(f) {
-    return (event, sink)=>{
-        if (isError(event)) {
-            f(event.error);
-        }
-        return sink(event);
-    };
-}
-function doActionT(f) {
-    return (event, sink)=>{
-        if (hasValue(event)) {
-            f(event.value);
-        }
-        return sink(event);
-    };
-}
-function doEndT(f) {
-    return (event, sink)=>{
-        if (isEnd(event)) {
-            f();
-        }
-        return sink(event);
-    };
-}
-function scan(src, seed, f) {
-    let resultProperty;
-    let acc = seed;
-    let initHandled = false;
-    const subscribe = (sink)=>{
-        var initSent = false;
-        var unsub = nop;
-        var reply = more;
-        const sendInit = function() {
-            if (!initSent) {
-                initSent = initHandled = true;
-                reply = sink(new Initial(acc));
-                if (reply === noMore) {
-                    unsub();
-                    unsub = nop;
-                }
-            }
-            return reply;
-        };
-        unsub = src.subscribeInternal(function(event) {
-            if (hasValue(event)) {
-                if (initHandled && event.isInitial) {
-                    return more;
-                } else {
-                    if (!event.isInitial) {
-                        sendInit();
-                    }
-                    initSent = initHandled = true;
-                    var prev = acc;
-                    var next = f(prev, event.value);
-                    acc = next;
-                    return sink(event.apply(next));
-                }
-            } else {
-                if (event.isEnd) {
-                    reply = sendInit();
-                }
-                if (reply !== noMore) {
-                    return sink(event);
-                }
-                return reply;
-            }
-        });
-        UpdateBarrier.whenDoneWith(resultProperty, sendInit);
-        return unsub;
-    };
-    return resultProperty = new Property(new Desc(src, "scan", [
-        seed,
-        f
-    ]), subscribe);
-}
-function mapEndT(f) {
-    let theF = _.toFunction(f);
-    return function(event, sink) {
-        if (isEnd(event)) {
-            sink(nextEvent(theF(event)));
-            sink(endEvent());
-            return noMore;
-        } else {
-            return sink(event);
-        }
-    };
-}
-function mapErrorT(f) {
-    let theF = _.toFunction(f);
-    return function(event, sink) {
-        if (isError(event)) {
-            return sink(nextEvent(theF(event.error)));
-        } else {
-            return sink(event);
-        }
-    };
-}
-function skipErrors(src) {
-    return src.transform(function(event, sink) {
-        if (isError(event)) {
-            return more;
-        } else {
-            return sink(event);
-        }
-    }, new Desc(src, "skipErrors", []));
-}
-function last$1(src) {
-    var lastEvent;
-    return src.transform(function(event, sink) {
-        if (isEnd(event)) {
-            if (lastEvent) {
-                sink(lastEvent);
-            }
-            sink(endEvent());
-            return noMore;
-        } else if (hasValue(event)) {
-            lastEvent = event;
-            return more;
-        } else {
-            return sink(event);
-        }
-    }).withDesc(new Desc(src, "last", []));
-}
-class CompositeUnsubscribe {
-    constructor(ss = []){
-        this.unsubscribed = false;
-        this.unsubscribe = _.bind(this.unsubscribe, this);
-        this.unsubscribed = false;
-        this.subscriptions = [];
-        this.starting = [];
-        for(var i = 0, s; i < ss.length; i++){
-            s = ss[i];
-            this.add(s);
-        }
-    }
-    add(subscription) {
-        if (!this.unsubscribed) {
-            var ended = false;
-            var unsub = nop;
-            this.starting.push(subscription);
-            var unsubMe = ()=>{
-                if (this.unsubscribed) {
-                    return;
-                }
-                ended = true;
-                this.remove(unsub);
-                _.remove(subscription, this.starting);
-            };
-            unsub = subscription(this.unsubscribe, unsubMe);
-            if (!(this.unsubscribed || ended)) {
-                this.subscriptions.push(unsub);
-            } else {
-                unsub();
-            }
-            _.remove(subscription, this.starting);
-        }
-    }
-    remove(unsub) {
-        if (this.unsubscribed) {
-            return;
-        }
-        if (_.remove(unsub, this.subscriptions) !== undefined) {
-            return unsub();
-        }
-    }
-    unsubscribe() {
-        if (this.unsubscribed) {
-            return;
-        }
-        this.unsubscribed = true;
-        var iterable = this.subscriptions;
-        for(var i = 0; i < iterable.length; i++){
-            iterable[i]();
-        }
-        this.subscriptions = [];
-        this.starting = [];
-    }
-    count() {
-        if (this.unsubscribed) {
-            return 0;
-        }
-        return this.subscriptions.length + this.starting.length;
-    }
-    empty() {
-        return this.count() === 0;
-    }
-}
-function streamSubscribeToPropertySubscribe(initValue, streamSubscribe) {
-    return function(sink) {
-        var initSent = false;
-        var subbed = false;
-        var unsub = nop;
-        var reply = more;
-        var sendInit = function() {
-            if (!initSent) {
-                return initValue.forEach(function(value) {
-                    initSent = true;
-                    reply = sink(new Initial(value));
-                    if (reply === noMore) {
-                        unsub();
-                        unsub = nop;
-                        return nop;
-                    }
-                });
-            }
-        };
-        unsub = streamSubscribe(function(event) {
-            if (event instanceof Value) {
-                if (event.isInitial && !subbed) {
-                    initValue = new Some(event.value);
-                    return more;
-                } else {
-                    if (!event.isInitial) {
-                        sendInit();
-                    }
-                    initSent = true;
-                    initValue = new Some(event.value);
-                    return sink(event);
-                }
-            } else {
-                if (event.isEnd) {
-                    reply = sendInit();
-                }
-                if (reply !== noMore) {
-                    return sink(event);
-                }
-                return reply;
-            }
-        });
-        subbed = true;
-        sendInit();
-        return unsub;
-    };
-}
-function propertyFromStreamSubscribe(desc, subscribe) {
-    assertFunction(subscribe);
-    return new Property(desc, streamSubscribeToPropertySubscribe(none(), subscribe));
-}
-function once(value) {
-    const s = new EventStream(new Desc("Bacon", "once", [
-        value
-    ]), function(sink) {
-        UpdateBarrier.soonButNotYet(s, function() {
-            sink(toEvent(value));
-            sink(endEvent());
-        });
-        return nop;
-    });
-    return s;
-}
-function flatMap_(spawner, src, params = {}) {
-    const root = src;
-    const rootDep = [
-        root
-    ];
-    const childDeps = [];
-    const isProperty1 = src._isProperty;
-    const ctor = isProperty1 ? propertyFromStreamSubscribe : newEventStreamAllowSync;
-    let initialSpawned = false;
-    const desc = params.desc || new Desc(src, "flatMap_", [
-        spawner
-    ]);
-    const result = ctor(desc, function(sink) {
-        const composite = new CompositeUnsubscribe();
-        const queue = [];
-        function spawn(event1) {
-            if (isProperty1 && event1.isInitial) {
-                if (initialSpawned) {
-                    return more;
-                }
-                initialSpawned = true;
-            }
-            const child = makeObservable(spawner(event1));
-            childDeps.push(child);
-            return composite.add(function(unsubAll, unsubMe) {
-                return child.subscribeInternal(function(event) {
-                    if (event.isEnd) {
-                        _.remove(child, childDeps);
-                        checkQueue();
-                        checkEnd(unsubMe);
-                        return noMore;
-                    } else {
-                        event = event.toNext();
-                        const reply = sink(event);
-                        if (reply === noMore) {
-                            unsubAll();
-                        }
-                        return reply;
-                    }
-                });
-            });
-        }
-        function checkQueue() {
-            const event = queue.shift();
-            if (event) {
-                spawn(event);
-            }
-        }
-        function checkEnd(unsub) {
-            unsub();
-            if (composite.empty()) {
-                return sink(endEvent());
-            }
-            return more;
-        }
-        composite.add(function(__, unsubRoot) {
-            return root.subscribeInternal(function(event) {
-                if (event.isEnd) {
-                    return checkEnd(unsubRoot);
-                } else if (event.isError && !params.mapError) {
-                    return sink(event);
-                } else if (params.firstOnly && composite.count() > 1) {
-                    return more;
-                } else {
-                    if (composite.unsubscribed) {
-                        return noMore;
-                    }
-                    if (params.limit && composite.count() > params.limit) {
-                        queue.push(event);
-                    } else {
-                        spawn(event);
-                    }
-                    return more;
-                }
-            });
-        });
-        return composite.unsubscribe;
-    });
-    result.internalDeps = function() {
-        if (childDeps.length) {
-            return rootDep.concat(childDeps);
-        } else {
-            return rootDep;
-        }
-    };
-    return result;
-}
-function handleEventValueWith(f) {
-    if (typeof f == "function") {
-        return (event)=>{
-            if (hasValue(event)) {
-                return f(event.value);
-            }
-            return event;
-        };
-    }
-    return (event)=>f
-    ;
-}
-function makeObservable(x) {
-    if (isObservable(x)) {
-        return x;
-    } else {
-        return once(x);
-    }
-}
-function flatMapEvent(src, f) {
-    return flatMap_(f, src, {
-        mapError: true,
-        desc: new Desc(src, "flatMapEvent", [
-            f
-        ])
-    });
-}
-function endAsValue(src) {
-    return src.transform((event, sink)=>{
-        if (isEnd(event)) {
-            sink(nextEvent({}));
-            sink(endEvent());
-            return noMore;
-        }
-        return more;
-    });
-}
-function endOnError(src, predicate = (x)=>true
-) {
-    return src.transform((event, sink)=>{
-        if (isError(event) && predicate(event.error)) {
-            sink(event);
-            return sink(endEvent());
-        } else {
-            return sink(event);
-        }
-    }, new Desc(src, "endOnError", []));
-}
-class Source {
-    constructor(obs, sync){
-        this._isSource = true;
-        this.flatten = true;
-        this.ended = false;
-        this.obs = obs;
-        this.sync = sync;
-    }
-    subscribe(sink) {
-        return this.obs.subscribeInternal(sink);
-    }
-    toString() {
-        return this.obs.toString();
-    }
-    markEnded() {
-        this.ended = true;
-    }
-    mayHave(count) {
-        return true;
-    }
-}
-class DefaultSource extends Source {
-    consume() {
-        return this.value;
-    }
-    push(x) {
-        this.value = x;
-    }
-    hasAtLeast(c) {
-        return !!this.value;
-    }
-}
-class ConsumingSource extends Source {
-    constructor(obs, sync){
-        super(obs, sync);
-        this.flatten = false;
-        this.queue = [];
-    }
-    consume() {
-        return this.queue.shift();
-    }
-    push(x) {
-        this.queue.push(x);
-    }
-    mayHave(count3) {
-        return !this.ended || this.queue.length >= count3;
-    }
-    hasAtLeast(count4) {
-        return this.queue.length >= count4;
-    }
-}
-class BufferingSource extends Source {
-    constructor(obs){
-        super(obs, true);
-        this.queue = [];
-    }
-    consume() {
-        const values1 = this.queue;
-        this.queue = [];
-        return {
-            value: values1
-        };
-    }
-    push(x) {
-        return this.queue.push(x.value);
-    }
-    hasAtLeast(count) {
-        return true;
-    }
-}
-function isTrigger(s) {
-    if (s == null) return false;
-    if (s._isSource) {
-        return s.sync;
-    } else {
-        return s._isEventStream;
-    }
-}
-function fromObservable(s) {
-    if (s != null && s._isSource) {
-        return s;
-    } else if (s != null && s._isProperty) {
-        return new DefaultSource(s, false);
-    } else {
-        return new ConsumingSource(s, true);
-    }
-}
-function never() {
-    return new EventStream(describe("Bacon", "never"), (sink)=>{
-        sink(endEvent());
-        return nop;
-    });
-}
-function when(...patterns) {
-    return when_(newEventStream, patterns);
-}
-function whenP(...patterns) {
-    return when_(propertyFromStreamSubscribe, patterns);
-}
-function when_(ctor, patterns) {
-    if (patterns.length === 0) {
-        return never();
-    }
-    var [sources, ixPats] = processRawPatterns(extractRawPatterns(patterns));
-    if (!sources.length) {
-        return never();
-    }
-    var needsBarrier = any(sources, (s)=>s.flatten
-    ) && containsDuplicateDeps(map((s)=>s.obs
-    , sources));
-    var desc = new Desc("Bacon", "when", Array.prototype.slice.call(patterns));
-    var resultStream = ctor(desc, function(sink) {
-        var triggers = [];
-        var ends = false;
-        function match(p) {
-            for(var i = 0; i < p.ixs.length; i++){
-                let ix = p.ixs[i];
-                if (!sources[ix.index].hasAtLeast(ix.count)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        function cannotMatch(p) {
-            for(var i = 0; i < p.ixs.length; i++){
-                let ix = p.ixs[i];
-                if (!sources[ix.index].mayHave(ix.count)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        function nonFlattened(trigger) {
-            return !trigger.source.flatten;
-        }
-        function part(source) {
-            return function(unsubAll) {
-                function flushLater() {
-                    return UpdateBarrier.whenDoneWith(resultStream, flush1);
-                }
-                function flushWhileTriggers() {
-                    var trigger;
-                    if ((trigger = triggers.pop()) !== undefined) {
-                        var reply = more;
-                        for(var i = 0, p; i < ixPats.length; i++){
-                            p = ixPats[i];
-                            if (match(p)) {
-                                const values2 = [];
-                                for(var j = 0; j < p.ixs.length; j++){
-                                    let event = sources[p.ixs[j].index].consume();
-                                    if (!event) throw new Error("Event was undefined");
-                                    values2.push(event.value);
-                                }
-                                let applied = p.f.apply(null, values2);
-                                reply = sink(trigger.e.apply(applied));
-                                if (triggers.length) {
-                                    triggers = filter(nonFlattened, triggers);
-                                }
-                                if (reply === noMore) {
-                                    return reply;
-                                } else {
-                                    return flushWhileTriggers();
-                                }
-                            }
-                        }
-                    }
-                    return more;
-                }
-                function flush1() {
-                    var reply = flushWhileTriggers();
-                    if (ends) {
-                        if (all(sources, cannotSync) || all(ixPats, cannotMatch)) {
-                            reply = noMore;
-                            sink(endEvent());
-                        }
-                    }
-                    if (reply === noMore) {
-                        unsubAll();
-                    }
-                }
-                return source.subscribe(function(e7) {
-                    var reply = more;
-                    if (e7.isEnd) {
-                        ends = true;
-                        source.markEnded();
-                        flushLater();
-                    } else if (e7.isError) {
-                        reply = sink(e7);
-                    } else {
-                        let valueEvent = e7;
-                        source.push(valueEvent);
-                        if (source.sync) {
-                            triggers.push({
-                                source: source,
-                                e: valueEvent
-                            });
-                            if (needsBarrier || UpdateBarrier.hasWaiters()) {
-                                flushLater();
-                            } else {
-                                flush1();
-                            }
-                        }
-                    }
-                    if (reply === noMore) {
-                        unsubAll();
-                    }
-                    return reply;
-                });
-            };
-        }
-        return new CompositeUnsubscribe(map(part, sources)).unsubscribe;
-    });
-    return resultStream;
-}
-function processRawPatterns(rawPatterns) {
-    var sources = [];
-    var pats = [];
-    for(let i = 0; i < rawPatterns.length; i++){
-        let [patSources, f] = rawPatterns[i];
-        var pat = {
-            f,
-            ixs: []
-        };
-        var triggerFound = false;
-        for(var j = 0, s; j < patSources.length; j++){
-            s = patSources[j];
-            var index = indexOf(sources, s);
-            if (!triggerFound) {
-                triggerFound = isTrigger(s);
-            }
-            if (index < 0) {
-                sources.push(s);
-                index = sources.length - 1;
-            }
-            for(var k = 0; k < pat.ixs.length; k++){
-                let ix = pat.ixs[k];
-                if (ix.index === index) {
-                    ix.count++;
-                }
-            }
-            pat.ixs.push({
-                index: index,
-                count: 1
-            });
-        }
-        if (patSources.length > 0 && !triggerFound) {
-            throw new Error("At least one EventStream required, none found in " + patSources);
-        }
-        if (patSources.length > 0) {
-            pats.push(pat);
-        }
-    }
-    return [
-        map(fromObservable, sources),
-        pats
-    ];
-}
-function extractLegacyPatterns(sourceArgs) {
-    var i = 0;
-    var len = sourceArgs.length;
-    var rawPatterns = [];
-    while(i < len){
-        let patSources = toArray(sourceArgs[i++]);
-        let f = toFunction(sourceArgs[i++]);
-        rawPatterns.push([
-            patSources,
-            f
-        ]);
-    }
-    var usage = "when: expecting arguments in the form (Observable+,function)+";
-    assert(usage, len % 2 === 0);
-    return rawPatterns;
-}
-function isTypedOrRawPattern(pattern) {
-    return pattern instanceof Array && !isObservable(pattern[pattern.length - 1]);
-}
-function isRawPattern(pattern) {
-    return pattern[0] instanceof Array;
-}
-function extractRawPatterns(patterns) {
-    let rawPatterns = [];
-    for(let i = 0; i < patterns.length; i++){
-        let pattern = patterns[i];
-        if (!isTypedOrRawPattern(pattern)) {
-            return extractLegacyPatterns(patterns);
-        }
-        if (isRawPattern(pattern)) {
-            rawPatterns.push([
-                pattern[0],
-                toFunction(pattern[1])
-            ]);
-        } else {
-            let sources = pattern.slice(0, pattern.length - 1);
-            let f = toFunction(pattern[pattern.length - 1]);
-            rawPatterns.push([
-                sources,
-                f
-            ]);
-        }
-    }
-    return rawPatterns;
-}
-function containsDuplicateDeps(observables, state = []) {
-    function checkObservable(obs) {
-        if (contains(state, obs)) {
-            return true;
-        } else {
-            var deps = obs.internalDeps();
-            if (deps.length) {
-                state.push(obs);
-                return any(deps, checkObservable);
-            } else {
-                state.push(obs);
-                return false;
-            }
-        }
-    }
-    return any(observables, checkObservable);
-}
-function cannotSync(source) {
-    return !source.sync || source.ended;
-}
-function withLatestFromE(sampler, samplee, f) {
-    var result = when([
-        new DefaultSource(samplee.toProperty(), false),
-        new DefaultSource(sampler, true),
-        flip(f)
-    ]);
-    return result.withDesc(new Desc(sampler, "withLatestFrom", [
-        samplee,
-        f
-    ]));
-}
-function withLatestFromP(sampler, samplee, f) {
-    var result = whenP([
-        new DefaultSource(samplee.toProperty(), false),
-        new DefaultSource(sampler, true),
-        flip(f)
-    ]);
-    return result.withDesc(new Desc(sampler, "withLatestFrom", [
-        samplee,
-        f
-    ]));
-}
-function withLatestFrom(sampler, samplee, f) {
-    if (sampler instanceof Property) {
-        return withLatestFromP(sampler, samplee, f);
-    } else if (sampler instanceof EventStream) {
-        return withLatestFromE(sampler, samplee, f);
-    } else {
-        throw new Error("Unknown observable: " + sampler);
-    }
-}
-function map$1(src, f) {
-    if (f instanceof Property) {
-        return withLatestFrom(src, f, (a, b)=>b
-        );
-    }
-    return src.transform(mapT(f), new Desc(src, "map", [
-        f
-    ]));
-}
-function mapT(f) {
-    let theF = _.toFunction(f);
-    return (e8, sink)=>{
-        return sink(e8.fmap(theF));
-    };
-}
-function constant(x) {
-    return new Property(new Desc("Bacon", "constant", [
-        x
-    ]), function(sink) {
-        sink(initialEvent(x));
-        sink(endEvent());
-        return nop;
-    });
-}
-function argumentsToObservables(args) {
-    args = Array.prototype.slice.call(args);
-    return _.flatMap(singleToObservables, args);
-}
-function singleToObservables(x) {
-    if (isObservable(x)) {
-        return [
-            x
-        ];
-    } else if (isArray(x)) {
-        return argumentsToObservables(x);
-    } else {
-        return [
-            constant(x)
-        ];
-    }
-}
-function argumentsToObservablesAndFunction(args) {
-    if (_.isFunction(args[0])) {
-        return [
-            argumentsToObservables(Array.prototype.slice.call(args, 1)),
-            args[0]
-        ];
-    } else {
-        return [
-            argumentsToObservables(Array.prototype.slice.call(args, 0, args.length - 1)),
-            _.last(args)
-        ];
-    }
-}
-function groupSimultaneous_(streams, options) {
-    let sources = _.map((stream)=>new BufferingSource(stream)
-    , streams);
-    let ctor = (desc, subscribe)=>new EventStream(desc, subscribe, undefined, options)
-    ;
-    return when_(ctor, [
-        sources,
-        function(...xs) {
-            return xs;
-        }
-    ]).withDesc(new Desc("Bacon", "groupSimultaneous", streams));
-}
-function awaiting(src, other) {
-    return groupSimultaneous_([
-        src,
-        other
-    ], allowSync).map((values3)=>values3[1].length === 0
-    ).toProperty(false).skipDuplicates().withDesc(new Desc(src, "awaiting", [
-        other
-    ]));
-}
-function combineAsArray(...streams) {
-    streams = argumentsToObservables(streams);
-    if (streams.length) {
-        var sources = [];
-        for(var i = 0; i < streams.length; i++){
-            let stream = isObservable(streams[i]) ? streams[i] : constant(streams[i]);
-            sources.push(wrap2(stream));
-        }
-        return whenP([
-            sources,
-            (...xs)=>xs
-        ]).withDesc(new Desc("Bacon", "combineAsArray", streams));
-    } else {
-        return constant([]);
-    }
-}
-function combineTwo(left1, right1, f) {
-    return whenP([
-        [
-            wrap2(left1),
-            wrap2(right1)
-        ],
-        f
-    ]).withDesc(new Desc(left1, "combine", [
-        right1,
-        f
-    ]));
-}
-function wrap2(obs) {
-    return new DefaultSource(obs, true);
-}
-function skip(src, count5) {
-    return src.transform((event, sink)=>{
-        if (!event.hasValue) {
-            return sink(event);
-        } else if (count5 > 0) {
-            count5--;
-            return more;
-        } else {
-            return sink(event);
-        }
-    }, new Desc(src, "skip", [
-        count5
-    ]));
-}
-function flatMapConcat(src, f) {
-    return flatMap_(handleEventValueWith(f), src, {
-        desc: new Desc(src, "flatMapConcat", [
-            f
-        ]),
-        limit: 1
-    });
-}
-function fromBinder(binder, eventTransformer = _.id) {
-    var desc = new Desc("Bacon", "fromBinder", [
-        binder,
-        eventTransformer
-    ]);
-    return new EventStream(desc, function(sink) {
-        var unbound = false;
-        var shouldUnbind = false;
-        var unbind = function() {
-            if (!unbound) {
-                if (typeof unbinder !== "undefined" && unbinder !== null) {
-                    unbinder();
-                    return unbound = true;
-                } else {
-                    return shouldUnbind = true;
-                }
-            }
-        };
-        var unbinder = binder(function(...args) {
-            var value_ = eventTransformer(...args);
-            let valueArray = isArray(value_) && isEvent(_.last(value_)) ? value_ : [
-                value_
-            ];
-            var reply = more;
-            for(var i = 0; i < valueArray.length; i++){
-                let event = toEvent(valueArray[i]);
-                reply = sink(event);
-                if (reply === noMore || event.isEnd) {
-                    unbind();
-                    return reply;
-                }
-            }
-            return reply;
-        });
-        if (shouldUnbind) {
-            unbind();
-        }
-        return unbind;
-    });
-}
-function fromPoll(delay1, poll) {
-    var desc = new Desc("Bacon", "fromPoll", [
-        delay1,
-        poll
-    ]);
-    return fromBinder(function(handler) {
-        var id3 = GlobalScheduler.scheduler.setInterval(handler, delay1);
-        return function() {
-            return GlobalScheduler.scheduler.clearInterval(id3);
-        };
-    }, poll).withDesc(desc);
-}
-function interval(delay2, value) {
-    return fromPoll(delay2, function() {
-        return nextEvent(value);
-    }).withDesc(new Desc("Bacon", "interval", [
-        delay2,
-        value
-    ]));
-}
-function makeCombinator(combinator) {
-    if (typeof combinator == "function") {
-        return combinator;
-    } else {
-        return _.id;
-    }
-}
-function sampledBy(samplee, sampler, f) {
-    if (samplee instanceof EventStream) {
-        return sampledByE(samplee, sampler, f);
-    } else {
-        return sampledByP(samplee, sampler, f);
-    }
-}
-function sampledByP(samplee, sampler, f) {
-    let combinator = makeCombinator(f);
-    var result = withLatestFrom(sampler, samplee, flip(combinator));
-    return result.withDesc(new Desc(samplee, "sampledBy", [
-        sampler
-    ]));
-}
-function sampledByE(samplee, sampler, f) {
-    return sampledByP(samplee.toProperty(), sampler, f).withDesc(new Desc(samplee, "sampledBy", [
-        sampler
-    ]));
-}
-function sampleP(samplee, samplingInterval) {
-    return sampledByP(samplee, interval(samplingInterval, {}), (a, b)=>a
-    ).withDesc(new Desc(samplee, "sample", [
-        samplingInterval
-    ]));
-}
-function transformP(src, transformer, desc) {
-    return new Property(new Desc(src, "transform", [
-        transformer
-    ]), (sink)=>src.subscribeInternal((e9)=>transformer(e9, sink)
-        )
-    ).withDesc(desc);
-}
-function transformE(src, transformer, desc) {
-    return new EventStream(new Desc(src, "transform", [
-        transformer
-    ]), (sink)=>src.subscribeInternal((e10)=>transformer(e10, sink)
-        )
-    , undefined, allowSync).withDesc(desc);
-}
-function composeT(t1, t2) {
-    let finalSink;
-    const sink2 = (event)=>{
-        return t2(event, finalSink);
-    };
-    return (event, sink)=>{
-        finalSink = sink;
-        return t1(event, sink2);
-    };
-}
-function toPredicate(f) {
-    if (typeof f == "boolean") {
-        return _.always(f);
-    } else if (typeof f != "function") {
-        throw new Error("Not a function: " + f);
-    } else {
-        return f;
-    }
-}
-function withPredicate(src, f, predicateTransformer, desc) {
-    if (f instanceof Property) {
-        return withLatestFrom(src, f, (p, v4)=>[
-                p,
-                v4
-            ]
-        ).transform(composeT(predicateTransformer((tuple)=>tuple[1]
-        ), mapT((tuple)=>tuple[0]
-        )), desc);
-    }
-    return src.transform(predicateTransformer(toPredicate(f)), desc);
-}
-function filter$1(src, f) {
-    return withPredicate(src, f, filterT, new Desc(src, "filter", [
-        f
-    ]));
-}
-function filterT(f) {
-    return (e11, sink)=>{
-        if (e11.filter(f)) {
-            return sink(e11);
-        } else {
-            return more;
-        }
-    };
-}
-function not(src) {
-    return src.map((x)=>!x
-    ).withDesc(new Desc(src, "not", []));
-}
-function and(left2, right2) {
-    return left2.combine(toProperty(right2), (x, y)=>!!(x && y)
-    ).withDesc(new Desc(left2, "and", [
-        right2
-    ]));
-}
-function or(left3, right3) {
-    return left3.combine(toProperty(right3), (x, y)=>x || y
-    ).withDesc(new Desc(left3, "or", [
-        right3
-    ]));
-}
-function toProperty(x) {
-    if (isProperty(x)) {
-        return x;
-    }
-    return constant(x);
-}
-function flatMapFirst(src, f) {
-    return flatMap_(handleEventValueWith(f), src, {
-        firstOnly: true,
-        desc: new Desc(src, "flatMapFirst", [
-            f
-        ])
-    });
-}
-function concatE(left4, right4, options) {
-    return new EventStream(new Desc(left4, "concat", [
-        right4
-    ]), function(sink) {
-        var unsubRight = nop;
-        var unsubLeft = left4.dispatcher.subscribe(function(e12) {
-            if (e12.isEnd) {
-                unsubRight = right4.toEventStream().dispatcher.subscribe(sink);
-                return more;
-            } else {
-                return sink(e12);
-            }
-        });
-        return function() {
-            return unsubLeft(), unsubRight();
-        };
-    }, undefined, options);
-}
-function transformPropertyChanges(property, f, desc) {
-    let initValue;
-    let comboSink;
-    const changes = new EventStream(describe(property, "changes", []), (sink)=>property.dispatcher.subscribe(function(event) {
-            if (!initValue && isInitial(event)) {
-                initValue = event;
-                UpdateBarrier.whenDoneWith(combo, function() {
-                    if (!comboSink) {
-                        throw new Error("Init sequence fail");
-                    }
-                    comboSink(initValue);
-                });
-            }
-            if (!event.isInitial) {
-                return sink(event);
-            }
-            return more;
-        })
-    , undefined, allowSync);
-    const transformedChanges = f(changes);
-    const combo = propertyFromStreamSubscribe(desc, (sink)=>{
-        comboSink = sink;
-        return transformedChanges.dispatcher.subscribe(function(event) {
-            sink(event);
-        });
-    });
-    return combo;
-}
-function fold$1(src, seed, f) {
-    return src.scan(seed, f).last().withDesc(new Desc(src, "fold", [
-        seed,
-        f
-    ]));
-}
-function startWithE(src, seed) {
-    return once(seed).concat(src).withDesc(new Desc(src, "startWith", [
-        seed
-    ]));
-}
-function startWithP(src, seed) {
-    return src.scan(seed, (prev, next)=>next
-    ).withDesc(new Desc(src, "startWith", [
-        seed
-    ]));
-}
-const endMarker = {};
-function takeUntil(src, stopper1) {
-    let endMapped = src.mapEnd(endMarker);
-    let withEndMarker = groupSimultaneous_([
-        endMapped,
-        stopper1.skipErrors()
-    ], allowSync);
-    if (src instanceof Property) withEndMarker = withEndMarker.toProperty();
-    return withEndMarker.transform(function(event, sink) {
-        if (hasValue(event)) {
-            var [data, stopper] = event.value;
-            if (stopper.length) {
-                return sink(endEvent());
-            } else {
-                var reply = more;
-                for(var i = 0; i < data.length; i++){
-                    let value = data[i];
-                    if (value === endMarker) {
-                        return sink(endEvent());
-                    } else {
-                        reply = sink(nextEvent(value));
-                    }
-                }
-                return reply;
-            }
-        } else {
-            return sink(event);
-        }
-    }, new Desc(src, "takeUntil", [
-        stopper1
-    ]));
-}
-function flatMap$1(src, f) {
-    return flatMap_(handleEventValueWith(f), src, {
-        desc: new Desc(src, "flatMap", [
-            f
-        ])
-    });
-}
-function flatMapError(src, f) {
-    return flatMap_((x)=>{
-        if (x instanceof Error$1) {
-            let error = x.error;
-            return f(error);
-        } else {
-            return x;
-        }
-    }, src, {
-        mapError: true,
-        desc: new Desc(src, "flatMapError", [
-            f
-        ])
-    });
-}
-var spies = [];
-var running = false;
-function registerObs(obs) {
-    if (spies.length) {
-        if (!running) {
-            try {
-                running = true;
-                spies.forEach(function(spy1) {
-                    spy1(obs);
-                });
-            } finally{
-                running = false;
-            }
-        }
-    }
-}
-function flatMapLatest(src, f_) {
-    let f = _.toFunction(f_);
-    var stream = isProperty(src) ? src.toEventStream(allowSync) : src;
-    let flatMapped = flatMap$1(stream, (value)=>makeObservable(f(value)).takeUntil(stream)
-    );
-    if (isProperty(src)) flatMapped = flatMapped.toProperty();
-    return flatMapped.withDesc(new Desc(src, "flatMapLatest", [
-        f
-    ]));
-}
-class Dispatcher {
-    constructor(observable, _subscribe, _handleEvent){
-        this.pushing = false;
-        this.ended = false;
-        this.prevError = undefined;
-        this.unsubSrc = undefined;
-        this._subscribe = _subscribe;
-        this._handleEvent = _handleEvent;
-        this.subscribe = _.bind(this.subscribe, this);
-        this.handleEvent = _.bind(this.handleEvent, this);
-        this.subscriptions = [];
-        this.observable = observable;
-        this.queue = [];
-    }
-    hasSubscribers() {
-        return this.subscriptions.length > 0;
-    }
-    removeSub(subscription) {
-        this.subscriptions = _.without(subscription, this.subscriptions);
-        return this.subscriptions;
-    }
-    push(event) {
-        if (event.isEnd) {
-            this.ended = true;
-        }
-        return UpdateBarrier.inTransaction(event, this, this.pushIt, [
-            event
-        ]);
-    }
-    pushToSubscriptions(event) {
-        try {
-            let tmp = this.subscriptions;
-            const len = tmp.length;
-            for(let i = 0; i < len; i++){
-                const sub = tmp[i];
-                let reply = sub.sink(event);
-                if (reply === noMore || event.isEnd) {
-                    this.removeSub(sub);
-                }
-            }
-            return true;
-        } catch (error) {
-            this.pushing = false;
-            this.queue = [];
-            throw error;
-        }
-    }
-    pushIt(event) {
-        if (!this.pushing) {
-            if (event === this.prevError) {
-                return;
-            }
-            if (event.isError) {
-                this.prevError = event;
-            }
-            this.pushing = true;
-            this.pushToSubscriptions(event);
-            this.pushing = false;
-            while(true){
-                let e13 = this.queue.shift();
-                if (e13) {
-                    this.push(e13);
-                } else {
-                    break;
-                }
-            }
-            if (this.hasSubscribers()) {
-                return more;
-            } else {
-                this.unsubscribeFromSource();
-                return noMore;
-            }
-        } else {
-            this.queue.push(event);
-            return more;
-        }
-    }
-    handleEvent(event) {
-        if (this._handleEvent) {
-            return this._handleEvent(event);
-        } else {
-            return this.push(event);
-        }
-    }
-    unsubscribeFromSource() {
-        if (this.unsubSrc) {
-            this.unsubSrc();
-        }
-        this.unsubSrc = undefined;
-    }
-    subscribe(sink) {
-        if (this.ended) {
-            sink(endEvent());
-            return nop;
-        } else {
-            assertFunction(sink);
-            let subscription = {
-                sink: sink
-            };
-            this.subscriptions.push(subscription);
-            if (this.subscriptions.length === 1) {
-                this.unsubSrc = this._subscribe(this.handleEvent);
-                assertFunction(this.unsubSrc);
-            }
-            return ()=>{
-                this.removeSub(subscription);
-                if (!this.hasSubscribers()) {
-                    return this.unsubscribeFromSource();
-                }
-            };
-        }
-    }
-    inspect() {
-        return this.observable.toString();
-    }
-}
-class PropertyDispatcher extends Dispatcher {
-    constructor(property, subscribe, handleEvent){
-        super(property, subscribe, handleEvent);
-        this.current = none();
-        this.propertyEnded = false;
-        this.subscribe = _.bind(this.subscribe, this);
-    }
-    push(event) {
-        if (event.isEnd) {
-            this.propertyEnded = true;
-        }
-        if (event instanceof Value) {
-            this.current = new Some(event);
-            this.currentValueRootId = UpdateBarrier.currentEventId();
-        } else if (event.hasValue) {
-            console.error("Unknown event, two Bacons loaded?", event.constructor);
-        }
-        return super.push(event);
-    }
-    maybeSubSource(sink, reply) {
-        if (reply === noMore) {
-            return nop;
-        } else if (this.propertyEnded) {
-            sink(endEvent());
-            return nop;
-        } else {
-            return super.subscribe(sink);
-        }
-    }
-    subscribe(sink) {
-        var reply = more;
-        if (this.current.isDefined && (this.hasSubscribers() || this.propertyEnded)) {
-            var dispatchingId = UpdateBarrier.currentEventId();
-            var valId = this.currentValueRootId;
-            if (!this.propertyEnded && valId && dispatchingId && dispatchingId !== valId) {
-                UpdateBarrier.whenDoneWith(this.observable, ()=>{
-                    if (this.currentValueRootId === valId) {
-                        return sink(initialEvent(this.current.get().value));
-                    }
-                });
-                return this.maybeSubSource(sink, reply);
-            } else {
-                UpdateBarrier.inTransaction(undefined, this, ()=>{
-                    reply = sink(initialEvent(this.current.get().value));
-                    return reply;
-                }, []);
-                return this.maybeSubSource(sink, reply);
-            }
-        } else {
-            return this.maybeSubSource(sink, reply);
-        }
-    }
-    inspect() {
-        return this.observable + " current= " + this.current;
-    }
-}
-function flatMapWithConcurrencyLimit(src, limit, f) {
-    return flatMap_(handleEventValueWith(f), src, {
-        desc: new Desc(src, "flatMapWithConcurrencyLimit", [
-            limit,
-            f
-        ]),
-        limit
-    });
-}
-function bufferWithTime(src, delay3) {
-    return bufferWithTimeOrCount(src, delay3, Number.MAX_VALUE).withDesc(new Desc(src, "bufferWithTime", [
-        delay3
-    ]));
-}
-function bufferWithCount(src, count6) {
-    return bufferWithTimeOrCount(src, undefined, count6).withDesc(new Desc(src, "bufferWithCount", [
-        count6
-    ]));
-}
-function bufferWithTimeOrCount(src, delay4, count7) {
-    const delayFunc = toDelayFunction(delay4);
-    function flushOrSchedule(buffer1) {
-        if (buffer1.values.length === count7) {
-            return buffer1.flush();
-        } else if (delayFunc !== undefined) {
-            return buffer1.schedule(delayFunc);
-        }
-    }
-    var desc = new Desc(src, "bufferWithTimeOrCount", [
-        delay4,
-        count7
-    ]);
-    return buffer(src, flushOrSchedule, flushOrSchedule).withDesc(desc);
-}
-class Buffer {
-    constructor(onFlush, onInput){
-        this.push = (e)=>more
-        ;
-        this.scheduled = null;
-        this.end = undefined;
-        this.values = [];
-        this.onFlush = onFlush;
-        this.onInput = onInput;
-    }
-    flush() {
-        if (this.scheduled) {
-            GlobalScheduler.scheduler.clearTimeout(this.scheduled);
-            this.scheduled = null;
-        }
-        if (this.values.length > 0) {
-            var valuesToPush = this.values;
-            this.values = [];
-            var reply = this.push(nextEvent(valuesToPush));
-            if (this.end != null) {
-                return this.push(this.end);
-            } else if (reply !== noMore) {
-                return this.onFlush(this);
-            }
-        } else {
-            if (this.end != null) {
-                return this.push(this.end);
-            }
-        }
-    }
-    schedule(delay5) {
-        if (!this.scheduled) {
-            return this.scheduled = delay5(()=>{
-                return this.flush();
-            });
-        }
-    }
-}
-function toDelayFunction(delay6) {
-    if (delay6 === undefined) {
-        return undefined;
-    }
-    if (typeof delay6 === "number") {
-        var delayMs = delay6;
-        return function(f) {
-            return GlobalScheduler.scheduler.setTimeout(f, delayMs);
-        };
-    }
-    return delay6;
-}
-function buffer(src, onInput = nop, onFlush = nop) {
-    var reply = more;
-    var buffer2 = new Buffer(onFlush, onInput);
-    return src.transform((event, sink)=>{
-        buffer2.push = sink;
-        if (hasValue(event)) {
-            buffer2.values.push(event.value);
-            onInput(buffer2);
-        } else if (isError(event)) {
-            reply = sink(event);
-        } else if (isEnd(event)) {
-            buffer2.end = event;
-            if (!buffer2.scheduled) {
-                buffer2.flush();
-            }
-        }
-        return reply;
-    }).withDesc(new Desc(src, "buffer", []));
-}
-function asyncWrapSubscribe(obs, subscribe) {
-    var subscribing = false;
-    return function wrappedSubscribe(sink) {
-        const inTransaction1 = UpdateBarrier.isInTransaction();
-        subscribing = true;
-        var asyncDeliveries;
-        function deliverAsync() {
-            var toDeliverNow = asyncDeliveries || [];
-            asyncDeliveries = undefined;
-            for(var i = 0; i < toDeliverNow.length; i++){
-                var event = toDeliverNow[i];
-                sink(event);
-            }
-        }
-        try {
-            return subscribe(function wrappedSink(event) {
-                if (subscribing || asyncDeliveries) {
-                    if (!asyncDeliveries) {
-                        asyncDeliveries = [
-                            event
-                        ];
-                        if (inTransaction1) {
-                            UpdateBarrier.soonButNotYet(obs, deliverAsync);
-                        } else {
-                            GlobalScheduler.scheduler.setTimeout(deliverAsync, 0);
-                        }
-                    } else {
-                        asyncDeliveries.push(event);
-                    }
-                    return more;
-                } else {
-                    return sink(event);
-                }
-            });
-        } finally{
-            subscribing = false;
-        }
-    };
-}
-function mergeAll(...streams) {
-    let flattenedStreams = argumentsToObservables(streams);
-    if (flattenedStreams.length) {
-        return new EventStream(new Desc("Bacon", "mergeAll", flattenedStreams), function(sink) {
-            var ends = 0;
-            var smartSink = function(obs) {
-                return function(unsubBoth) {
-                    return obs.subscribeInternal(function(event) {
-                        if (event.isEnd) {
-                            ends++;
-                            if (ends === flattenedStreams.length) {
-                                return sink(endEvent());
-                            } else {
-                                return more;
-                            }
-                        } else {
-                            event = event.toNext();
-                            var reply = sink(event);
-                            if (reply === noMore) {
-                                unsubBoth();
-                            }
-                            return reply;
-                        }
-                    });
-                };
-            };
-            var sinks = map(smartSink, flattenedStreams);
-            return new CompositeUnsubscribe(sinks).unsubscribe;
-        });
-    } else {
-        return never();
-    }
-}
-function later(delay7, value) {
-    return fromBinder(function(sink) {
-        var sender = function() {
-            return sink([
-                toEvent(value),
-                endEvent()
-            ]);
-        };
-        var id4 = GlobalScheduler.scheduler.setTimeout(sender, delay7);
-        return function() {
-            return GlobalScheduler.scheduler.clearTimeout(id4);
-        };
-    }).withDesc(new Desc("Bacon", "later", [
-        delay7,
-        value
-    ]));
-}
-function delay(src, delay8) {
-    return src.transformChanges(new Desc(src, "delay", [
-        delay8
-    ]), function(changes) {
-        return changes.flatMap(function(value) {
-            return later(delay8, value);
-        });
-    });
-}
-function debounce(src, delay9) {
-    return src.transformChanges(new Desc(src, "debounce", [
-        delay9
-    ]), function(changes) {
-        return changes.flatMapLatest(function(value) {
-            return later(delay9, value);
-        });
-    });
-}
-function debounceImmediate(src, delay10) {
-    return src.transformChanges(new Desc(src, "debounceImmediate", [
-        delay10
-    ]), function(changes) {
-        return changes.flatMapFirst(function(value) {
-            return once(value).concat(later(delay10, value).errors());
-        });
-    });
-}
-function throttle(src, delay11) {
-    return src.transformChanges(new Desc(src, "throttle", [
-        delay11
-    ]), (changes)=>changes.bufferWithTime(delay11).map((values4)=>values4[values4.length - 1]
-        )
-    );
-}
-function bufferingThrottle(src, minimumInterval) {
-    var desc = new Desc(src, "bufferingThrottle", [
-        minimumInterval
-    ]);
-    return src.transformChanges(desc, (changes)=>changes.flatMapConcat((x)=>{
-            return once(x).concat(later(minimumInterval, x).errors());
-        })
-    );
-}
-function takeWhile(src, f) {
-    return withPredicate(src, f, takeWhileT, new Desc(src, "takeWhile", [
-        f
-    ]));
-}
-function takeWhileT(f) {
-    return (event, sink)=>{
-        if (event.filter(f)) {
-            return sink(event);
-        } else {
-            sink(endEvent());
-            return noMore;
-        }
-    };
-}
-function skipUntil(src, starter) {
-    var started = starter.transform(composeT(takeT(1), mapT(true))).toProperty().startWith(false);
-    return src.filter(started).withDesc(new Desc(src, "skipUntil", [
-        starter
-    ]));
-}
-function skipWhile(src, f) {
-    return withPredicate(src, f, skipWhileT, new Desc(src, "skipWhile", [
-        f
-    ]));
-}
-function skipWhileT(f) {
-    var started = false;
-    return function(event, sink) {
-        if (started || !hasValue(event) || !f(event.value)) {
-            if (event.hasValue) {
-                started = true;
-            }
-            return sink(event);
-        } else {
-            return more;
-        }
-    };
-}
-function groupBy(src, keyF, limitF = _.id) {
-    var streams = {};
-    return src.transform(composeT(filterT((x)=>!streams[keyF(x)]
-    ), mapT(function(firstValue) {
-        var key = keyF(firstValue);
-        var similarValues = src.changes().filter((x)=>keyF(x) === key
-        );
-        var data = once(firstValue).concat(similarValues);
-        var limited = limitF(data, firstValue).toEventStream().transform((event, sink)=>{
-            let reply = sink(event);
-            if (event.isEnd) {
-                delete streams[key];
-            }
-            return reply;
-        });
-        streams[key] = limited;
-        return limited;
-    })));
-}
-function slidingWindow(src, maxValues, minValues = 0) {
-    return src.scan([], function(window, value) {
-        return window.concat([
-            value
-        ]).slice(-maxValues);
-    }).filter(function(values5) {
-        return values5.length >= minValues;
-    }).withDesc(new Desc(src, "slidingWindow", [
-        maxValues,
-        minValues
-    ]));
-}
-const nullMarker = {};
-function diff(src, start, f) {
-    return transformP(scan(src, [
-        start,
-        nullMarker
-    ], (prevTuple, next)=>[
-            next,
-            f(prevTuple[0], next)
-        ]
-    ), composeT(filterT((tuple)=>tuple[1] !== nullMarker
-    ), mapT((tuple)=>tuple[1]
-    )), new Desc(src, "diff", [
-        start,
-        f
-    ]));
-}
-function flatScan(src, seed, f) {
-    let current = seed;
-    return src.flatMapConcat((next)=>makeObservable(f(current, next)).doAction((updated)=>current = updated
-        )
-    ).toProperty().startWith(seed).withDesc(new Desc(src, "flatScan", [
-        seed,
-        f
-    ]));
-}
-function holdWhen(src, valve) {
-    var onHold = false;
-    var bufferedValues = [];
-    var srcIsEnded = false;
-    return new EventStream(new Desc(src, "holdWhen", [
-        valve
-    ]), function(sink) {
-        var composite = new CompositeUnsubscribe();
-        var subscribed = false;
-        var endIfBothEnded = function(unsub) {
-            if (unsub) {
-                unsub();
-            }
-            if (composite.empty() && subscribed) {
-                return sink(endEvent());
-            }
-            return more;
-        };
-        composite.add(function(unsubAll, unsubMe) {
-            return valve.subscribeInternal(function(event) {
-                if (hasValue(event)) {
-                    onHold = event.value;
-                    var result = more;
-                    if (!onHold) {
-                        var toSend = bufferedValues;
-                        bufferedValues = [];
-                        for(var i = 0; i < toSend.length; i++){
-                            result = sink(nextEvent(toSend[i]));
-                        }
-                        if (srcIsEnded) {
-                            sink(endEvent());
-                            unsubMe();
-                            result = noMore;
-                        }
-                    }
-                    return result;
-                } else if (event.isEnd) {
-                    return endIfBothEnded(unsubMe);
-                } else {
-                    return sink(event);
-                }
-            });
-        });
-        composite.add(function(unsubAll, unsubMe) {
-            return src.subscribeInternal(function(event) {
-                if (onHold && hasValue(event)) {
-                    bufferedValues.push(event.value);
-                    return more;
-                } else if (event.isEnd && bufferedValues.length) {
-                    srcIsEnded = true;
-                    return endIfBothEnded(unsubMe);
-                } else {
-                    return sink(event);
-                }
-            });
-        });
-        subscribed = true;
-        endIfBothEnded();
-        return composite.unsubscribe;
-    });
-}
-function zipWith(f, ...streams) {
-    var [streams, f] = argumentsToObservablesAndFunction(arguments);
-    streams = _.map((s)=>s.toEventStream()
-    , streams);
-    return when([
-        streams,
-        f
-    ]).withDesc(new Desc("Bacon", "zipWith", [
-        f
-    ].concat(streams)));
-}
-function zip(left5, right5, f) {
-    return zipWith(f || Array, left5, right5).withDesc(new Desc(left5, "zip", [
-        right5
-    ]));
-}
-function combineTemplate(template1) {
-    function current(ctxStack) {
-        return ctxStack[ctxStack.length - 1];
-    }
-    function setValue(ctxStack, key, value) {
-        current(ctxStack)[key] = value;
-        return value;
-    }
-    function applyStreamValue(key, index) {
-        return function(ctxStack, values6) {
-            setValue(ctxStack, key, values6[index]);
-        };
-    }
-    function constantValue(key, value) {
-        return function(ctxStack) {
-            setValue(ctxStack, key, value);
-        };
-    }
-    function mkContext(template) {
-        return isArray(template) ? [] : {};
-    }
-    function pushContext(key, value) {
-        return function(ctxStack) {
-            const newContext = mkContext(value);
-            setValue(ctxStack, key, newContext);
-            ctxStack.push(newContext);
-        };
-    }
-    function containsObservables(value) {
-        if (isObservable(value)) {
-            return true;
-        } else if (value && (value.constructor == Object || value.constructor == Array)) {
-            for(var key in value){
-                if (Object.prototype.hasOwnProperty.call(value, key)) {
-                    const child = value[key];
-                    if (containsObservables(child)) return true;
-                }
-            }
-        }
-    }
-    function compile(key, value) {
-        if (isObservable(value)) {
-            streams.push(value);
-            funcs.push(applyStreamValue(key, streams.length - 1));
-        } else if (containsObservables(value)) {
-            const popContext = function(ctxStack) {
-                ctxStack.pop();
-            };
-            funcs.push(pushContext(key, value));
-            compileTemplate(value);
-            funcs.push(popContext);
-        } else {
-            funcs.push(constantValue(key, value));
-        }
-    }
-    function combinator(values7) {
-        const rootContext = mkContext(template1);
-        const ctxStack = [
-            rootContext
-        ];
-        for(var i = 0, f; i < funcs.length; i++){
-            f = funcs[i];
-            f(ctxStack, values7);
-        }
-        return rootContext;
-    }
-    function compileTemplate(template) {
-        _.each(template, compile);
-    }
-    const funcs = [];
-    const streams = [];
-    const resultProperty = containsObservables(template1) ? (compileTemplate(template1), combineAsArray(streams).map(combinator)) : constant(template1);
-    return resultProperty.withDesc(new Desc("Bacon", "combineTemplate", [
-        template1
-    ]));
-}
-function decode(src, cases) {
-    return src.combine(combineTemplate(cases), (key, values8)=>values8[key]
-    ).withDesc(new Desc(src, "decode", [
-        cases
-    ]));
-}
-function firstToPromise(src, PromiseCtr) {
-    const generator = (resolve, reject1)=>src.subscribe((event)=>{
-            if (hasValue(event)) {
-                resolve(event.value);
-            }
-            if (isError(event)) {
-                reject1(event.error);
-            }
-            return noMore;
-        })
-    ;
-    if (typeof PromiseCtr === "function") {
-        return new PromiseCtr(generator);
-    } else if (typeof Promise === "function") {
-        return new Promise(generator);
-    } else {
-        throw new Error("There isn't default Promise, use shim or parameter");
-    }
-}
-function toPromise(src, PromiseCtr) {
-    return src.last().firstToPromise(PromiseCtr);
-}
-var idCounter = 0;
-class Observable {
-    constructor(desc){
-        this.id = ++idCounter;
-        this._isObservable = true;
-        this.desc = desc;
-        this.initialDesc = desc;
-    }
-    awaiting(other) {
-        return awaiting(this, other);
-    }
-    bufferingThrottle(minimumInterval) {
-        return bufferingThrottle(this, minimumInterval);
-    }
-    combine(right6, f) {
-        return combineTwo(this, right6, f).withDesc(new Desc(this, "combine", [
-            right6,
-            f
-        ]));
-    }
-    debounce(minimumInterval) {
-        return debounce(this, minimumInterval);
-    }
-    debounceImmediate(minimumInterval) {
-        return debounceImmediate(this, minimumInterval);
-    }
-    decode(cases) {
-        return decode(this, cases);
-    }
-    delay(delayMs) {
-        return delay(this, delayMs);
-    }
-    deps() {
-        return this.desc.deps();
-    }
-    diff(start, f) {
-        return diff(this, start, f);
-    }
-    doAction(f) {
-        return this.transform(doActionT(f), new Desc(this, "doAction", [
-            f
-        ]));
-    }
-    doEnd(f) {
-        return this.transform(doEndT(f), new Desc(this, "doEnd", [
-            f
-        ]));
-    }
-    doError(f) {
-        return this.transform(doErrorT(f), new Desc(this, "doError", [
-            f
-        ]));
-    }
-    doLog(...args) {
-        return this.transform(doLogT(args), new Desc(this, "doLog", args));
-    }
-    endAsValue() {
-        return endAsValue(this);
-    }
-    endOnError(predicate = (x)=>true
-    ) {
-        return endOnError(this, predicate);
-    }
-    errors() {
-        return this.filter((x)=>false
-        ).withDesc(new Desc(this, "errors"));
-    }
-    filter(f) {
-        return filter$1(this, f);
-    }
-    first() {
-        return take(1, this, new Desc(this, "first"));
-    }
-    firstToPromise(PromiseCtr) {
-        return firstToPromise(this, PromiseCtr);
-    }
-    fold(seed, f) {
-        return fold$1(this, seed, f);
-    }
-    forEach(f = nullSink) {
-        return this.onValue(f);
-    }
-    holdWhen(valve) {
-        return holdWhen(this, valve);
-    }
-    inspect() {
-        return this.toString();
-    }
-    internalDeps() {
-        return this.initialDesc.deps();
-    }
-    last() {
-        return last$1(this);
-    }
-    log(...args) {
-        log(args, this);
-        return this;
-    }
-    mapEnd(f) {
-        return this.transform(mapEndT(f), new Desc(this, "mapEnd", [
-            f
-        ]));
-    }
-    mapError(f) {
-        return this.transform(mapErrorT(f), new Desc(this, "mapError", [
-            f
-        ]));
-    }
-    name(name) {
-        this._name = name;
-        return this;
-    }
-    onEnd(f = nullVoidSink) {
-        return this.subscribe(function(event) {
-            if (event.isEnd) {
-                return f();
-            }
-            return more;
-        });
-    }
-    onError(f = nullSink) {
-        return this.subscribe(function(event) {
-            if (isError(event)) {
-                return f(event.error);
-            }
-            return more;
-        });
-    }
-    onValue(f = nullSink) {
-        return this.subscribe(function(event) {
-            if (hasValue(event)) {
-                return f(event.value);
-            }
-            return more;
-        });
-    }
-    onValues(f) {
-        return this.onValue(function(args) {
-            return f(...args);
-        });
-    }
-    reduce(seed, f) {
-        return fold$1(this, seed, f);
-    }
-    sampledBy(sampler) {
-        return sampledBy(this, sampler, arguments[1]);
-    }
-    scan(seed, f) {
-        return scan(this, seed, f);
-    }
-    skip(count8) {
-        return skip(this, count8);
-    }
-    skipDuplicates(isEqual) {
-        return skipDuplicates(this, isEqual);
-    }
-    skipErrors() {
-        return skipErrors(this);
-    }
-    skipUntil(starter) {
-        return skipUntil(this, starter);
-    }
-    skipWhile(f) {
-        return skipWhile(this, f);
-    }
-    slidingWindow(maxValues, minValues = 0) {
-        return slidingWindow(this, maxValues, minValues);
-    }
-    subscribe(sink1 = nullSink) {
-        return UpdateBarrier.wrappedSubscribe(this, (sink)=>this.subscribeInternal(sink)
-        , sink1);
-    }
-    take(count9) {
-        return take(count9, this);
-    }
-    takeUntil(stopper) {
-        return takeUntil(this, stopper);
-    }
-    takeWhile(f) {
-        return takeWhile(this, f);
-    }
-    throttle(minimumInterval) {
-        return throttle(this, minimumInterval);
-    }
-    toPromise(PromiseCtr) {
-        return toPromise(this, PromiseCtr);
-    }
-    toString() {
-        if (this._name) {
-            return this._name;
-        } else {
-            return this.desc.toString();
-        }
-    }
-    withDesc(desc) {
-        if (desc) this.desc = desc;
-        return this;
-    }
-    withDescription(context, method, ...args) {
-        this.desc = describe(context, method, ...args);
-        return this;
-    }
-    zip(other, f) {
-        return zip(this, other, f);
-    }
-}
-class Property extends Observable {
-    constructor(desc, subscribe, handler){
-        super(desc);
-        this._isProperty = true;
-        assertFunction(subscribe);
-        this.dispatcher = new PropertyDispatcher(this, subscribe, handler);
-        registerObs(this);
-    }
-    and(other) {
-        return and(this, other);
-    }
-    changes() {
-        return new EventStream(new Desc(this, "changes", []), (sink)=>this.dispatcher.subscribe(function(event) {
-                if (!event.isInitial) {
-                    return sink(event);
-                }
-                return more;
-            })
-        );
-    }
-    concat(other) {
-        return this.transformChanges(describe(this, "concat", other), (changes)=>changes.concat(other)
-        );
-    }
-    transformChanges(desc, f) {
-        return transformPropertyChanges(this, f, desc);
-    }
-    flatMap(f) {
-        return flatMap$1(this, f);
-    }
-    flatMapConcat(f) {
-        return flatMapConcat(this, f);
-    }
-    flatMapError(f) {
-        return flatMapError(this, f);
-    }
-    flatMapEvent(f) {
-        return flatMapEvent(this, f);
-    }
-    flatMapFirst(f) {
-        return flatMapFirst(this, f);
-    }
-    flatMapLatest(f) {
-        return flatMapLatest(this, f);
-    }
-    flatMapWithConcurrencyLimit(limit, f) {
-        return flatMapWithConcurrencyLimit(this, limit, f);
-    }
-    groupBy(keyF, limitF) {
-        return groupBy(this, keyF, limitF);
-    }
-    map(f) {
-        return map$1(this, f);
-    }
-    not() {
-        return not(this);
-    }
-    or(other) {
-        return or(this, other);
-    }
-    sample(interval1) {
-        return sampleP(this, interval1);
-    }
-    startWith(seed) {
-        return startWithP(this, seed);
-    }
-    subscribeInternal(sink = nullSink) {
-        return this.dispatcher.subscribe(sink);
-    }
-    toEventStream(options) {
-        return new EventStream(new Desc(this, "toEventStream", []), (sink)=>this.subscribeInternal(function(event) {
-                return sink(event.toNext());
-            })
-        , undefined, options);
-    }
-    toProperty() {
-        assertNoArguments(arguments);
-        return this;
-    }
-    transform(transformer, desc) {
-        return transformP(this, transformer, desc);
-    }
-    withLatestFrom(samplee, f) {
-        return withLatestFromP(this, samplee, f);
-    }
-    withStateMachine(initState, f) {
-        return withStateMachine(initState, f, this);
-    }
-}
-function isProperty(x) {
-    return !!x._isProperty;
-}
-const allowSync = {
-    forceAsync: false
-};
-class EventStream extends Observable {
-    constructor(desc, subscribe, handler, options){
-        super(desc);
-        this._isEventStream = true;
-        if (options !== allowSync) {
-            subscribe = asyncWrapSubscribe(this, subscribe);
-        }
-        this.dispatcher = new Dispatcher(this, subscribe, handler);
-        registerObs(this);
-    }
-    bufferWithTime(delay12) {
-        return bufferWithTime(this, delay12);
-    }
-    bufferWithCount(count10) {
-        return bufferWithCount(this, count10);
-    }
-    bufferWithTimeOrCount(delay13, count11) {
-        return bufferWithTimeOrCount(this, delay13, count11);
-    }
-    changes() {
-        return this;
-    }
-    concat(other, options) {
-        return concatE(this, other, options);
-    }
-    transformChanges(desc, f) {
-        return f(this).withDesc(desc);
-    }
-    flatMap(f) {
-        return flatMap$1(this, f);
-    }
-    flatMapConcat(f) {
-        return flatMapConcat(this, f);
-    }
-    flatMapError(f) {
-        return flatMapError(this, f);
-    }
-    flatMapFirst(f) {
-        return flatMapFirst(this, f);
-    }
-    flatMapLatest(f) {
-        return flatMapLatest(this, f);
-    }
-    flatMapWithConcurrencyLimit(limit, f) {
-        return flatMapWithConcurrencyLimit(this, limit, f);
-    }
-    flatMapEvent(f) {
-        return flatMapEvent(this, f);
-    }
-    flatScan(seed, f) {
-        return flatScan(this, seed, f);
-    }
-    groupBy(keyF, limitF) {
-        return groupBy(this, keyF, limitF);
-    }
-    map(f) {
-        return map$1(this, f);
-    }
-    merge(other) {
-        assertEventStream(other);
-        return mergeAll(this, other).withDesc(new Desc(this, "merge", [
-            other
-        ]));
-    }
-    not() {
-        return not(this);
-    }
-    startWith(seed) {
-        return startWithE(this, seed);
-    }
-    subscribeInternal(sink = nullSink) {
-        return this.dispatcher.subscribe(sink);
-    }
-    toEventStream() {
-        return this;
-    }
-    toProperty(initValue) {
-        let usedInitValue = arguments.length ? toOption(initValue) : none();
-        let disp = this.dispatcher;
-        let desc = new Desc(this, "toProperty", Array.prototype.slice.apply(arguments));
-        let streamSubscribe = disp.subscribe;
-        return new Property(desc, streamSubscribeToPropertySubscribe(usedInitValue, streamSubscribe));
-    }
-    transform(transformer, desc) {
-        return transformE(this, transformer, desc);
-    }
-    withLatestFrom(samplee, f) {
-        return withLatestFromE(this, samplee, f);
-    }
-    withStateMachine(initState, f) {
-        return withStateMachine(initState, f, this);
-    }
-}
-function newEventStream(description, subscribe) {
-    return new EventStream(description, subscribe);
-}
-function newEventStreamAllowSync(description, subscribe) {
-    return new EventStream(description, subscribe, undefined, allowSync);
-}
-function symbol(key) {
-    if (typeof Symbol !== "undefined" && Symbol[key]) {
-        return Symbol[key];
-    } else if (typeof Symbol !== "undefined" && typeof Symbol.for === "function") {
-        return Symbol[key] = Symbol.for(key);
-    } else {
-        return "@@" + key;
-    }
-}
-class ESObservable {
-    constructor(observable){
-        this.observable = observable;
-    }
-    subscribe(observerOrOnNext, onError, onComplete) {
-        const observer = typeof observerOrOnNext === 'function' ? {
-            next: observerOrOnNext,
-            error: onError,
-            complete: onComplete
-        } : observerOrOnNext;
-        const subscription = {
-            closed: false,
-            unsubscribe: function() {
-                subscription.closed = true;
-                cancel();
-            }
-        };
-        const cancel = this.observable.subscribe(function(event) {
-            if (hasValue(event) && observer.next) {
-                observer.next(event.value);
-            } else if (isError(event)) {
-                if (observer.error) observer.error(event.error);
-                subscription.unsubscribe();
-            } else if (event.isEnd) {
-                subscription.closed = true;
-                if (observer.complete) observer.complete();
-            }
-        });
-        return subscription;
-    }
-}
-ESObservable.prototype[symbol('observable')] = function() {
-    return this;
-};
-Observable.prototype.toESObservable = function() {
-    return new ESObservable(this);
-};
-Observable.prototype[symbol('observable')] = Observable.prototype.toESObservable;
-function withMethodCallSupport(wrapped) {
-    return function(f, ...args1) {
-        if (typeof f === "object" && args1.length) {
-            var context = f;
-            var methodName = args1[0];
-            f = function(...args) {
-                return context[methodName](...args);
-            };
-            args1 = args1.slice(1);
-        }
-        return wrapped(f, ...args1);
-    };
-}
-function partiallyApplied(f, applied) {
-    return function(...args) {
-        return f(...applied.concat(args));
-    };
-}
-withMethodCallSupport(function(f, ...args) {
-    if (_.isFunction(f)) {
-        if (args.length) {
-            return partiallyApplied(f, args);
-        } else {
-            return f;
-        }
-    } else {
-        return _.always(f);
-    }
-});
-class Bus extends EventStream {
-    constructor(){
-        super(new Desc("Bacon", "Bus", []), (sink)=>this.subscribeAll(sink)
-        );
-        this.pushing = false;
-        this.pushQueue = undefined;
-        this.ended = false;
-        this.subscriptions = [];
-        this.unsubAll = _.bind(this.unsubAll, this);
-        this.push = _.bind(this.push, this);
-        this.subscriptions = [];
-        this.ended = false;
-    }
-    plug(input) {
-        assertObservable(input);
-        if (this.ended) {
-            return;
-        }
-        var sub = {
-            input: input,
-            unsub: undefined
-        };
-        this.subscriptions.push(sub);
-        if (typeof this.sink !== "undefined") {
-            this.subscribeInput(sub);
-        }
-        return ()=>this.unsubscribeInput(input)
-        ;
-    }
-    end() {
-        this.ended = true;
-        this.unsubAll();
-        if (typeof this.sink === "function") {
-            return this.sink(endEvent());
-        }
-    }
-    push(value) {
-        if (!this.ended && typeof this.sink === "function") {
-            var rootPush = !this.pushing;
-            if (!rootPush) {
-                if (!this.pushQueue) this.pushQueue = [];
-                this.pushQueue.push(value);
-                return;
-            }
-            this.pushing = true;
-            try {
-                return this.sink(nextEvent(value));
-            } finally{
-                if (rootPush && this.pushQueue) {
-                    var i = 0;
-                    while(i < this.pushQueue.length){
-                        var v5 = this.pushQueue[i];
-                        this.sink(nextEvent(v5));
-                        i++;
-                    }
-                    this.pushQueue = undefined;
-                }
-                this.pushing = false;
-            }
-        }
-    }
-    error(error) {
-        if (typeof this.sink === "function") {
-            return this.sink(new Error$1(error));
-        }
-    }
-    unsubAll() {
-        var iterable = this.subscriptions;
-        for(var i = 0, sub; i < iterable.length; i++){
-            sub = iterable[i];
-            if (typeof sub.unsub === "function") {
-                sub.unsub();
-            }
-        }
-    }
-    subscribeAll(newSink) {
-        if (this.ended) {
-            newSink(endEvent());
-        } else {
-            this.sink = newSink;
-            var iterable = this.subscriptions.slice();
-            for(var i = 0, subscription; i < iterable.length; i++){
-                subscription = iterable[i];
-                this.subscribeInput(subscription);
-            }
-        }
-        return this.unsubAll;
-    }
-    guardedSink(input) {
-        return (event)=>{
-            if (event.isEnd) {
-                this.unsubscribeInput(input);
-                return noMore;
-            } else if (this.sink) {
-                return this.sink(event);
-            } else {
-                return more;
-            }
-        };
-    }
-    subscribeInput(subscription) {
-        subscription.unsub = subscription.input.subscribeInternal(this.guardedSink(subscription.input));
-        return subscription.unsub;
-    }
-    unsubscribeInput(input) {
-        var iterable = this.subscriptions;
-        for(var i = 0, sub; i < iterable.length; i++){
-            sub = iterable[i];
-            if (sub.input === input) {
-                if (typeof sub.unsub === "function") {
-                    sub.unsub();
-                }
-                this.subscriptions.splice(i, 1);
-                return;
-            }
-        }
-    }
-}
-const $ = {
-    asEventStream (eventName, selector, eventTransformer) {
-        if (_.isFunction(selector)) {
-            eventTransformer = selector;
-            selector = undefined;
-        }
-        return fromBinder((handler)=>{
-            this.on(eventName, selector, handler);
-            return ()=>this.off(eventName, selector, handler)
-            ;
-        }, eventTransformer).withDesc(new Desc(this.selector || this, "asEventStream", [
-            eventName
-        ]));
-    },
-    init (jQuery) {
-        jQuery.fn.asEventStream = $.asEventStream;
-    }
-};
-const windowKeyDownListener = new Bus();
-const windowKeyUpListener = new Bus();
-const windowBlurListener = new Bus();
-const mod = {
-    windowKeyDownListener: windowKeyDownListener,
-    windowKeyUpListener: windowKeyUpListener,
-    windowBlurListener: windowBlurListener
-};
 const immutable = (t)=>{
     const obj = Object.freeze(t);
     if (Array.isArray(obj)) {
@@ -3658,6 +353,34 @@ const immutable = (t)=>{
     }
     return obj;
 };
+const isNumber = (item)=>typeof item === 'number' && isNaN(item) === false
+;
+function* range(a, b) {
+    const hasB = isNumber(b);
+    const start = hasB ? a : 0;
+    const end = hasB ? b : a;
+    if (start > end) throw new Error('range start is larger than end');
+    for(let i = start; i < end; i++){
+        yield i;
+    }
+}
+class EMap extends Map {
+    creator;
+    constructor(creator){
+        super();
+        this.creator = creator;
+    }
+    get(key) {
+        const value = super.get(key);
+        if (value) return value;
+        const created = this.creator();
+        super.set(key, created);
+        return created;
+    }
+    has() {
+        return true;
+    }
+}
 const NativeKeyCodes = immutable({
     AltLeft: 'AltLeft',
     AltRight: 'AltRight',
@@ -3779,59 +502,396 @@ const clearKeys = ()=>{
 const applySnapshot = ()=>{
     activeKeysSnapshot = new Set(activeKeys);
     justActivatedSnapshot = new Set(justActivated);
+    justActivated.clear();
 };
 const attachListeners = (worker)=>{
-    if (isWorkerContext()) {
-        return {
-            'module:Keyboard:event:window:keydown': triggerKeyDown,
-            'module:Keyboard:event:window:keyup': triggerKeyUp,
-            'module:Keyboard:event:window:blur': clearKeys
-        };
-    } else {
+    if (!isWorkerContext()) {
         const keydownEvent = worker ? (event)=>worker['module:Keyboard:event:window:keydown'](event.code)
          : triggerKeyDown;
         const keyUpEvent = worker ? (event)=>worker['module:Keyboard:event:window:keyup'](event.code)
          : triggerKeyUp;
         const blurEvent = worker ? ()=>worker['module:Keyboard:event:window:blur']()
          : triggerKeyUp;
-        window.addEventListener('keydown', (e14)=>{
-            keydownEvent({
-                code: e14.code
-            });
-        });
+        window.addEventListener('keydown', keydownEvent);
         window.addEventListener('keyup', keyUpEvent);
         window.addEventListener('blur', blurEvent);
     }
-};
-const CBTracker = ()=>{
-    const events = new Set();
-    const once1 = (...callbacks)=>{
-        callbacks.forEach((callback)=>events.add([
-                'once',
-                callback
-            ])
-        );
-    };
-    const add2 = (...callbacks)=>{
-        callbacks.forEach((callback)=>events.add([
-                'always',
-                callback
-            ])
-        );
-    };
     return {
-        once: once1,
-        add: add2,
-        *[Symbol.iterator] () {
-            for (const ev of events){
-                const [type2, callback] = ev;
-                if (type2 === 'once') {
-                    events.delete(ev);
+        'module:Keyboard:event:window:keydown': triggerKeyDown,
+        'module:Keyboard:event:window:keyup': triggerKeyUp,
+        'module:Keyboard:event:window:blur': clearKeys
+    };
+};
+const cns = Symbol('__Component_Symbol__');
+const Component = ()=>{
+    const returnMethod = (data)=>{
+        return {
+            [cns]: returnMethod,
+            ...data
+        };
+    };
+    return returnMethod;
+};
+const ComponentStateManager = (initialState)=>{
+    let internalState = initialState;
+    return (changes)=>{
+        if (changes) {
+            internalState = {
+                ...internalState,
+                ...changes
+            };
+        }
+        return internalState;
+    };
+};
+class ComponentEntityManager extends Map {
+    get(component) {
+        const list = super.get(component);
+        if (list) {
+            return list;
+        }
+        const newList = [];
+        super.set(component, newList);
+        return newList;
+    }
+    appendItem(component, item) {
+        this.get(component).push(item);
+    }
+    removeItem(component, item) {
+        const list = this.get(component);
+        this.set(component, list.filter((i)=>i !== item
+        ));
+    }
+}
+const Counter = ()=>{
+    let number = 0;
+    return ()=>number++
+    ;
+};
+const EntityId = Component();
+const EntityList = ()=>{
+    const entityIdCounter = Counter();
+    const entities = new Map();
+    const componentEntityMapping = new ComponentEntityManager();
+    const addEntity1 = (components)=>{
+        const id = entityIdCounter();
+        const entity = {
+            id,
+            components: new Map()
+        };
+        entities.set(entity.id, entity);
+        addComponentToEntity1(id, EntityId({
+            id
+        }));
+        for (const component of components){
+            addComponentToEntity1(id, component);
+        }
+        return entity;
+    };
+    const addComponentToEntity1 = (entityId, component)=>{
+        const componentName = component[cns];
+        const entity = entities.get(entityId);
+        if (!entity) return;
+        entity.components.set(componentName, ComponentStateManager(component));
+        componentEntityMapping.appendItem(componentName, entityId);
+    };
+    function removeEntity1(id) {
+        const entity = entities.get(id);
+        if (!entity) return;
+        const { components  } = entity;
+        entities.delete(id);
+        for (const [componentName] of components){
+            componentEntityMapping.removeItem(componentName, id);
+        }
+    }
+    function count1(componentFilter) {
+        const componentMapping = [];
+        for (const componentName of componentFilter){
+            const component = componentEntityMapping.get(componentName);
+            if (component.length === 0) {
+                return 0;
+            }
+            componentMapping.push(component);
+        }
+        const entityIds = intersectionBetweenOrderedIntegerLists(componentMapping);
+        return entityIds.length;
+    }
+    function* query1(componentFilter, filteredUserIds) {
+        let componentMapping = [];
+        if (filteredUserIds) {
+            componentMapping.push(filteredUserIds);
+        }
+        for (const [, componentName] of Object.entries(componentFilter)){
+            const component = componentEntityMapping.get(componentName) || [];
+            if (!component || component.length === 0) {
+                return;
+            }
+            componentMapping.push(component);
+        }
+        componentMapping = componentMapping.sort((a, b)=>a.length - b.length
+        );
+        const entityIds = intersectionBetweenOrderedIntegerLists(componentMapping);
+        for (const entityId of entityIds){
+            const entity = entities.get(entityId);
+            if (!entity) {
+                continue;
+            }
+            const components = {};
+            for (const [remappedName, componentName] of Object.entries(componentFilter)){
+                components[remappedName] = entity.components.get(componentName);
+            }
+            yield components;
+        }
+    }
+    return {
+        addEntity: addEntity1,
+        removeEntity: removeEntity1,
+        addComponentToEntity: addComponentToEntity1,
+        count: count1,
+        query: query1
+    };
+};
+const globalEntityList = EntityList();
+const addEntity = globalEntityList.addEntity;
+const removeEntity = globalEntityList.removeEntity;
+globalEntityList.addComponentToEntity;
+const count = globalEntityList.count;
+const query = globalEntityList.query;
+const intersectionBetweenOrderedIntegerLists = (intLists)=>{
+    let last2 = intLists[0];
+    for(let i = 1; i < intLists.length; i++){
+        const current = intLists[i];
+        const matches = [];
+        const lastLength = last2.length;
+        const currentLength = current.length;
+        let currentIndexStartingPoint = 0;
+        for(let lastIndex = 0; lastIndex < lastLength; lastIndex++){
+            const lastId = last2[lastIndex];
+            for(let currentIndex = currentIndexStartingPoint; currentIndex < currentLength; currentIndex++){
+                const currentId = current[currentIndex];
+                if (lastId === currentId) {
+                    currentIndexStartingPoint = currentIndex + 1;
+                    matches.push(lastId);
+                    break;
+                } else if (lastId < currentId) {
+                    break;
+                } else if (lastId > currentId) {
+                    currentIndexStartingPoint = currentIndex;
                 }
-                yield callback;
             }
         }
+        if (matches.length === 0) {
+            return [];
+        }
+        last2 = matches;
+    }
+    return last2;
+};
+const isOrderedSystem = (item)=>{
+    return Array.isArray(item);
+};
+class App {
+    #runCount = 0;
+    #systems = {
+        init: [],
+        system: [],
+        render: [],
+        final: []
     };
+    #plugins = [];
+    #events = {
+        prerun: new Set(),
+        preinit: new Set(),
+        postinit: new Set(),
+        presystem: new Set(),
+        postsystem: new Set(),
+        prerender: new Set(),
+        postrender: new Set(),
+        prefinal: new Set(),
+        postfinal: new Set(),
+        postrun: new Set()
+    };
+    addListener(event, handler) {
+        this.#events[event].add(handler);
+        return ()=>this.removeListener(event, handler)
+        ;
+    }
+    removeListener(event, handler) {
+        this.#events[event].delete(handler);
+    }
+     #dispatchEvent(event) {
+        this.#events[event].forEach((handler)=>handler()
+        );
+    }
+     #toOrderedSystem(system) {
+        if (isOrderedSystem(system)) return system;
+        return [
+            0,
+            system
+        ];
+    }
+     #runSystem(systemType) {
+        this.#dispatchEvent(`pre${systemType}`);
+        this.#systems[systemType].forEach(([, system1])=>system1(this)
+        );
+        this.#dispatchEvent(`post${systemType}`);
+    }
+    addPlugin(plugin) {
+        this.#plugins.push(plugin);
+        return this;
+    }
+    addSystemByType(systemType1, ...manySystems) {
+        const orderedSystems = manySystems.map((system2)=>this.#toOrderedSystem(system2)
+        );
+        this.#systems[systemType1] = [
+            ...this.#systems[systemType1],
+            ...orderedSystems, 
+        ].sort((a, b)=>a[0] - b[0]
+        );
+        return this;
+    }
+    addInitSystem(...manySystems) {
+        return this.addSystemByType('init', ...manySystems);
+    }
+    addSystem(...manySystems) {
+        return this.addSystemByType('system', ...manySystems);
+    }
+    addRenderSystem(...manySystems) {
+        return this.addSystemByType('render', ...manySystems);
+    }
+    addFinalSystem(...manySystems) {
+        return this.addSystemByType('final', ...manySystems);
+    }
+    async run() {
+        const firstRun = this.#runCount === 0;
+        this.#runCount++;
+        if (firstRun) {
+            for (const plugin of this.#plugins){
+                await plugin(this);
+            }
+        }
+        this.#runCount++;
+        this.#dispatchEvent('prerun');
+        if (firstRun) {
+            this.#dispatchEvent(`preinit`);
+            for (let [, s] of this.#systems.init){
+                const a = s(this);
+                if (a && a instanceof Promise) await a;
+            }
+            this.#dispatchEvent(`postinit`);
+        }
+        this.#dispatchEvent('presystem');
+        for (let [, s] of this.#systems.system){
+            const a = s(this);
+            if (a && a instanceof Promise) await a;
+        }
+        this.#dispatchEvent('postsystem');
+        this.#dispatchEvent('prerender');
+        for (let [, s1] of this.#systems.render){
+            const a = s1(this);
+            if (a && a instanceof Promise) await a;
+        }
+        this.#dispatchEvent('postrender');
+        this.#dispatchEvent('prefinal');
+        for (let [, s2] of this.#systems.final){
+            const a = s2(this);
+            if (a && a instanceof Promise) await a;
+        }
+        this.#dispatchEvent('postfinal');
+        this.#dispatchEvent('postrun');
+    }
+}
+const DeleteQueueManager = Component();
+const removeMarkedEntities = ()=>{
+    for (const { deleteQueueManager , entityId  } of query({
+        deleteQueueManager: DeleteQueueManager,
+        entityId: EntityId
+    })){
+        const { markedForDeletion  } = deleteQueueManager();
+        if (markedForDeletion) {
+            removeEntity(entityId().id);
+        }
+    }
+};
+const deleteQueuePlugin = (app)=>{
+    app.addSystem(removeMarkedEntities);
+};
+const Hitbox = Component();
+const createHitBoxComponent = (label, [x, y], [width, height])=>{
+    return Hitbox({
+        label,
+        x,
+        y,
+        x2: x + width,
+        y2: y + height,
+        width,
+        height,
+        entityInteractions: []
+    });
+};
+const updateHitboxTransform = (hitbox, [x, y], [width, height])=>{
+    hitbox({
+        x,
+        y,
+        x2: x + width,
+        y2: y + height,
+        width,
+        height
+    });
+};
+const isLine = (hitbox)=>hitbox.x === hitbox.x2 || hitbox.y === hitbox.y2
+;
+const hittest = (hitboxA, hitboxB)=>{
+    if (isLine(hitboxA) || isLine(hitboxB)) return false;
+    if (hitboxB.x >= hitboxA.x2) return false;
+    if (hitboxA.x >= hitboxB.x2) return false;
+    if (hitboxB.y >= hitboxA.y2) return false;
+    if (hitboxA.y >= hitboxB.y2) return false;
+    return true;
+};
+const checkHitboxes = ()=>{
+    const ht = [
+        ...query({
+            entityId: EntityId,
+            hitbox: Hitbox
+        })
+    ];
+    for(let i = 0; i < ht.length; i++){
+        const a = ht[i];
+        for(let j = i + 1; j < ht.length; j++){
+            const b = ht[j];
+            const aHitbox = a.hitbox();
+            const bHitbox = b.hitbox();
+            if (hittest(aHitbox, bHitbox)) {
+                const aid = a.entityId().id;
+                const bid = b.entityId().id;
+                a.hitbox({
+                    entityInteractions: [
+                        ...aHitbox.entityInteractions,
+                        bid
+                    ]
+                });
+                b.hitbox({
+                    entityInteractions: [
+                        ...bHitbox.entityInteractions,
+                        aid
+                    ]
+                });
+            }
+        }
+    }
+};
+const clearHitboxInteractions = ()=>{
+    for (const { hitbox  } of query({
+        hitbox: Hitbox
+    })){
+        hitbox({
+            entityInteractions: []
+        });
+    }
+};
+const hitboxPlugin = (app)=>{
+    app.addSystem(clearHitboxInteractions).addSystem(checkHitboxes);
 };
 function _isPlaceholder(a) {
     return a != null && typeof a === 'object' && a['@@functional/placeholder'] === true;
@@ -3939,7 +999,7 @@ function _curryN(length1, received, fn) {
     return function() {
         var combined = [];
         var argsIdx = 0;
-        var left6 = length1;
+        var left1 = length1;
         var combinedIdx = 0;
         while(combinedIdx < received.length || argsIdx < arguments.length){
             var result;
@@ -3951,11 +1011,11 @@ function _curryN(length1, received, fn) {
             }
             combined[combinedIdx] = result;
             if (!_isPlaceholder(result)) {
-                left6 -= 1;
+                left1 -= 1;
             }
             combinedIdx += 1;
         }
-        return left6 <= 0 ? fn.apply(this, combined) : _arity(left6, _curryN(length1, combined, fn));
+        return left1 <= 0 ? fn.apply(this, combined) : _arity(left1, _curryN(length1, combined, fn));
     };
 }
 var curryN = _curry2(function curryN(length2, fn) {
@@ -4092,7 +1152,7 @@ var XAll = function() {
 var _xall = _curry2(function _xall(f, xf) {
     return new XAll(f, xf);
 });
-var all1 = _curry2(_dispatchable([
+var all = _curry2(_dispatchable([
     'all'
 ], _xall, function all(fn, list) {
     var idx = 0;
@@ -4159,7 +1219,7 @@ var XWrap = function() {
 function _xwrap(fn) {
     return new XWrap(fn);
 }
-var bind1 = _curry2(function bind(fn, thisObj) {
+var bind = _curry2(function bind(fn, thisObj) {
     return _arity(fn.length, function() {
         return fn.apply(thisObj, arguments);
     });
@@ -4190,7 +1250,7 @@ function _iterableReduce(xf, acc, iter) {
     return xf['@@transducer/result'](acc);
 }
 function _methodReduce(xf, acc, obj, methodName) {
-    return xf['@@transducer/result'](obj[methodName](bind1(xf['@@transducer/step'], xf), acc));
+    return xf['@@transducer/result'](obj[methodName](bind(xf['@@transducer/step'], xf), acc));
 }
 var symIterator = typeof Symbol !== 'undefined' ? Symbol.iterator : '@@iterator';
 function _reduce(fn, acc, list) {
@@ -4232,10 +1292,10 @@ var _xmap = _curry2(function _xmap(f, xf) {
 function _has(prop5, obj) {
     return Object.prototype.hasOwnProperty.call(obj, prop5);
 }
-var toString1 = Object.prototype.toString;
+var toString = Object.prototype.toString;
 var _isArguments = function() {
-    return toString1.call(arguments) === '[object Arguments]' ? function _isArguments(x) {
-        return toString1.call(x) === '[object Arguments]';
+    return toString.call(arguments) === '[object Arguments]' ? function _isArguments(x) {
+        return toString.call(x) === '[object Arguments]';
     } : function _isArguments(x) {
         return _has('callee', x);
     };
@@ -4256,7 +1316,7 @@ var hasArgsEnumBug = function() {
     'use strict';
     return arguments.propertyIsEnumerable('length');
 }();
-var contains1 = function contains(list, item) {
+var contains = function contains(list, item) {
     var idx = 0;
     while(idx < list.length){
         if (list[idx] === item) {
@@ -4284,7 +1344,7 @@ var keys = typeof Object.keys === 'function' && !hasArgsEnumBug ? _curry1(functi
         nIdx = nonEnumerableProps.length - 1;
         while(nIdx >= 0){
             prop6 = nonEnumerableProps[nIdx];
-            if (_has(prop6, obj) && !contains1(ks, prop6)) {
+            if (_has(prop6, obj) && !contains(ks, prop6)) {
                 ks[ks.length] = prop6;
             }
             nIdx -= 1;
@@ -4292,7 +1352,7 @@ var keys = typeof Object.keys === 'function' && !hasArgsEnumBug ? _curry1(functi
     }
     return ks;
 });
-var map1 = _curry2(_dispatchable([
+var map = _curry2(_dispatchable([
     'fantasy-land/map',
     'map'
 ], _xmap, function map(fn, functor) {
@@ -4324,7 +1384,7 @@ var prop = _curry2(function prop(p, obj) {
     return __default2(p) ? nth(p, obj) : obj[p];
 });
 var pluck = _curry2(function pluck(p, list) {
-    return map1(prop(p), list);
+    return map(prop(p), list);
 });
 var reduce = _curry3(_reduce);
 _curry1(function allPass(preds) {
@@ -4340,12 +1400,12 @@ _curry1(function allPass(preds) {
         return true;
     });
 });
-var always1 = _curry1(function always(val) {
+var always = _curry1(function always(val) {
     return function() {
         return val;
     };
 });
-var and1 = _curry2(function and(a, b) {
+var and = _curry2(function and(a, b) {
     return a && b;
 });
 var XAny = function() {
@@ -4402,7 +1462,7 @@ var ap = _curry2(function ap(applyF, applyX) {
     return typeof applyX['fantasy-land/ap'] === 'function' ? applyX['fantasy-land/ap'](applyF) : typeof applyF.ap === 'function' ? applyF.ap(applyX) : typeof applyF === 'function' ? function(x) {
         return applyF(x)(applyX(x));
     } : _reduce(function(acc, f) {
-        return _concat(acc, map1(f, applyX));
+        return _concat(acc, map(f, applyX));
     }, [], applyF);
 });
 function _aperture(n, list) {
@@ -4474,8 +1534,8 @@ function mapValues(fn, obj) {
     }, {});
 }
 _curry1(function applySpec1(spec) {
-    spec = mapValues(function(v6) {
-        return typeof v6 == 'function' ? v6 : applySpec1(v6);
+    spec = mapValues(function(v3) {
+        return typeof v3 == 'function' ? v3 : applySpec1(v3);
     }, spec);
     return curryN(reduce(max, 0, pluck('length', values(spec))), function() {
         var args = arguments;
@@ -4578,13 +1638,13 @@ _curry1(function binary(fn) {
     return nAry(2, fn);
 });
 function _isFunction(x) {
-    var type3 = Object.prototype.toString.call(x);
-    return type3 === '[object Function]' || type3 === '[object AsyncFunction]' || type3 === '[object GeneratorFunction]' || type3 === '[object AsyncGeneratorFunction]';
+    var type2 = Object.prototype.toString.call(x);
+    return type2 === '[object Function]' || type2 === '[object AsyncFunction]' || type2 === '[object GeneratorFunction]' || type2 === '[object AsyncGeneratorFunction]';
 }
 var liftN = _curry2(function liftN(arity, fn) {
     var lifted = curryN(arity, fn);
     return curryN(arity, function() {
-        return _reduce(ap, map1(lifted, arguments[0]), Array.prototype.slice.call(arguments, 1));
+        return _reduce(ap, map(lifted, arguments[0]), Array.prototype.slice.call(arguments, 1));
     });
 });
 var lift = _curry1(function lift(fn) {
@@ -4593,7 +1653,7 @@ var lift = _curry1(function lift(fn) {
 _curry2(function both(f, g) {
     return _isFunction(f) ? function _both() {
         return f.apply(this, arguments) && g.apply(this, arguments);
-    } : lift(and1)(f, g);
+    } : lift(and)(f, g);
 });
 _curry1(function call(fn) {
     return fn.apply(this, Array.prototype.slice.call(arguments, 1));
@@ -4654,7 +1714,7 @@ var _flatCat = function _xcat(xf) {
     };
 };
 var _xchain = _curry2(function _xchain(f, xf) {
-    return map1(f, _flatCat(xf));
+    return map(f, _flatCat(xf));
 });
 var chain = _curry2(_dispatchable([
     'fantasy-land/chain',
@@ -4665,7 +1725,7 @@ var chain = _curry2(_dispatchable([
             return fn(monad(x))(x);
         };
     }
-    return _makeFlat(false)(map1(fn, monad));
+    return _makeFlat(false)(map(fn, monad));
 }));
 _curry3(function clamp(min, max1, value) {
     if (min > max1) {
@@ -4746,10 +1806,10 @@ _curry1(function comparator(pred) {
         return pred(a, b) ? -1 : pred(b, a) ? 1 : 0;
     };
 });
-var not1 = _curry1(function not(a) {
+var not = _curry1(function not(a) {
     return !a;
 });
-var complement = lift(not1);
+var complement = lift(not);
 function _pipe(f, g) {
     return function() {
         return g.call(this, f.apply(this, arguments));
@@ -4768,12 +1828,12 @@ function _checkForMethod(methodname, fn) {
 var slice = _curry3(_checkForMethod('slice', function slice(fromIndex, toIndex, list) {
     return Array.prototype.slice.call(list, fromIndex, toIndex);
 }));
-var tail1 = _curry1(_checkForMethod('tail', slice(1, Infinity)));
+var tail = _curry1(_checkForMethod('tail', slice(1, Infinity)));
 function pipe() {
     if (arguments.length === 0) {
         throw new Error('pipe requires at least one argument');
     }
-    return _arity(arguments[0].length, reduce(_pipe, arguments[0], tail1(arguments)));
+    return _arity(arguments[0].length, reduce(_pipe, arguments[0], tail(arguments)));
 }
 var reverse = _curry1(function reverse(list) {
     return _isString(list) ? list.split('').reverse().join('') : Array.prototype.slice.call(list, 0).reverse();
@@ -4784,7 +1844,7 @@ function compose() {
     }
     return pipe.apply(this, reverse(arguments));
 }
-var head1 = nth(0);
+var head = nth(0);
 function _identity(x) {
     return x;
 }
@@ -4793,8 +1853,8 @@ var pipeWith = _curry2(function pipeWith(xf, list) {
     if (list.length <= 0) {
         return identity;
     }
-    var headList = head1(list);
-    var tailList = tail1(list);
+    var headList = head(list);
+    var tailList = tail(list);
     return _arity(headList.length, function() {
         return _reduce(function(result, f) {
             return xf.call(this, f, result);
@@ -4959,7 +2019,7 @@ function _equals(a, b, stackA, stackB) {
     }
     return true;
 }
-var equals1 = _curry2(function equals(a, b) {
+var equals = _curry2(function equals(a, b) {
     return _equals(a, b, [], []);
 });
 function _indexOf(list, a, idx) {
@@ -5000,7 +2060,7 @@ function _indexOf(list, a, idx) {
         }
     }
     while(idx < list.length){
-        if (equals1(list[idx], a)) {
+        if (equals(list[idx], a)) {
             return idx;
         }
         idx += 1;
@@ -5057,7 +2117,7 @@ var XFilter = function() {
 var _xfilter = _curry2(function _xfilter(f, xf) {
     return new XFilter(f, xf);
 });
-var filter1 = _curry2(_dispatchable([
+var filter = _curry2(_dispatchable([
     'fantasy-land/filter',
     'filter'
 ], _xfilter, function(pred, filterable) {
@@ -5069,7 +2129,7 @@ var filter1 = _curry2(_dispatchable([
     }, {}, keys(filterable)) : _filter(pred, filterable);
 }));
 var reject = _curry2(function reject(pred, filterable) {
-    return filter1(_complement(pred), filterable);
+    return filter(_complement(pred), filterable);
 });
 function _toString(x, seen) {
     var recur = function recur(y) {
@@ -5112,7 +2172,7 @@ function _toString(x, seen) {
             return '{' + mapPairs(x, keys(x)).join(', ') + '}';
     }
 }
-var toString2 = _curry1(function toString(val) {
+var toString1 = _curry1(function toString(val) {
     return _toString(val, []);
 });
 var concat = _curry2(function concat(a, b) {
@@ -5120,13 +2180,13 @@ var concat = _curry2(function concat(a, b) {
         if (__default(b)) {
             return a.concat(b);
         }
-        throw new TypeError(toString2(b) + ' is not an array');
+        throw new TypeError(toString1(b) + ' is not an array');
     }
     if (_isString(a)) {
         if (_isString(b)) {
             return a + b;
         }
-        throw new TypeError(toString2(b) + ' is not a string');
+        throw new TypeError(toString1(b) + ' is not a string');
     }
     if (a != null && _isFunction(a['fantasy-land/concat'])) {
         return a['fantasy-land/concat'](b);
@@ -5134,10 +2194,10 @@ var concat = _curry2(function concat(a, b) {
     if (a != null && _isFunction(a.concat)) {
         return a.concat(b);
     }
-    throw new TypeError(toString2(a) + ' does not have a method named "concat" or "fantasy-land/concat"');
+    throw new TypeError(toString1(a) + ' does not have a method named "concat" or "fantasy-land/concat"');
 });
 _curry1(function cond(pairs) {
-    var arity = reduce(max, 0, map1(function(pair) {
+    var arity = reduce(max, 0, map(function(pair) {
         return pair[0].length;
     }, pairs));
     return _arity(arity, function() {
@@ -5200,8 +2260,8 @@ var converge = _curry2(function converge(after, fns) {
     });
 });
 curry(function(pred, list) {
-    return _reduce(function(a, e15) {
-        return pred(e15) ? a + 1 : a;
+    return _reduce(function(a, e1) {
+        return pred(e1) ? a + 1 : a;
     }, 0, list);
 });
 var XReduceBy = function() {
@@ -5256,8 +2316,8 @@ reduceBy(function(acc, elem) {
     return acc + 1;
 }, 0);
 add(-1);
-var defaultTo = _curry2(function defaultTo(d, v7) {
-    return v7 == null || v7 !== v7 ? d : v7;
+var defaultTo = _curry2(function defaultTo(d, v4) {
+    return v4 == null || v4 !== v4 ? d : v4;
 });
 _curry3(function descend(fn, a, b) {
     var aa = fn(a);
@@ -5278,9 +2338,9 @@ var _Set = function() {
     return _Set1;
 }();
 function hasOrAdd(item, shouldAdd, set) {
-    var type4 = typeof item;
+    var type3 = typeof item;
     var prevSize, newSize;
-    switch(type4){
+    switch(type3){
         case 'string':
         case 'number':
             if (item === 0 && 1 / item === -Infinity) {
@@ -5303,35 +2363,35 @@ function hasOrAdd(item, shouldAdd, set) {
                     return set._nativeSet.has(item);
                 }
             } else {
-                if (!(type4 in set._items)) {
+                if (!(type3 in set._items)) {
                     if (shouldAdd) {
-                        set._items[type4] = {};
-                        set._items[type4][item] = true;
+                        set._items[type3] = {};
+                        set._items[type3][item] = true;
                     }
                     return false;
-                } else if (item in set._items[type4]) {
+                } else if (item in set._items[type3]) {
                     return true;
                 } else {
                     if (shouldAdd) {
-                        set._items[type4][item] = true;
+                        set._items[type3][item] = true;
                     }
                     return false;
                 }
             }
         case 'boolean':
-            if (type4 in set._items) {
+            if (type3 in set._items) {
                 var bIdx = item ? 1 : 0;
-                if (set._items[type4][bIdx]) {
+                if (set._items[type3][bIdx]) {
                     return true;
                 } else {
                     if (shouldAdd) {
-                        set._items[type4][bIdx] = true;
+                        set._items[type3][bIdx] = true;
                     }
                     return false;
                 }
             } else {
                 if (shouldAdd) {
-                    set._items[type4] = item ? [
+                    set._items[type3] = item ? [
                         false,
                         true
                     ] : [
@@ -5352,28 +2412,28 @@ function hasOrAdd(item, shouldAdd, set) {
                     return set._nativeSet.has(item);
                 }
             } else {
-                if (!(type4 in set._items)) {
+                if (!(type3 in set._items)) {
                     if (shouldAdd) {
-                        set._items[type4] = [
+                        set._items[type3] = [
                             item
                         ];
                     }
                     return false;
                 }
-                if (!_includes(item, set._items[type4])) {
+                if (!_includes(item, set._items[type3])) {
                     if (shouldAdd) {
-                        set._items[type4].push(item);
+                        set._items[type3].push(item);
                     }
                     return false;
                 }
                 return true;
             }
         case 'undefined':
-            if (set._items[type4]) {
+            if (set._items[type3]) {
                 return true;
             } else {
                 if (shouldAdd) {
-                    set._items[type4] = true;
+                    set._items[type3] = true;
                 }
                 return false;
             }
@@ -5388,18 +2448,18 @@ function hasOrAdd(item, shouldAdd, set) {
                 return true;
             }
         default:
-            type4 = Object.prototype.toString.call(item);
-            if (!(type4 in set._items)) {
+            type3 = Object.prototype.toString.call(item);
+            if (!(type3 in set._items)) {
                 if (shouldAdd) {
-                    set._items[type4] = [
+                    set._items[type3] = [
                         item
                     ];
                 }
                 return false;
             }
-            if (!_includes(item, set._items[type4])) {
+            if (!_includes(item, set._items[type3])) {
                 if (shouldAdd) {
-                    set._items[type4].push(item);
+                    set._items[type3].push(item);
                 }
                 return false;
             }
@@ -5435,9 +2495,9 @@ var differenceWith = _curry3(function differenceWith(pred, first, second) {
     }
     return out;
 });
-var remove1 = _curry3(function remove(start, count12, list) {
+var remove = _curry3(function remove(start, count2, list) {
     var result = Array.prototype.slice.call(list, 0);
-    result.splice(start, count12);
+    result.splice(start, count2);
     return result;
 });
 function _dissoc(prop9, obj) {
@@ -5445,7 +2505,7 @@ function _dissoc(prop9, obj) {
         return obj;
     }
     if (__default2(prop9) && __default(obj)) {
-        return remove1(prop9, 1, obj);
+        return remove(prop9, 1, obj);
     }
     var result = {};
     for(var p in obj){
@@ -5474,12 +2534,12 @@ var dissocPath = _curry2(function dissocPath1(path4, obj) {
         case 1:
             return _dissoc(path4[0], obj);
         default:
-            var head2 = path4[0];
-            var tail2 = Array.prototype.slice.call(path4, 1);
-            if (obj[head2] == null) {
-                return _shallowCloneObject(head2, obj);
+            var head1 = path4[0];
+            var tail1 = Array.prototype.slice.call(path4, 1);
+            if (obj[head1] == null) {
+                return _shallowCloneObject(head1, obj);
             } else {
-                return assoc(head2, dissocPath1(tail2, obj[head2]), obj);
+                return assoc(head1, dissocPath1(tail1, obj[head1]), obj);
             }
     }
 });
@@ -5533,13 +2593,13 @@ var XTake = function() {
 var _xtake = _curry2(function _xtake(n, xf) {
     return new XTake(n, xf);
 });
-var take1 = _curry2(_dispatchable([
+var take = _curry2(_dispatchable([
     'take'
 ], _xtake, function take(n, xs) {
     return slice(0, n < 0 ? Infinity : n, xs);
 }));
 function dropLast(n, xs) {
-    return take1(n < xs.length ? xs.length - n : 0, xs);
+    return take(n < xs.length ? xs.length - n : 0, xs);
 }
 var XDropLast = function() {
     function XDropLast1(n, xf) {
@@ -5634,7 +2694,7 @@ var XDropRepeatsWith = function() {
 var _xdropRepeatsWith = _curry2(function _xdropRepeatsWith(pred, xf) {
     return new XDropRepeatsWith(pred, xf);
 });
-var last1 = nth(-1);
+var last = nth(-1);
 var dropRepeatsWith = _curry2(_dispatchable([], _xdropRepeatsWith, function dropRepeatsWith(pred, list) {
     var result = [];
     var idx = 1;
@@ -5642,7 +2702,7 @@ var dropRepeatsWith = _curry2(_dispatchable([], _xdropRepeatsWith, function drop
     if (len !== 0) {
         result[0] = list[0];
         while(idx < len){
-            if (!pred(last1(result), list[idx])) {
+            if (!pred(last(result), list[idx])) {
                 result[result.length] = list[idx];
             }
             idx += 1;
@@ -5650,7 +2710,7 @@ var dropRepeatsWith = _curry2(_dispatchable([], _xdropRepeatsWith, function drop
     }
     return result;
 }));
-_curry1(_dispatchable([], _xdropRepeatsWith(equals1), dropRepeatsWith(equals1)));
+_curry1(_dispatchable([], _xdropRepeatsWith(equals), dropRepeatsWith(equals)));
 var XDropWhile = function() {
     function XDropWhile1(f, xf) {
         this.xf = xf;
@@ -5682,19 +2742,19 @@ _curry2(_dispatchable([
     }
     return slice(idx, Infinity, xs);
 }));
-var or1 = _curry2(function or(a, b) {
+var or = _curry2(function or(a, b) {
     return a || b;
 });
 _curry2(function either(f, g) {
     return _isFunction(f) ? function _either() {
         return f.apply(this, arguments) || g.apply(this, arguments);
-    } : lift(or1)(f, g);
+    } : lift(or)(f, g);
 });
 function _isTypedArray(val) {
-    var type5 = Object.prototype.toString.call(val);
-    return type5 === '[object Uint8ClampedArray]' || type5 === '[object Int8Array]' || type5 === '[object Uint8Array]' || type5 === '[object Int16Array]' || type5 === '[object Uint16Array]' || type5 === '[object Int32Array]' || type5 === '[object Uint32Array]' || type5 === '[object Float32Array]' || type5 === '[object Float64Array]' || type5 === '[object BigInt64Array]' || type5 === '[object BigUint64Array]';
+    var type4 = Object.prototype.toString.call(val);
+    return type4 === '[object Uint8ClampedArray]' || type4 === '[object Int8Array]' || type4 === '[object Uint8Array]' || type4 === '[object Int16Array]' || type4 === '[object Uint16Array]' || type4 === '[object Int32Array]' || type4 === '[object Uint32Array]' || type4 === '[object Float32Array]' || type4 === '[object Float64Array]' || type4 === '[object BigInt64Array]' || type4 === '[object BigUint64Array]';
 }
-var empty1 = _curry1(function empty(x) {
+var empty = _curry1(function empty(x) {
     return x != null && typeof x['fantasy-land/empty'] === 'function' ? x['fantasy-land/empty']() : x != null && x.constructor != null && typeof x.constructor['fantasy-land/empty'] === 'function' ? x.constructor['fantasy-land/empty']() : x != null && typeof x.empty === 'function' ? x.empty() : x != null && x.constructor != null && typeof x.constructor.empty === 'function' ? x.constructor.empty() : __default(x) ? [] : _isString(x) ? '' : _isObject(x) ? {} : _isArguments(x) ? function() {
         return arguments;
     }() : _isTypedArray(x) ? x.constructor.from('') : void 0;
@@ -5703,24 +2763,24 @@ var takeLast = _curry2(function takeLast(n, xs) {
     return drop(n >= 0 ? xs.length - n : 0, xs);
 });
 _curry2(function(suffix, list) {
-    return equals1(takeLast(suffix.length, list), suffix);
+    return equals(takeLast(suffix.length, list), suffix);
 });
 _curry3(function eqBy(f, x, y) {
-    return equals1(f(x), f(y));
+    return equals(f(x), f(y));
 });
 _curry3(function eqProps(prop12, obj1, obj2) {
-    return equals1(obj1[prop12], obj2[prop12]);
+    return equals(obj1[prop12], obj2[prop12]);
 });
 _curry2(function evolve1(transformations, object) {
     if (!_isObject(object) && !__default(object)) {
         return object;
     }
     var result = object instanceof Array ? [] : {};
-    var transformation, key, type6;
+    var transformation, key, type5;
     for(key in object){
         transformation = transformations[key];
-        type6 = typeof transformation;
-        result[key] = type6 === 'function' ? transformation(object[key]) : transformation && type6 === 'object' ? evolve1(transformation, object[key]) : object[key];
+        type5 = typeof transformation;
+        result[key] = type5 === 'function' ? transformation(object[key]) : transformation && type5 === 'object' ? evolve1(transformation, object[key]) : object[key];
     }
     return result;
 });
@@ -5862,7 +2922,7 @@ _curry2(_dispatchable([], _xfindLastIndex, function findLastIndex(fn, list) {
     return -1;
 }));
 _curry1(_makeFlat(true));
-var flip1 = _curry1(function flip(fn) {
+var flip = _curry1(function flip(fn) {
     return curryN(fn.length, function(a, b) {
         var args = Array.prototype.slice.call(arguments, 0);
         args[0] = b;
@@ -6020,7 +3080,7 @@ _curry2(function intersection(list1, list2) {
         lookupList = list2;
         filteredList = list1;
     }
-    return uniq(_filter(flip1(_includes)(lookupList), filteredList));
+    return uniq(_filter(flip(_includes)(lookupList), filteredList));
 });
 _curry2(_checkForMethod('intersperse', function intersperse(separator, list) {
     var out = [];
@@ -6134,14 +3194,14 @@ var invoker = _curry2(function invoker(arity, method) {
         if (target != null && _isFunction(target[method])) {
             return target[method].apply(target, Array.prototype.slice.call(arguments, 0, arity));
         }
-        throw new TypeError(toString2(target) + ' does not have a method named "' + method + '"');
+        throw new TypeError(toString1(target) + ' does not have a method named "' + method + '"');
     });
 });
 var is = _curry2(function is(Ctor, val) {
     return val instanceof Ctor || val != null && (val.constructor === Ctor || Ctor.name === 'Object' && typeof val === 'object');
 });
 _curry1(function isEmpty(x) {
-    return x != null && equals1(x, empty1(x));
+    return x != null && equals(x, empty(x));
 });
 invoker(1, 'join');
 var juxt = _curry1(function juxt(fns) {
@@ -6163,7 +3223,7 @@ _curry2(function lastIndexOf(target, xs) {
     } else {
         var idx = xs.length - 1;
         while(idx >= 0){
-            if (equals1(xs[idx], target)) {
+            if (equals(xs[idx], target)) {
                 return idx;
             }
             idx -= 1;
@@ -6180,14 +3240,14 @@ var length = _curry1(function length(list) {
 var lens = _curry2(function lens(getter, setter) {
     return function(toFunctorFn) {
         return function(target) {
-            return map1(function(focus) {
+            return map(function(focus) {
                 return setter(focus, target);
             }, toFunctorFn(getter(target)));
         };
     };
 });
 var update = _curry3(function update(idx, x, list) {
-    return adjust(idx, always1(x), list);
+    return adjust(idx, always(x), list);
 });
 _curry1(function lensIndex(n) {
     return lens(nth(n), update(n));
@@ -6420,7 +3480,7 @@ _curry1(function negate(n) {
     return -n;
 });
 _curry2(function none(fn, input) {
-    return all1(_complement(fn), input);
+    return all(_complement(fn), input);
 });
 _curry1(function nthArg(n) {
     var arity = n < 0 ? 1 : n + 1;
@@ -6504,13 +3564,13 @@ function _createPartialApplicator(concat1) {
     });
 }
 _createPartialApplicator(_concat);
-_createPartialApplicator(flip1(_concat));
+_createPartialApplicator(flip(_concat));
 juxt([
-    filter1,
+    filter,
     reject
 ]);
 _curry3(function pathEq(_path, val, obj) {
-    return equals1(path(_path, obj), val);
+    return equals(path(_path, obj), val);
 });
 _curry3(function pathOr(d, p, obj) {
     return defaultTo(d, path(p, obj));
@@ -6596,10 +3656,10 @@ _curry3(_dispatchable([
     'promap'
 ], _xpromap, _promap));
 _curry3(function propEq(name, val, obj) {
-    return equals1(val, prop(name, obj));
+    return equals(val, prop(name, obj));
 });
-_curry3(function propIs(type7, name, obj) {
-    return is(type7, prop(name, obj));
+_curry3(function propIs(type6, name, obj) {
+    return is(type6, prop(name, obj));
 });
 _curry3(function propOr(val, p, obj) {
     return defaultTo(val, prop(p, obj));
@@ -6659,7 +3719,7 @@ var times = _curry2(function times(fn, n) {
     return list;
 });
 _curry2(function repeat(value, n) {
-    return times(always1(value), n);
+    return times(always(value), n);
 });
 _curry3(function replace(regex, replacement, str) {
     return str.replace(regex, replacement);
@@ -6679,11 +3739,11 @@ _curry3(function scan(fn, acc, list) {
 });
 var sequence = _curry2(function sequence(of, traversable) {
     return typeof traversable.sequence === 'function' ? traversable.sequence(of) : reduceRight(function(x, acc) {
-        return ap(map1(prepend, x), acc);
+        return ap(map(prepend, x), acc);
     }, of([]), traversable);
 });
-_curry3(function set(lens2, v8, x) {
-    return over(lens2, always1(v8), x);
+_curry3(function set(lens2, v5, x) {
+    return over(lens2, always(v5), x);
 });
 _curry2(function sort(comparator, list) {
     return Array.prototype.slice.call(list, 0).sort(comparator);
@@ -6752,7 +3812,7 @@ _curryN(2, [], function splitWhenever(pred, list) {
     return acc;
 });
 _curry2(function(prefix, list) {
-    return equals1(take1(prefix.length, list), prefix);
+    return equals(take(prefix.length, list), prefix);
 });
 _curry2(function subtract(a, b) {
     return Number(a) - Number(b);
@@ -6820,7 +3880,7 @@ function _isRegExp(x) {
 }
 _curry2(function test(pattern, str) {
     if (!_isRegExp(pattern)) {
-        throw new TypeError('‘test’ requires a value of type RegExp as its first argument; received ' + toString2(pattern));
+        throw new TypeError('‘test’ requires a value of type RegExp as its first argument; received ' + toString1(pattern));
     }
     return _cloneRegExp(pattern).test(str);
 });
@@ -6873,7 +3933,7 @@ _curry1(function transpose(outerlist) {
     return result;
 });
 _curry3(function traverse(of, f, traversable) {
-    return typeof traversable['fantasy-land/traverse'] === 'function' ? traversable['fantasy-land/traverse'](f, of) : typeof traversable.traverse === 'function' ? traversable.traverse(f, of) : sequence(of, map1(f, traversable));
+    return typeof traversable['fantasy-land/traverse'] === 'function' ? traversable['fantasy-land/traverse'](f, of) : typeof traversable.traverse === 'function' ? traversable.traverse(f, of) : sequence(of, map(f, traversable));
 });
 var ws = '\x09\x0A\x0B\x0C\x0D\x20\xA0\u1680\u2000\u2001\u2002\u2003' + '\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000\u2028' + '\u2029\uFEFF';
 var zeroWidth = '\u200b';
@@ -6889,9 +3949,9 @@ _curry2(function _tryCatch(tryer, catcher) {
     return _arity(tryer.length, function() {
         try {
             return tryer.apply(this, arguments);
-        } catch (e16) {
+        } catch (e2) {
             return catcher.apply(this, _concat([
-                e16
+                e2
             ], arguments));
         }
     });
@@ -7027,10 +4087,10 @@ _curry2(function whereAny(spec, testObj) {
     return false;
 });
 _curry2(function whereEq(spec, testObj) {
-    return where(map1(equals1, spec), testObj);
+    return where(map(equals, spec), testObj);
 });
 _curry2(function(xs, list) {
-    return reject(flip1(_includes)(xs), list);
+    return reject(flip(_includes)(xs), list);
 });
 _curry2(function xor(a, b) {
     return Boolean(!a ^ !b);
@@ -7067,12 +4127,12 @@ _curry2(function zip(a, b) {
     }
     return rv;
 });
-_curry2(function zipObj(keys2, values9) {
+_curry2(function zipObj(keys2, values1) {
     var idx = 0;
-    var len = Math.min(keys2.length, values9.length);
+    var len = Math.min(keys2.length, values1.length);
     var out = {};
     while(idx < len){
-        out[keys2[idx]] = values9[idx];
+        out[keys2[idx]] = values1[idx];
         idx += 1;
     }
     return out;
@@ -7095,7 +4155,7 @@ _curry1(function thunkify(fn) {
         };
     });
 });
-const isFunction1 = (item)=>typeof item === 'function'
+const isFunction = (item)=>typeof item === 'function'
 ;
 complement(isNil);
 const random = (from, to = 0)=>{
@@ -7120,24 +4180,147 @@ const State = (initialState)=>{
     let internalState = initialState;
     return (handler)=>{
         if (handler) {
-            internalState = isFunction1(handler) ? handler(internalState) : handler;
+            internalState = isFunction(handler) ? handler(internalState) : handler;
         }
         return internalState;
     };
 };
+const timeMS = State(0);
+const timeDiffMS = State(0);
+const timeS = State(0);
+const timeDiffS = State(0);
+const fps = State(0);
+const calculateFpsFromDiff = (timeDiff)=>Math.round(1 / timeDiff)
+;
+const attachTimes = (animateTimeMs)=>{
+    const lastTimeMs = timeMS();
+    const diffTimeMs = animateTimeMs - lastTimeMs;
+    timeMS(animateTimeMs);
+    timeDiffMS(diffTimeMs);
+    timeS(animateTimeMs / 1000);
+    timeDiffS(diffTimeMs / 1000);
+    fps(calculateFpsFromDiff(timeDiffS()));
+};
+const LoopPlugin = (app)=>{
+    app.addListener('postrun', ()=>{
+        requestAnimationFrame((time)=>{
+            attachTimes(time);
+            app.run();
+        });
+    });
+};
+function* it() {
+    yield this.x;
+    yield this.y;
+}
+const v = (x, y)=>{
+    return {
+        x,
+        y,
+        [0]: x,
+        [1]: x,
+        [Symbol.iterator]: it
+    };
+};
+const zero = ()=>v(0, 0)
+;
+const add1 = curry(([x1, y1], [x2, y2])=>{
+    return v(x1 + x2, y1 + y2);
+});
+const up = (value)=>v(0, value * -1)
+;
+const down = (value)=>v(0, value)
+;
+const left = (value)=>v(value * -1, 0)
+;
+const right = (value)=>v(value, 0)
+;
+const Position = Component();
+const Size = Component();
+const resources = {
+    USER_IMAGE: '/sprites/MainPlayer.png'
+};
+new Map();
+const createSpriteMatrix = (rowCount, colCount)=>{
+    return [
+        ...range(rowCount)
+    ].map((row)=>{
+        return [
+            ...range(colCount)
+        ].map((col)=>v(col, row)
+        );
+    });
+};
+const Sprite = Component();
+const spriteSetRow = (sprite, row)=>{
+    if (!sprite.active) {
+        return {
+            ...sprite,
+            active: true,
+            activeCol: 0,
+            activeRow: row
+        };
+    }
+    if (sprite.activeRow === row) {
+        return sprite;
+    }
+    return {
+        ...sprite,
+        activeCol: 0,
+        activeRow: row,
+        lastTime: 0
+    };
+};
+const spritePoll = (sprite, deltaTime)=>{
+    const { lastTime , interval , matrix , activeRow , activeCol , active  } = sprite;
+    if (active === false) {
+        return sprite;
+    }
+    const l = lastTime + deltaTime;
+    if (l < interval) return {
+        ...sprite,
+        lastTime: l
+    };
+    const steps = Math.floor(l / interval);
+    const leftover = l % interval;
+    const maxCol = matrix[activeRow].length;
+    let nextCol = activeCol;
+    for (const _ of range(steps)){
+        nextCol += 1;
+        if (nextCol >= maxCol) {
+            nextCol = 0;
+        }
+    }
+    return {
+        ...sprite,
+        lastTime: leftover,
+        activeCol: nextCol
+    };
+};
+const getSpritePos = ({ matrix , activeCol , activeRow  })=>{
+    return matrix[activeRow][activeCol];
+};
+const Canvas = State({
+    width: 1920,
+    height: 1080
+});
 let activeContext = null;
-const renderContext = (method)=>{
+const UserBullet = Component();
+const User = Component();
+const Enemy = Component();
+const startContext = ()=>{
     activeContext = [];
-    method();
-    let response = activeContext;
-    activeContext = null;
-    return response;
+    return ()=>{
+        const response = activeContext;
+        activeContext = null;
+        return response;
+    };
 };
 const sendToContext = (item)=>{
     if (!activeContext) throw new Error('Outside of context');
     activeContext.push(item);
 };
-const e = createEnum('arcTo', 'beginPath', 'bezierCurveTo', 'clearRect', 'clip', 'closePath', 'createConicGradient', 'createImageData', 'createLinearGradient', 'createPattern', 'createRadialGradient', 'drawFocusIfNeeded', 'drawImage', 'ellipse', 'fill', 'fillRect', 'fillText', 'getContextAttributes', 'getImageData', 'getLineDash', 'getTransform', 'isContextLost', 'isPointInPath', 'isPointInStroke', 'lineTo', 'measureText', 'moveTo', 'putImageData', 'quadraticCurveTo', 'rect', 'reset', 'resetTransform', 'restore', 'rotate', 'roundRect', 'save', 'scale', 'setLineDash', 'setTransform', 'stroke', 'strokeRect', 'strokeText', 'transform', 'translate', 'direction', 'fillStyle', 'filter', 'font', 'fontKerning', 'fontStretch', 'fontVariantCaps', 'globalAlpha', 'globalCompositeOperation', 'imageSmoothingEnabled', 'imageSmoothingQuality', 'letterSpacing', 'lineCap', 'lineDashOffset', 'lineJoin', 'lineWidth', 'miterLimit', 'shadowBlur', 'shadowColor', 'shadowOffsetX', 'shadowOffsetY', 'strokeStyle', 'textAlign', 'textBaseline', 'textRendering', 'wordSpacing');
+const e = createEnum('markStart', 'markEnd', 'arcTo', 'beginPath', 'bezierCurveTo', 'clearRect', 'clip', 'closePath', 'createConicGradient', 'createImageData', 'createLinearGradient', 'createPattern', 'createRadialGradient', 'drawFocusIfNeeded', 'drawImage', 'ellipse', 'fill', 'fillRect', 'fillText', 'getContextAttributes', 'getImageData', 'getLineDash', 'getTransform', 'isContextLost', 'isPointInPath', 'isPointInStroke', 'lineTo', 'measureText', 'moveTo', 'putImageData', 'quadraticCurveTo', 'rect', 'reset', 'resetTransform', 'restore', 'rotate', 'roundRect', 'save', 'scale', 'setLineDash', 'setTransform', 'stroke', 'strokeRect', 'strokeText', 'transform', 'translate', 'direction', 'fillStyle', 'filter', 'font', 'fontKerning', 'fontStretch', 'fontVariantCaps', 'globalAlpha', 'globalCompositeOperation', 'imageSmoothingEnabled', 'imageSmoothingQuality', 'letterSpacing', 'lineCap', 'lineDashOffset', 'lineJoin', 'lineWidth', 'miterLimit', 'shadowBlur', 'shadowColor', 'shadowOffsetX', 'shadowOffsetY', 'strokeStyle', 'textAlign', 'textBaseline', 'textRendering', 'wordSpacing');
 const c = (e1)=>{
     return (...args)=>sendToContext([
             e1,
@@ -7154,10 +4337,53 @@ const hs = ()=>(ctx, enumber, [value])=>{
     }
 ;
 const drawHandlers = new Map();
+const markStart = c(e.markStart);
+const markEnd = c(e.markEnd);
 c(e.arcTo);
 const beginPath = c(e.beginPath);
 c(e.bezierCurveTo);
 const clearRect = c(e.clearRect);
+const clearCanvas = ()=>{
+    const { width , height  } = Canvas();
+    clearRect(...zero(), width, height);
+};
+let debugItems = new Map();
+const markStart1 = (label)=>{
+    performance.mark(label, {
+        detail: [
+            'debug',
+            'start'
+        ]
+    });
+};
+const markEnd1 = (label)=>{
+    performance.mark(label, {
+        detail: [
+            'debug',
+            'end'
+        ]
+    });
+};
+const canvasPlugin = (canvasWorker1)=>(app)=>{
+        let completeContext;
+        app.addListener('prerender', ()=>{
+            completeContext = startContext();
+        });
+        app.addRenderSystem(clearCanvas);
+        app.addFinalSystem(async ()=>{
+            markStart1('draw');
+            const results = completeContext();
+            const perf = await canvasWorker1.draw(Date.now(), performance.now(), results);
+            for (let [name, detail, startTime] of perf){
+                performance.mark(name, {
+                    detail,
+                    startTime
+                });
+            }
+            markEnd1('draw');
+        });
+    }
+;
 c(e.clip);
 const closePath = c(e.closePath);
 c(e.createConicGradient);
@@ -7294,440 +4520,200 @@ drawHandlers.set(e.textAlign, hs());
 drawHandlers.set(e.textBaseline, hs());
 drawHandlers.set(e.textRendering, hs());
 drawHandlers.set(e.wordSpacing, hs());
+drawHandlers.set(e.markStart, (ctx, en, args)=>{
+    markStart1(...args);
+});
+drawHandlers.set(e.markEnd, (ctx, en, args)=>{
+    markEnd1(...args);
+});
 new Map();
-const $$initiate = CBTracker();
-const inputs = CBTracker();
-const preframe = CBTracker();
-const physics = CBTracker();
-const update1 = CBTracker();
-const removal = CBTracker();
-const prerender = CBTracker();
-const render = CBTracker();
-const __final = CBTracker();
-const timeMS = State(0);
-const timeDiffMS = State(0);
-const timeS = State(0);
-const timeDiffS = State(0);
-const fps = State(0);
-const calculateFpsFromDiff = (timeDiff)=>Math.round(1 / timeDiff)
-;
-const attachTimes = (animateTimeMs)=>{
-    const lastTimeMs = timeMS();
-    const diffTimeMs = animateTimeMs - lastTimeMs;
-    timeMS(animateTimeMs);
-    timeDiffMS(diffTimeMs);
-    timeS(animateTimeMs / 1000);
-    timeDiffS(diffTimeMs / 1000);
-    fps(calculateFpsFromDiff(timeDiffS()));
-};
-const frame = (method)=>{
-    return requestAnimationFrame(method);
-};
-new WeakSet();
-function activate(canvasWorker1) {
-    async function animate(t) {
-        attachTimes(t);
-        const stateMethods = [
-            ...$$initiate,
-            ...inputs,
-            ...preframe,
-            ...physics,
-            ...update1
-        ];
-        const endMethods = [
-            ...removal,
-            ...__final
-        ];
-        stateMethods.forEach((callback)=>callback()
-        );
-        const renderContext2 = renderContext(()=>{
-            const prerenderSorted = [
-                ...prerender
-            ].map((item)=>isFunction1(item) ? [
-                    0,
-                    item
-                ] : item
-            ).sort((a, b)=>a[0] - b[0]
-            );
-            const renderSorted = [
-                ...render
-            ].map((item)=>isFunction1(item) ? [
-                    0,
-                    item
-                ] : item
-            ).sort((a, b)=>a[0] - b[0]
-            );
-            [
-                ...prerenderSorted,
-                ...renderSorted
-            ].forEach(([, callback])=>callback()
-            );
-        });
-        endMethods.forEach((callback)=>callback()
-        );
-        await canvasWorker1.newRenderer2(renderContext2);
-        frame(animate);
-    }
-    frame(animate);
-}
-const cns = Symbol('__Component_Symbol__');
-const Component = ()=>{
-    const returnMethod = (data)=>{
-        return {
-            [cns]: returnMethod,
-            ...data
-        };
-    };
-    return returnMethod;
-};
-const ComponentStateManager = (initialState)=>{
-    let internalState = initialState;
-    return (changes)=>{
-        if (changes) {
-            internalState = {
-                ...internalState,
-                ...changes
-            };
-        }
-        return internalState;
-    };
-};
-class ComponentEntityManager extends Map {
-    get(component) {
-        const list = super.get(component);
-        if (list) {
-            return list;
-        }
-        const newList = [];
-        super.set(component, newList);
-        return newList;
-    }
-    appendItem(component, item) {
-        this.get(component).push(item);
-    }
-    removeItem(component, item) {
-        const list = this.get(component);
-        this.set(component, list.filter((i)=>i !== item
+const addToGroup = (group, label, value)=>{
+    let groupedItems = debugItems.get(group);
+    if (!groupedItems) {
+        const val = new Map();
+        debugItems.set(group, val);
+        debugItems = new Map([
+            ...debugItems.entries()
+        ].sort(([a], [b])=>a.localeCompare(b)
         ));
+        groupedItems = val;
     }
-}
-const Counter = ()=>{
-    let number = 0;
-    return ()=>number++
-    ;
+    debugItems.set(group, groupedItems);
+    groupedItems.set(label, value);
 };
-const EntityId = Component();
-const EntityList = ()=>{
-    const entityIdCounter = Counter();
-    const entities = new Map();
-    const componentEntityMapping = new ComponentEntityManager();
-    const addEntity1 = (components)=>{
-        const id5 = entityIdCounter();
-        const entity = {
-            id: id5,
-            components: new Map()
-        };
-        entities.set(entity.id, entity);
-        addComponentToEntity1(id5, EntityId({
-            id: id5
-        }));
-        for (const component of components){
-            addComponentToEntity1(id5, component);
-        }
-        return entity;
-    };
-    const addComponentToEntity1 = (entityId, component)=>{
-        const componentName = component[cns];
-        const entity = entities.get(entityId);
-        if (!entity) return;
-        entity.components.set(componentName, ComponentStateManager(component));
-        componentEntityMapping.appendItem(componentName, entityId);
-    };
-    function removeEntity1(id6) {
-        const entity = entities.get(id6);
-        if (!entity) return;
-        const { components  } = entity;
-        entities.delete(id6);
-        for (const [componentName] of components){
-            componentEntityMapping.removeItem(componentName, id6);
-        }
-    }
-    function count1(componentFilter) {
-        const componentMapping = [];
-        for (const componentName of componentFilter){
-            const component = componentEntityMapping.get(componentName);
-            if (component.length === 0) {
-                return 0;
-            }
-            componentMapping.push(component);
-        }
-        const entityIds = intersectionBetweenOrderedIntegerLists(componentMapping);
-        return entityIds.length;
-    }
-    function* query1(componentFilter, filteredUserIds) {
-        let componentMapping = [];
-        if (filteredUserIds) {
-            componentMapping.push(filteredUserIds);
-        }
-        for (const [, componentName] of Object.entries(componentFilter)){
-            const component = componentEntityMapping.get(componentName) || [];
-            if (!component || component.length === 0) {
-                return;
-            }
-            componentMapping.push(component);
-        }
-        componentMapping = componentMapping.sort((a, b)=>a.length - b.length
-        );
-        const entityIds = intersectionBetweenOrderedIntegerLists(componentMapping);
-        for (const entityId of entityIds){
-            const entity = entities.get(entityId);
-            if (!entity) {
-                continue;
-            }
-            const components = {};
-            for (const [remappedName, componentName] of Object.entries(componentFilter)){
-                components[remappedName] = entity.components.get(componentName);
-            }
-            yield components;
-        }
-    }
-    return {
-        addEntity: addEntity1,
-        removeEntity: removeEntity1,
-        addComponentToEntity: addComponentToEntity1,
-        count: count1,
-        query: query1
-    };
+const addDebug = (label, value, group = '')=>{
+    addToGroup(group, label, value);
 };
-const globalEntityList = EntityList();
-const addEntity = globalEntityList.addEntity;
-const removeEntity = globalEntityList.removeEntity;
-globalEntityList.addComponentToEntity;
-const count = globalEntityList.count;
-const query = globalEntityList.query;
-const intersectionBetweenOrderedIntegerLists = (intLists)=>{
-    let last3 = intLists[0];
-    for(let i = 1; i < intLists.length; i++){
-        const current = intLists[i];
-        const matches = [];
-        const lastLength = last3.length;
-        const currentLength = current.length;
-        let currentIndexStartingPoint = 0;
-        for(let lastIndex = 0; lastIndex < lastLength; lastIndex++){
-            const lastId = last3[lastIndex];
-            for(let currentIndex = currentIndexStartingPoint; currentIndex < currentLength; currentIndex++){
-                const currentId = current[currentIndex];
-                if (lastId === currentId) {
-                    currentIndexStartingPoint = currentIndex + 1;
-                    matches.push(lastId);
-                    break;
-                } else if (lastId < currentId) {
-                    break;
-                } else if (lastId > currentId) {
-                    currentIndexStartingPoint = currentIndex;
+new EMap(()=>[]
+);
+const debugRenderMenu = ()=>[
+        99999,
+        ()=>{
+            let renderIndex = -1;
+            const drawText = (label, textLog)=>{
+                renderIndex++;
+                save();
+                beginPath();
+                const count1 = `${label} ${textLog}`;
+                const pos = v(10, 40 + renderIndex * 40);
+                font(`${40}px serif`);
+                fillText(count1, ...pos);
+                restore();
+            };
+            addDebug('fps', fps());
+            addDebug('Entities', count([
+                EntityId
+            ]));
+            addDebug('bullets', count([
+                UserBullet
+            ]));
+            addDebug('enemies', count([
+                Enemy
+            ]));
+            addDebug('hitboxes', count([
+                Hitbox
+            ]));
+            for (let [groupName, groupitems] of debugItems){
+                if (groupName !== '') {
+                    drawText(groupName, '');
+                }
+                let prefix = groupName !== '' ? '  ' : '';
+                for (let [key, value] of groupitems){
+                    drawText(prefix + key, value.toString());
                 }
             }
         }
-        if (matches.length === 0) {
-            return [];
-        }
-        last3 = matches;
-    }
-    return last3;
-};
-const DeleteQueueManager = Component();
-const removeMarkedEntities = ()=>{
-    for (const { deleteQueueManager , entityId  } of query({
-        deleteQueueManager: DeleteQueueManager,
-        entityId: EntityId
-    })){
-        const { markedForDeletion  } = deleteQueueManager();
-        if (markedForDeletion) {
-            removeEntity(entityId().id);
-        }
-    }
-};
-removal.add(removeMarkedEntities);
-const Position = Component();
-const Size = Component();
-const Hitbox = Component();
-const createHitBoxComponent = (label, [x, y], [width, height])=>{
-    return Hitbox({
-        label,
-        x,
-        y,
-        x2: x + width,
-        y2: y + height,
-        width,
-        height,
-        entityInteractions: []
-    });
-};
-const updateHitboxTransform = (hitbox, [x, y], [width, height])=>{
-    hitbox({
-        x,
-        y,
-        x2: x + width,
-        y2: y + height,
-        width,
-        height
-    });
-};
-const isLine = (hitbox)=>hitbox.x === hitbox.x2 || hitbox.y === hitbox.y2
+    ]
 ;
-const hittest = (hitboxA, hitboxB)=>{
-    if (isLine(hitboxA) || isLine(hitboxB)) return false;
-    if (hitboxB.x >= hitboxA.x2) return false;
-    if (hitboxA.x >= hitboxB.x2) return false;
-    if (hitboxB.y >= hitboxA.y2) return false;
-    if (hitboxA.y >= hitboxB.y2) return false;
-    return true;
-};
-const checkHitboxes = ()=>{
-    const ht = [
-        ...query({
-            entityId: EntityId,
+const renderHitboxes = [
+    99999,
+    ()=>{
+        for (const { hitbox  } of query({
             hitbox: Hitbox
-        })
-    ];
-    for(let i = 0; i < ht.length; i++){
-        const a = ht[i];
-        for(let j = i + 1; j < ht.length; j++){
-            const b = ht[j];
-            const aHitbox = a.hitbox();
-            const bHitbox = b.hitbox();
-            if (hittest(aHitbox, bHitbox)) {
-                const aid = a.entityId().id;
-                const bid = b.entityId().id;
-                a.hitbox({
-                    entityInteractions: [
-                        ...aHitbox.entityInteractions,
-                        bid
-                    ]
-                });
-                b.hitbox({
-                    entityInteractions: [
-                        ...bHitbox.entityInteractions,
-                        aid
-                    ]
-                });
+        })){
+            const { x , x2 , y , y2  } = hitbox();
+            save();
+            beginPath();
+            moveTo(x, y);
+            lineTo(x2, y);
+            lineTo(x2, y2);
+            lineTo(x, y2);
+            lineWidth(4);
+            strokeStyle('blue');
+            closePath();
+            stroke();
+            restore();
+        }
+    }
+];
+const debugPlugin = (app)=>{
+    app.addListener('prerun', ()=>{
+        markEnd1('cycle');
+        const entries = [
+            ...performance.getEntries()
+        ].filter((mark)=>Array.isArray(mark.detail)
+        ).filter((mark)=>mark.detail.includes('debug')
+        );
+        let started = {};
+        for (const mark1 of entries){
+            const isStart = mark1.detail.includes('start');
+            if (isStart) {
+                started[mark1.name] = mark1;
+            } else {
+                const startedMark = started[mark1.name];
+                if (startedMark) {
+                    performance.measure(mark1.name, {
+                        start: startedMark.startTime,
+                        end: mark1.startTime
+                    });
+                } else {
+                    console.warn(`mark not started ${mark1.name}`);
+                }
             }
         }
+        entries.forEach((mark)=>performance.clearMarks(mark.name)
+        );
+        performance.clearMarks();
+        performance.clearMeasures();
+        markStart1('cycle');
+        markStart1('frame');
+    });
+    app.addListener('postrun', ()=>markEnd1('frame')
+    );
+    app.addListener('presystem', ()=>markStart1('system')
+    );
+    app.addListener('postsystem', ()=>markEnd1('system')
+    );
+    app.addListener('prerender', ()=>markStart1('render')
+    );
+    app.addListener('postrender', ()=>markEnd1('render')
+    );
+    app.addListener('prefinal', ()=>markStart1('final')
+    );
+    app.addListener('postfinal', ()=>markEnd1('final')
+    );
+    app.addRenderSystem(renderHitboxes, debugRenderMenu());
+};
+const UserBulletManager = Component();
+const createBullet = (pos)=>{
+    const size = v(10, 10);
+    addEntity([
+        UserBullet({
+            speed: 700,
+            status: 'ACTIVE'
+        }),
+        Position(pos),
+        Size(size),
+        DeleteQueueManager({
+            markedForDeletion: false
+        }),
+        createHitBoxComponent('UserBullet', pos, size), 
+    ]);
+};
+const calculateBulletSpeedForFrame = (speed)=>speed * timeDiffS()
+;
+const spawnBullet = ()=>{
+    for (const { userBulletManager  } of query({
+        userBulletManager: UserBulletManager
+    })){
+        if (!keyDown(KeyCodes.Space)) return;
+        if (timeMS() - userBulletManager().lastBulletFiredTime < 100) return;
+        userBulletManager({
+            lastBulletFiredTime: timeMS()
+        });
+        for (const { position  } of query({
+            user: User,
+            position: Position
+        })){
+            createBullet(position());
+        }
     }
 };
-const clearHitboxInteractions = ()=>{
-    for (const { hitbox  } of query({
+const moveBullet = ()=>{
+    for (const { userBullet , position , size , hitbox  } of query({
+        userBullet: UserBullet,
+        position: Position,
+        size: Size,
         hitbox: Hitbox
     })){
-        hitbox({
-            entityInteractions: []
+        const { speed  } = userBullet();
+        position(add1(position(), right(calculateBulletSpeedForFrame(speed))));
+        updateHitboxTransform(hitbox, position(), size());
+    }
+};
+const removeBullet = ()=>{
+    for (const { position , deleteQueueManager  } of query({
+        userBullet: Size,
+        position: Position,
+        deleteQueueManager: DeleteQueueManager
+    })){
+        if (position().x < 1920) return;
+        deleteQueueManager({
+            markedForDeletion: true
         });
     }
 };
-removal.add(clearHitboxInteractions);
-physics.add(checkHitboxes);
-function* it() {
-    yield this.x;
-    yield this.y;
-}
-const v = (x, y)=>{
-    return {
-        x,
-        y,
-        [0]: x,
-        [1]: x,
-        [Symbol.iterator]: it
-    };
-};
-const zero = ()=>v(0, 0)
-;
-const add1 = curry(([x1, y1], [x2, y2])=>{
-    return v(x1 + x2, y1 + y2);
-});
-const up = (value)=>v(0, value * -1)
-;
-const down = (value)=>v(0, value)
-;
-const left = (value)=>v(value * -1, 0)
-;
-const right = (value)=>v(value, 0)
-;
-const Canvas = State({
-    width: 1920,
-    height: 1080
-});
-prerender.add(()=>{
-    const { width , height  } = Canvas();
-    clearRect(...zero(), width, height);
-});
-inputs.add(()=>{
-    applySnapshot();
-});
-const resources = {
-    USER_IMAGE: '/sprites/MainPlayerWalkDown.png'
-};
-new Map();
-const User = Component();
-const UserAnimation = Component();
-$$initiate.once(()=>{
-    addEntity([
-        User({
-            speed: 400
-        }),
-        Position(zero()),
-        Size(v(50, 50)),
-        UserAnimation({
-            row: 0,
-            column: 0,
-            interval: 300
-        })
-    ]);
-});
-const calculateSpeedForFrame = (speed)=>speed * timeDiffS()
-;
-update1.add(()=>{
-    for (const { user , position , size  } of query({
-        user: User,
-        position: Position,
-        size: Size
-    })){
-        if (keyDown(KeyCodes.KeyW)) {
-            position(add1(position(), up(calculateSpeedForFrame(user().speed))));
-        }
-        if (keyDown(KeyCodes.KeyS)) {
-            position(add1(position(), down(calculateSpeedForFrame(user().speed))));
-        }
-        if (keyDown(KeyCodes.KeyA)) {
-            position(add1(position(), left(calculateSpeedForFrame(user().speed))));
-        }
-        if (keyDown(KeyCodes.KeyD)) {
-            position(add1(position(), right(calculateSpeedForFrame(user().speed))));
-        }
-        const canvas = Canvas();
-        const [width, height] = size();
-        const [x, y] = position();
-        position(v(Math.max(0, Math.min(x, canvas.width - width)), Math.max(0, Math.min(y, canvas.height - height))));
-    }
-});
-render.add(()=>{
-    for (const { position  } of query({
-        user: User,
-        position: Position
-    })){
-        save();
-        drawImage(resources.USER_IMAGE, ...position());
-        restore();
-    }
-});
-const Enemy = Component();
 const EnemyManager = Component();
-$$initiate.once(()=>{
-    addEntity([
-        EnemyManager({
-            lastSpawnTime: 0
-        }), 
-    ]);
-});
 const createEnemy = (posX)=>{
     const startingPosition = v(1800, posX);
     const startingSize = v(100, 50);
@@ -7797,8 +4783,142 @@ const damageEnemy = (entityId, amount)=>{
         }
     }
 };
-update1.add(spawnEnemies, moveEnemies, enemyRemover);
-render.add(()=>{
+const bulletEnemyManager = ()=>{
+    const enemies = [
+        ...query({
+            enemy: Enemy,
+            entityId: EntityId
+        })
+    ];
+    for (const { hitbox , deleteQueueManager  } of query({
+        userBullet: UserBullet,
+        entityId: EntityId,
+        hitbox: Hitbox,
+        deleteQueueManager: DeleteQueueManager
+    })){
+        const { entityInteractions  } = hitbox();
+        const firstInteractedEnemeyId = entityInteractions.find((entityIdInteraction)=>enemies.some(({ entityId  })=>entityIdInteraction === entityId().id
+            )
+        );
+        if (firstInteractedEnemeyId) {
+            damageEnemy(firstInteractedEnemeyId, 20);
+            deleteQueueManager({
+                markedForDeletion: true
+            });
+        }
+    }
+};
+const bulletManagerSystem = ()=>{
+    addEntity([
+        UserBulletManager({
+            lastBulletFiredTime: 0
+        }), 
+    ]);
+};
+const bulletRenderSystem = ()=>{
+    for (const { position , size  } of query({
+        userBullet: UserBullet,
+        position: Position,
+        size: Size
+    })){
+        save();
+        beginPath();
+        rect(...position(), ...size());
+        fillStyle('black');
+        fill();
+        restore();
+    }
+};
+const bulletPlugin = (app)=>{
+    app.addInitSystem(bulletManagerSystem).addSystem(spawnBullet, moveBullet, bulletEnemyManager, removeBullet).addRenderSystem(bulletRenderSystem);
+};
+const calculateSpeedForFrame = (speed)=>speed * timeDiffS()
+;
+const spawnUserSystem = ()=>{
+    addEntity([
+        User({
+            speed: 400
+        }),
+        Position(zero()),
+        Size(v(50, 50)),
+        Sprite({
+            active: false,
+            matrix: createSpriteMatrix(2, 4),
+            activeRow: 0,
+            activeCol: 0,
+            lastTime: 0,
+            interval: 300
+        })
+    ]);
+};
+const moveUserSystem = ()=>{
+    for (const { user , position , size  } of query({
+        user: User,
+        position: Position,
+        size: Size
+    })){
+        if (keyDown(KeyCodes.KeyW)) {
+            position(add1(position(), up(calculateSpeedForFrame(user().speed))));
+        }
+        if (keyDown(KeyCodes.KeyS)) {
+            position(add1(position(), down(calculateSpeedForFrame(user().speed))));
+        }
+        if (keyDown(KeyCodes.KeyA)) {
+            position(add1(position(), left(calculateSpeedForFrame(user().speed))));
+        }
+        if (keyDown(KeyCodes.KeyD)) {
+            position(add1(position(), right(calculateSpeedForFrame(user().speed))));
+        }
+        const canvas = Canvas();
+        const [width, height] = size();
+        const [x, y] = position();
+        position(v(Math.max(0, Math.min(x, canvas.width - width)), Math.max(0, Math.min(y, canvas.height - height))));
+    }
+};
+const userAnimationSystem = ()=>{
+    for (const { sprite  } of query({
+        user: User,
+        sprite: Sprite
+    })){
+        const last3 = sprite();
+        if (!last3.active) {
+            sprite(spriteSetRow(sprite(), 0));
+        }
+        if (justPressed(KeyCodes.KeyW)) {
+            sprite(spriteSetRow(sprite(), 1));
+        }
+        if (justPressed(KeyCodes.KeyS)) {
+            sprite(spriteSetRow(sprite(), 0));
+        }
+        sprite(spritePoll(sprite(), timeDiffMS()));
+    }
+};
+const renderUserSystem = ()=>{
+    for (const { position , sprite  } of query({
+        user: User,
+        position: Position,
+        sprite: Sprite
+    })){
+        markStart('render user');
+        save();
+        const [col, row] = getSpritePos(sprite());
+        const [x, y] = position();
+        drawImage(resources.USER_IMAGE, col * 32, row * 52, 32, 52, x, y, 32, 52);
+        restore();
+        markEnd('render user');
+    }
+};
+const userPlugin = (app)=>{
+    app.addInitSystem(spawnUserSystem).addSystem(moveUserSystem).addSystem(userAnimationSystem).addRenderSystem(renderUserSystem);
+};
+const spawnEntityManagerSystem = ()=>{
+    addEntity([
+        EnemyManager({
+            lastSpawnTime: 0
+        }), 
+    ]);
+};
+const renderEnemiesSystem = ()=>{
     for (const { enemy , position , size  } of query({
         enemy: Enemy,
         position: Position,
@@ -7825,190 +4945,31 @@ render.add(()=>{
         fill();
         restore();
     }
-});
-const UserBullet = Component();
-const UserBulletManager = Component();
-$$initiate.once(()=>{
-    addEntity([
-        UserBulletManager({
-            lastBulletFiredTime: 0
-        }), 
-    ]);
-});
-const createBullet = (pos)=>{
-    const size = v(10, 10);
-    addEntity([
-        UserBullet({
-            speed: 700,
-            status: 'ACTIVE'
-        }),
-        Position(pos),
-        Size(size),
-        DeleteQueueManager({
-            markedForDeletion: false
-        }),
-        createHitBoxComponent('UserBullet', pos, size), 
-    ]);
 };
-const calculateBulletSpeedForFrame = (speed)=>speed * timeDiffS()
-;
-const spawnBullet = ()=>{
-    for (const { userBulletManager  } of query({
-        userBulletManager: UserBulletManager
-    })){
-        if (!keyDown(KeyCodes.Space)) return;
-        if (timeMS() - userBulletManager().lastBulletFiredTime < 100) return;
-        userBulletManager({
-            lastBulletFiredTime: timeMS()
-        });
-        for (const { position  } of query({
-            user: User,
-            position: Position
-        })){
-            createBullet(position());
-        }
-    }
+const EnemyPlugin = (app)=>{
+    app.addInitSystem(spawnEntityManagerSystem).addSystem(spawnEnemies, moveEnemies, enemyRemover).addRenderSystem(renderEnemiesSystem);
 };
-const moveBullet = ()=>{
-    for (const { userBullet , position , size , hitbox  } of query({
-        userBullet: UserBullet,
-        position: Position,
-        size: Size,
-        hitbox: Hitbox
-    })){
-        const { speed  } = userBullet();
-        position(add1(position(), right(calculateBulletSpeedForFrame(speed))));
-        updateHitboxTransform(hitbox, position(), size());
-    }
+const startApp = async (canvasWorker2)=>{
+    const resourceUrls = Array.from(Object.values(resources));
+    await canvasWorker2.loadResources(resourceUrls);
+    return new App().addPlugin(LoopPlugin).addPlugin(canvasPlugin(canvasWorker2)).addPlugin((app)=>app.addSystem(applySnapshot)
+    ).addPlugin(deleteQueuePlugin).addPlugin(hitboxPlugin).addPlugin(EnemyPlugin).addPlugin(bulletPlugin).addPlugin(userPlugin).addPlugin(debugPlugin).run();
 };
-const removeBullet = ()=>{
-    for (const { position , deleteQueueManager  } of query({
-        userBullet: Size,
-        position: Position,
-        deleteQueueManager: DeleteQueueManager
-    })){
-        if (position().x < 1920) return;
-        deleteQueueManager({
-            markedForDeletion: true
-        });
-    }
-};
-const bulletEnemyManager = ()=>{
-    const enemies = [
-        ...query({
-            enemy: Enemy,
-            entityId: EntityId
-        })
-    ];
-    for (const { hitbox , deleteQueueManager  } of query({
-        userBullet: UserBullet,
-        entityId: EntityId,
-        hitbox: Hitbox,
-        deleteQueueManager: DeleteQueueManager
-    })){
-        const { entityInteractions  } = hitbox();
-        const firstInteractedEnemeyId = entityInteractions.find((entityIdInteraction)=>enemies.some(({ entityId  })=>entityIdInteraction === entityId().id
-            )
-        );
-        if (firstInteractedEnemeyId) {
-            damageEnemy(firstInteractedEnemeyId, 20);
-            deleteQueueManager({
-                markedForDeletion: true
-            });
-        }
-    }
-};
-update1.add(spawnBullet, moveBullet, bulletEnemyManager, removeBullet);
-render.add(()=>{
-    for (const { position , size  } of query({
-        userBullet: UserBullet,
-        position: Position,
-        size: Size
-    })){
-        save();
-        beginPath();
-        rect(...position(), ...size());
-        fillStyle('black');
-        fill();
-        restore();
-    }
-});
-render.add(()=>{
-    const metrics = [
-        [
-            'fps',
-            fps()
-        ],
-        [
-            'bullets',
-            count([
-                UserBullet
-            ])
-        ],
-        [
-            'enemies',
-            count([
-                Enemy
-            ])
-        ],
-        [
-            'hitboxes',
-            count([
-                Hitbox
-            ])
-        ], 
-    ];
-    metrics.forEach(([label, textLog], index)=>{
-        save();
-        beginPath();
-        const count1 = `${label}: ${textLog}`;
-        const pos = v(10, 40 + index * 40);
-        font(`${40}px serif`);
-        fillText(count1, ...pos);
-        restore();
-    });
-});
-render.add([
-    99999,
-    ()=>{
-        for (const { hitbox  } of query({
-            hitbox: Hitbox
-        })){
-            const { x , x2 , y , y2  } = hitbox();
-            save();
-            beginPath();
-            moveTo(x, y);
-            lineTo(x2, y);
-            lineTo(x2, y2);
-            lineTo(x, y2);
-            lineWidth(4);
-            strokeStyle('blue');
-            closePath();
-            stroke();
-            restore();
-        }
-    }
-]);
 let canvasWorker;
 const attachCanvasWorker = (transferredCanvasWorker)=>{
     console.log('received canvas worker');
     canvasWorker = wrap1(transferredCanvasWorker);
     return true;
 };
-const fireEvent = (key, data)=>{
-    console.log('fireEvent');
-    mod[key].push(data);
-};
 const run = async ()=>{
     console.log('run');
     if (!canvasWorker) {
         throw new Error('canvasWorker has not been setup yet');
     }
-    await activate(canvasWorker);
+    await startApp(canvasWorker);
 };
 const methods = {
     attachCanvasWorker,
-    fireEvent,
     run
 };
 expose1({
@@ -8016,6 +4977,5 @@ expose1({
     ...attachListeners()
 });
 export { attachCanvasWorker as attachCanvasWorker };
-export { fireEvent as fireEvent };
 export { run as run };
 export { methods as default };

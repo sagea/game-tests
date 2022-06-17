@@ -1,6 +1,6 @@
-import { physics, removal } from './animate.ts'
 import { Component, query, ComponentInstanceEditor, EntityId } from './modules/ecs/mod.ts'
 import { Vector } from './Vector.ts'
+import { AppPlugin } from './modules/ecs/mod.ts';
 
 export type HitboxDimensions = {
   x: number;
@@ -75,8 +75,9 @@ export const clearHitboxInteractions = () => {
     hitbox({ entityInteractions: [] });
   }
 }
-removal.add(
-  clearHitboxInteractions,
-)
 
-physics.add(checkHitboxes)
+export const hitboxPlugin: AppPlugin = (app) => {
+  app
+    .addSystem(clearHitboxInteractions)
+    .addSystem(checkHitboxes);
+}

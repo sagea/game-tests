@@ -1,37 +1,36 @@
 import { Canvas } from './canvas.ts';
-import { $$initiate, render, timeDiffS, update } from './animate.ts'
-import { keyDown, KeyCodes } from './modules/Keyboard/mod.ts'
+import { timeDiffS, timeDiffMS } from './modules/loop/mod.ts'
+import { keyDown, KeyCodes, justPressed } from './modules/Keyboard/mod.ts'
 import { add, down, v, left, right, up, zero } from './Vector.ts'
-import { restore, save, drawImage } from './draw.ts'
-import { query, Component, addEntity } from './modules/ecs/mod.ts';
+import * as d from './draw.ts'
+import { query, Component, addEntity, AppPlugin } from './modules/ecs/mod.ts';
 import { Position, Size } from './components/basic.ts'
 import {resources} from './resources.ts';
+import { Sprite, spritePoll, spriteSetRow, createSpriteMatrix, getSpritePos } from './modules/Sprite/mod.ts';
 
 export const User = Component<{ speed: number }>();
-export const UserAnimation = Component<{
-  row: number,
-  column: number,
-  interval: number,
-}>();
 
-$$initiate.once(() => {
+const calculateSpeedForFrame = (speed: number): number => speed * timeDiffS();
+
+export const spawnUserSystem = () => {
   addEntity([
     User({
       speed: 400,
     }),
     Position(zero()),
     Size(v(50, 50)),
-    UserAnimation({
-      row: 0,
-      column: 0,
+    Sprite({
+      active: false,
+      matrix: createSpriteMatrix(2, 4),
+      activeRow: 0,
+      activeCol: 0,
+      lastTime: 0,
       interval: 300,
     })
   ]);
-})
+};
 
-const calculateSpeedForFrame = (speed: number): number => speed * timeDiffS();
-
-update.add(() => {
+export const moveUserSystem = () => {
   for (const { user, position, size } of query({ user: User, position: Position, size: Size })) {
     if (keyDown(KeyCodes.KeyW)) {
       position(add(position(), up(calculateSpeedForFrame(user().speed))))
@@ -54,17 +53,43 @@ update.add(() => {
       Math.max(0, Math.min(y, canvas.height - height))
     ));
   }
-})
-// update.add(() => {
-//   justPressed('KeyW')
-// })
+}
 
-
-render.add(() => {
-  for (const { position } of query({ user: User, position: Position })) {
-    save()
-    drawImage(resources.USER_IMAGE, ...position())
-    restore()
+export const userAnimationSystem = () => {
+  for (const { sprite } of query({ user: User, sprite: Sprite })) {
+    const last = sprite();
+    if (!last.active) {
+      sprite(spriteSetRow(sprite(), 0))
+    }
+    if(justPressed(KeyCodes.KeyW)) {
+      sprite(spriteSetRow(sprite(), 1))
+    }
+    if(justPressed(KeyCodes.KeyS)) {
+      sprite(spriteSetRow(sprite(), 0))
+    }
+    sprite(spritePoll(sprite(), timeDiffMS()))
   }
-})
+}
 
+export const renderUserSystem = () => {
+  for (const { position, sprite } of query({ user: User, position: Position, sprite: Sprite })) {
+    d.markStart('render user')
+    d.save()
+    const width = 32;
+    const height = 52;
+    // const s = sprite();
+    const [col, row] = getSpritePos(sprite())
+    const [ x, y ] = position();
+    d.drawImage(resources.USER_IMAGE, col * width, row * height, width, height, x, y, width, height);
+    d.restore()
+    d.markEnd('render user')
+  }
+}
+
+export const userPlugin: AppPlugin = (app) => {
+  app
+    .addInitSystem(spawnUserSystem)
+    .addSystem(moveUserSystem)
+    .addSystem(userAnimationSystem)
+    .addRenderSystem(renderUserSystem);
+}

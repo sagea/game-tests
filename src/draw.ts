@@ -1,6 +1,15 @@
 import { createEnum } from './utilities/generic.ts'
+import * as debug from './debug.ts';
 
 let activeContext = null;
+export const startContext = () => {
+  activeContext = [];
+  return () => {
+    const response = activeContext;
+    activeContext = null;
+    return response;
+  }
+}
 export const renderContext = (method: () => any) => {
   activeContext = [];
   method();
@@ -15,6 +24,9 @@ const sendToContext = (item) => {
 }
 
 export const e = createEnum(
+  'markStart',
+  'markEnd',
+
   'arcTo',
   'beginPath',
   'bezierCurveTo',
@@ -100,6 +112,10 @@ export const hs = () => (ctx, enumber, [value]) => {
 }
 
 export const drawHandlers = new Map();
+
+export const markStart = c(e.markStart);
+export const markEnd = c(e.markEnd);
+
 export const arcTo: CanvasRenderingContext2D['arcTo'] = c(e.arcTo);
 export const beginPath: CanvasRenderingContext2D['beginPath'] = c(e.beginPath);
 export const bezierCurveTo: CanvasRenderingContext2D['bezierCurveTo'] = c(e.bezierCurveTo);
@@ -216,6 +232,7 @@ export const textAlign: SetMethod<CanvasRenderingContext2D['textAlign']> = c(e.t
 export const textBaseline: SetMethod<CanvasRenderingContext2D['textBaseline']> = c(e.textBaseline);
 export const textRendering: SetMethod<CanvasRenderingContext2D['textRendering']> = c(e.textRendering);
 export const wordSpacing: SetMethod<CanvasRenderingContext2D['wordSpacing']> = c(e.wordSpacing);
+
 drawHandlers.set(e.direction, hs());
 drawHandlers.set(e.fillStyle, hs());
 drawHandlers.set(e.filter, hs());
@@ -242,6 +259,15 @@ drawHandlers.set(e.textAlign, hs());
 drawHandlers.set(e.textBaseline, hs());
 drawHandlers.set(e.textRendering, hs());
 drawHandlers.set(e.wordSpacing, hs());
+
+
+drawHandlers.set(e.markStart, (ctx, en, args) => {
+  debug.markStart(...args);
+})
+
+drawHandlers.set(e.markEnd, (ctx, en, args) => {
+  debug.markEnd(...args);
+})
 const loadImage = (url) => {
 	return new Promise((resolve, reject) => {
   	const img = new Image();

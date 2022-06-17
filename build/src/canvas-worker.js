@@ -249,9 +249,9 @@ function myFlat(arr) {
 function processArguments(argumentList) {
     const processed = argumentList.map(toWireValue);
     return [
-        processed.map((v)=>v[0]
+        processed.map((v1)=>v1[0]
         ),
-        myFlat(processed.map((v)=>v[1]
+        myFlat(processed.map((v2)=>v2[1]
         ))
     ];
 }
@@ -972,8 +972,8 @@ function mapValues(fn, obj) {
     }, {});
 }
 _curry1(function applySpec1(spec) {
-    spec = mapValues(function(v) {
-        return typeof v == 'function' ? v : applySpec1(v);
+    spec = mapValues(function(v3) {
+        return typeof v3 == 'function' ? v3 : applySpec1(v3);
     }, spec);
     return curryN(reduce(max, 0, pluck('length', values(spec))), function() {
         var args = arguments;
@@ -1754,8 +1754,8 @@ reduceBy(function(acc, elem) {
     return acc + 1;
 }, 0);
 add(-1);
-var defaultTo = _curry2(function defaultTo(d, v) {
-    return v == null || v !== v ? d : v;
+var defaultTo = _curry2(function defaultTo(d, v4) {
+    return v4 == null || v4 !== v4 ? d : v4;
 });
 _curry3(function descend(fn, a, b) {
     var aa = fn(a);
@@ -3180,8 +3180,8 @@ var sequence = _curry2(function sequence(of, traversable) {
         return ap(map(prepend, x), acc);
     }, of([]), traversable);
 });
-_curry3(function set(lens2, v, x) {
-    return over(lens2, always(v), x);
+_curry3(function set(lens2, v5, x) {
+    return over(lens2, always(v5), x);
 });
 _curry2(function sort(comparator, list) {
     return Array.prototype.slice.call(list, 0).sort(comparator);
@@ -3593,6 +3593,24 @@ _curry1(function thunkify(fn) {
         };
     });
 });
+function* it() {
+    yield this.x;
+    yield this.y;
+}
+const v = (x, y)=>{
+    return {
+        x,
+        y,
+        [0]: x,
+        [1]: x,
+        [Symbol.iterator]: it
+    };
+};
+curry(([x1, y1], [x2, y2])=>{
+    return v(x1 + x2, y1 + y2);
+});
+const isFunction = (item)=>typeof item === 'function'
+;
 complement(isNil);
 const createEnum = (...args)=>{
     return Object.fromEntries(args.map((enumName, index)=>[
@@ -3607,12 +3625,336 @@ const createEnum = (...args)=>{
         ]
     ).flat());
 };
+const State = (initialState)=>{
+    let internalState = initialState;
+    return (handler)=>{
+        if (handler) {
+            internalState = isFunction(handler) ? handler(internalState) : handler;
+        }
+        return internalState;
+    };
+};
+State(0);
+State(0);
+State(0);
+State(0);
+State(0);
+const immutable = (t)=>{
+    const obj = Object.freeze(t);
+    if (Array.isArray(obj)) {
+        obj.forEach((item)=>immutable(item)
+        );
+    } else if (typeof obj === 'object' && obj !== null) {
+        for (let value of Object.values(obj)){
+            immutable(value);
+        }
+    }
+    return obj;
+};
+class EMap extends Map {
+    creator;
+    constructor(creator){
+        super();
+        this.creator = creator;
+    }
+    get(key) {
+        const value = super.get(key);
+        if (value) return value;
+        const created = this.creator();
+        super.set(key, created);
+        return created;
+    }
+    has() {
+        return true;
+    }
+}
+const NativeKeyCodes = immutable({
+    AltLeft: 'AltLeft',
+    AltRight: 'AltRight',
+    ArrowDown: 'ArrowDown',
+    ArrowLeft: 'ArrowLeft',
+    ArrowRight: 'ArrowRight',
+    ArrowUp: 'ArrowUp',
+    Backquote: 'Backquote',
+    Backslash: 'Backslash',
+    Backspace: 'Backspace',
+    BracketLeft: 'BracketLeft',
+    BracketRight: 'BracketRight',
+    CapsLock: 'CapsLock',
+    Comma: 'Comma',
+    ControlLeft: 'ControlLeft',
+    Digit0: 'Digit0',
+    Digit1: 'Digit1',
+    Digit2: 'Digit2',
+    Digit3: 'Digit3',
+    Digit4: 'Digit4',
+    Digit5: 'Digit5',
+    Digit6: 'Digit6',
+    Digit7: 'Digit7',
+    Digit8: 'Digit8',
+    Digit9: 'Digit9',
+    Enter: 'Enter',
+    Equal: 'Equal',
+    Escape: 'Escape',
+    KeyA: 'KeyA',
+    KeyB: 'KeyB',
+    KeyC: 'KeyC',
+    KeyD: 'KeyD',
+    KeyE: 'KeyE',
+    KeyF: 'KeyF',
+    KeyG: 'KeyG',
+    KeyH: 'KeyH',
+    KeyI: 'KeyI',
+    KeyJ: 'KeyJ',
+    KeyK: 'KeyK',
+    KeyL: 'KeyL',
+    KeyM: 'KeyM',
+    KeyN: 'KeyN',
+    KeyO: 'KeyO',
+    KeyP: 'KeyP',
+    KeyQ: 'KeyQ',
+    KeyR: 'KeyR',
+    KeyS: 'KeyS',
+    KeyT: 'KeyT',
+    KeyU: 'KeyU',
+    KeyV: 'KeyV',
+    KeyW: 'KeyW',
+    KeyX: 'KeyX',
+    KeyY: 'KeyY',
+    KeyZ: 'KeyZ',
+    MetaLeft: 'MetaLeft',
+    MetaRight: 'MetaRight',
+    Minus: 'Minus',
+    Period: 'Period',
+    Quote: 'Quote',
+    Semicolon: 'Semicolon',
+    ShiftLeft: 'ShiftLeft',
+    ShiftRight: 'ShiftRight',
+    Slash: 'Slash',
+    Space: 'Space',
+    Tab: 'Tab'
+});
+const AliasKeyCodes = immutable({
+    'Shift': [
+        'ShiftLeft',
+        'ShiftRight'
+    ],
+    'Meta': [
+        'MetaLeft',
+        'MetaRight'
+    ],
+    'Alt': [
+        'AltLeft',
+        'AltRight'
+    ]
+});
+immutable({
+    ...NativeKeyCodes,
+    ...AliasKeyCodes
+});
+new Set();
+new Set();
+new Set();
+let justActivatedSnapshot = new Set();
+const justPressed = (codes)=>{
+    if (Array.isArray(codes)) {
+        return codes.some((code)=>justPressed(code)
+        );
+    }
+    return justActivatedSnapshot.has(codes);
+};
+const cns = Symbol('__Component_Symbol__');
+const Component = ()=>{
+    const returnMethod = (data)=>{
+        return {
+            [cns]: returnMethod,
+            ...data
+        };
+    };
+    return returnMethod;
+};
+const ComponentStateManager = (initialState)=>{
+    let internalState = initialState;
+    return (changes)=>{
+        if (changes) {
+            internalState = {
+                ...internalState,
+                ...changes
+            };
+        }
+        return internalState;
+    };
+};
+class ComponentEntityManager extends Map {
+    get(component) {
+        const list = super.get(component);
+        if (list) {
+            return list;
+        }
+        const newList = [];
+        super.set(component, newList);
+        return newList;
+    }
+    appendItem(component, item) {
+        this.get(component).push(item);
+    }
+    removeItem(component, item) {
+        const list = this.get(component);
+        this.set(component, list.filter((i)=>i !== item
+        ));
+    }
+}
+const Counter = ()=>{
+    let number = 0;
+    return ()=>number++
+    ;
+};
+const EntityId = Component();
+const EntityList = ()=>{
+    const entityIdCounter = Counter();
+    const entities = new Map();
+    const componentEntityMapping = new ComponentEntityManager();
+    const addEntity1 = (components)=>{
+        const id = entityIdCounter();
+        const entity = {
+            id,
+            components: new Map()
+        };
+        entities.set(entity.id, entity);
+        addComponentToEntity1(id, EntityId({
+            id
+        }));
+        for (const component of components){
+            addComponentToEntity1(id, component);
+        }
+        return entity;
+    };
+    const addComponentToEntity1 = (entityId, component)=>{
+        const componentName = component[cns];
+        const entity = entities.get(entityId);
+        if (!entity) return;
+        entity.components.set(componentName, ComponentStateManager(component));
+        componentEntityMapping.appendItem(componentName, entityId);
+    };
+    function removeEntity1(id) {
+        const entity = entities.get(id);
+        if (!entity) return;
+        const { components  } = entity;
+        entities.delete(id);
+        for (const [componentName] of components){
+            componentEntityMapping.removeItem(componentName, id);
+        }
+    }
+    function count1(componentFilter) {
+        const componentMapping = [];
+        for (const componentName of componentFilter){
+            const component = componentEntityMapping.get(componentName);
+            if (component.length === 0) {
+                return 0;
+            }
+            componentMapping.push(component);
+        }
+        const entityIds = intersectionBetweenOrderedIntegerLists(componentMapping);
+        return entityIds.length;
+    }
+    function* query1(componentFilter, filteredUserIds) {
+        let componentMapping = [];
+        if (filteredUserIds) {
+            componentMapping.push(filteredUserIds);
+        }
+        for (const [, componentName] of Object.entries(componentFilter)){
+            const component = componentEntityMapping.get(componentName) || [];
+            if (!component || component.length === 0) {
+                return;
+            }
+            componentMapping.push(component);
+        }
+        componentMapping = componentMapping.sort((a, b)=>a.length - b.length
+        );
+        const entityIds = intersectionBetweenOrderedIntegerLists(componentMapping);
+        for (const entityId of entityIds){
+            const entity = entities.get(entityId);
+            if (!entity) {
+                continue;
+            }
+            const components = {};
+            for (const [remappedName, componentName] of Object.entries(componentFilter)){
+                components[remappedName] = entity.components.get(componentName);
+            }
+            yield components;
+        }
+    }
+    return {
+        addEntity: addEntity1,
+        removeEntity: removeEntity1,
+        addComponentToEntity: addComponentToEntity1,
+        count: count1,
+        query: query1
+    };
+};
+const globalEntityList = EntityList();
+globalEntityList.addEntity;
+globalEntityList.removeEntity;
+globalEntityList.addComponentToEntity;
+globalEntityList.count;
+globalEntityList.query;
+const intersectionBetweenOrderedIntegerLists = (intLists)=>{
+    let last2 = intLists[0];
+    for(let i = 1; i < intLists.length; i++){
+        const current = intLists[i];
+        const matches = [];
+        const lastLength = last2.length;
+        const currentLength = current.length;
+        let currentIndexStartingPoint = 0;
+        for(let lastIndex = 0; lastIndex < lastLength; lastIndex++){
+            const lastId = last2[lastIndex];
+            for(let currentIndex = currentIndexStartingPoint; currentIndex < currentLength; currentIndex++){
+                const currentId = current[currentIndex];
+                if (lastId === currentId) {
+                    currentIndexStartingPoint = currentIndex + 1;
+                    matches.push(lastId);
+                    break;
+                } else if (lastId < currentId) {
+                    break;
+                } else if (lastId > currentId) {
+                    currentIndexStartingPoint = currentIndex;
+                }
+            }
+        }
+        if (matches.length === 0) {
+            return [];
+        }
+        last2 = matches;
+    }
+    return last2;
+};
+Component();
+Component();
+const loadedResources = new Map();
+const addResource = (url, imageBitmap)=>{
+    loadedResources.set(url, imageBitmap);
+};
+const loadImage = async (url)=>{
+    const pre = await fetch(url);
+    const blob = await pre.blob();
+    return createImageBitmap(blob);
+};
+Component();
+Component();
+Component();
 let activeContext = null;
+Component();
+Component();
+Component();
+State({
+    width: 1920,
+    height: 1080
+});
 const sendToContext = (item)=>{
     if (!activeContext) throw new Error('Outside of context');
     activeContext.push(item);
 };
-const e = createEnum('arcTo', 'beginPath', 'bezierCurveTo', 'clearRect', 'clip', 'closePath', 'createConicGradient', 'createImageData', 'createLinearGradient', 'createPattern', 'createRadialGradient', 'drawFocusIfNeeded', 'drawImage', 'ellipse', 'fill', 'fillRect', 'fillText', 'getContextAttributes', 'getImageData', 'getLineDash', 'getTransform', 'isContextLost', 'isPointInPath', 'isPointInStroke', 'lineTo', 'measureText', 'moveTo', 'putImageData', 'quadraticCurveTo', 'rect', 'reset', 'resetTransform', 'restore', 'rotate', 'roundRect', 'save', 'scale', 'setLineDash', 'setTransform', 'stroke', 'strokeRect', 'strokeText', 'transform', 'translate', 'direction', 'fillStyle', 'filter', 'font', 'fontKerning', 'fontStretch', 'fontVariantCaps', 'globalAlpha', 'globalCompositeOperation', 'imageSmoothingEnabled', 'imageSmoothingQuality', 'letterSpacing', 'lineCap', 'lineDashOffset', 'lineJoin', 'lineWidth', 'miterLimit', 'shadowBlur', 'shadowColor', 'shadowOffsetX', 'shadowOffsetY', 'strokeStyle', 'textAlign', 'textBaseline', 'textRendering', 'wordSpacing');
+const e = createEnum('markStart', 'markEnd', 'arcTo', 'beginPath', 'bezierCurveTo', 'clearRect', 'clip', 'closePath', 'createConicGradient', 'createImageData', 'createLinearGradient', 'createPattern', 'createRadialGradient', 'drawFocusIfNeeded', 'drawImage', 'ellipse', 'fill', 'fillRect', 'fillText', 'getContextAttributes', 'getImageData', 'getLineDash', 'getTransform', 'isContextLost', 'isPointInPath', 'isPointInStroke', 'lineTo', 'measureText', 'moveTo', 'putImageData', 'quadraticCurveTo', 'rect', 'reset', 'resetTransform', 'restore', 'rotate', 'roundRect', 'save', 'scale', 'setLineDash', 'setTransform', 'stroke', 'strokeRect', 'strokeText', 'transform', 'translate', 'direction', 'fillStyle', 'filter', 'font', 'fontKerning', 'fontStretch', 'fontVariantCaps', 'globalAlpha', 'globalCompositeOperation', 'imageSmoothingEnabled', 'imageSmoothingQuality', 'letterSpacing', 'lineCap', 'lineDashOffset', 'lineJoin', 'lineWidth', 'miterLimit', 'shadowBlur', 'shadowColor', 'shadowOffsetX', 'shadowOffsetY', 'strokeStyle', 'textAlign', 'textBaseline', 'textRendering', 'wordSpacing');
 const c = (e1)=>{
     return (...args)=>sendToContext([
             e1,
@@ -3629,6 +3971,8 @@ const hs = ()=>(ctx2, enumber, [value])=>{
     }
 ;
 const drawHandlers = new Map();
+c(e.markStart);
+c(e.markEnd);
 c(e.arcTo);
 c(e.beginPath);
 c(e.bezierCurveTo);
@@ -3769,6 +4113,29 @@ drawHandlers.set(e.textAlign, hs());
 drawHandlers.set(e.textBaseline, hs());
 drawHandlers.set(e.textRendering, hs());
 drawHandlers.set(e.wordSpacing, hs());
+new Map();
+const markStart = (label)=>{
+    performance.mark(label, {
+        detail: [
+            'debug',
+            'start'
+        ]
+    });
+};
+drawHandlers.set(e.markStart, (ctx, en, args)=>{
+    markStart(...args);
+});
+const markEnd = (label)=>{
+    performance.mark(label, {
+        detail: [
+            'debug',
+            'end'
+        ]
+    });
+};
+drawHandlers.set(e.markEnd, (ctx, en, args)=>{
+    markEnd(...args);
+});
 const images = new Map();
 const getImage = (url)=>{
     if (!images.has(url)) {
@@ -3797,15 +4164,10 @@ const executeOnCanvas = (ctx3, [enumber, args])=>{
         drawHandlers.get(enumber)(ctx3, enumber, args);
     }
 };
-const loadedResources = new Map();
-const addResource = (url, imageBitmap)=>{
-    loadedResources.set(url, imageBitmap);
-};
-const loadImage = async (url)=>{
-    const pre = await fetch(url);
-    const blob = await pre.blob();
-    return createImageBitmap(blob);
-};
+new EMap(()=>[]
+);
+Component();
+Component();
 let canvas;
 let ctx;
 const loadResources = async (imageUrls)=>{
@@ -3820,14 +4182,28 @@ const setCanvas = (offscreenCanvas)=>{
     canvas = offscreenCanvas;
     ctx = canvas.getContext('2d');
 };
-const newRenderer2 = (handlers)=>{
+const draw = (time, now, handlers)=>{
+    const offset = Date.now() - time;
+    const canvperf = performance.now();
     for (let handler of handlers){
         executeOnCanvas(ctx, handler);
     }
+    const entries = performance.getEntries();
+    const perf = [
+        ...entries
+    ].map((e3)=>[
+            e3.name,
+            e3.detail,
+            e3.startTime - canvperf + offset + now, 
+        ]
+    );
+    performance.clearMarks();
+    performance.clearMeasures();
+    return perf;
 };
 const comlinkObj = {
     setCanvas,
-    newRenderer2,
+    draw,
     loadResources
 };
 self.onconnect = (event)=>{

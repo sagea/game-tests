@@ -1,5 +1,4 @@
-import { removal } from '../animate.ts';
-import { query, Component, removeEntity, EntityId } from '../modules/ecs/mod.ts';
+import { query, Component, removeEntity, EntityId, AppPlugin } from '../modules/ecs/mod.ts';
 
 export const DeleteQueueManager = Component<{ markedForDeletion: boolean }>();
 export const removeMarkedEntities = () => {
@@ -10,4 +9,7 @@ export const removeMarkedEntities = () => {
     }
   }
 }
-removal.add(removeMarkedEntities);
+
+export const deleteQueuePlugin: AppPlugin = (app) => {
+  app.addSystem(removeMarkedEntities);
+}

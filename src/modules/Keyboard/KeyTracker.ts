@@ -43,4 +43,5 @@ export const clearKeys = () => {
 export const applySnapshot = () => {
   activeKeysSnapshot = new Set(activeKeys);
   justActivatedSnapshot = new Set(justActivated);
+  justActivated.clear();
 }
