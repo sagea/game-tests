@@ -151,7 +151,7 @@ _curry1(function addIndex(fn) {
     });
 });
 function _curry3(fn) {
-    return function f3(a, b, c1) {
+    return function f3(a, b, c) {
         switch(arguments.length){
             case 0:
                 return f3;
@@ -168,19 +168,19 @@ function _curry3(fn) {
                     return fn(a, b, _c);
                 });
             default:
-                return _isPlaceholder(a) && _isPlaceholder(b) && _isPlaceholder(c1) ? f3 : _isPlaceholder(a) && _isPlaceholder(b) ? _curry2(function(_a, _b) {
-                    return fn(_a, _b, c1);
-                }) : _isPlaceholder(a) && _isPlaceholder(c1) ? _curry2(function(_a, _c) {
+                return _isPlaceholder(a) && _isPlaceholder(b) && _isPlaceholder(c) ? f3 : _isPlaceholder(a) && _isPlaceholder(b) ? _curry2(function(_a, _b) {
+                    return fn(_a, _b, c);
+                }) : _isPlaceholder(a) && _isPlaceholder(c) ? _curry2(function(_a, _c) {
                     return fn(_a, b, _c);
-                }) : _isPlaceholder(b) && _isPlaceholder(c1) ? _curry2(function(_b, _c) {
+                }) : _isPlaceholder(b) && _isPlaceholder(c) ? _curry2(function(_b, _c) {
                     return fn(a, _b, _c);
                 }) : _isPlaceholder(a) ? _curry1(function(_a) {
-                    return fn(_a, b, c1);
+                    return fn(_a, b, c);
                 }) : _isPlaceholder(b) ? _curry1(function(_b) {
-                    return fn(a, _b, c1);
-                }) : _isPlaceholder(c1) ? _curry1(function(_c) {
+                    return fn(a, _b, c);
+                }) : _isPlaceholder(c) ? _curry1(function(_c) {
                     return fn(a, b, _c);
-                }) : fn(a, b, c1);
+                }) : fn(a, b, c);
         }
     };
 }
@@ -643,8 +643,8 @@ function mapValues(fn, obj) {
     }, {});
 }
 _curry1(function applySpec1(spec) {
-    spec = mapValues(function(v1) {
-        return typeof v1 == 'function' ? v1 : applySpec1(v1);
+    spec = mapValues(function(v) {
+        return typeof v == 'function' ? v : applySpec1(v);
     }, spec);
     return curryN(reduce(max, 0, pluck('length', values(spec))), function() {
         var args = arguments;
@@ -1369,8 +1369,8 @@ var converge = _curry2(function converge(after, fns) {
     });
 });
 curry(function(pred, list) {
-    return _reduce(function(a, e1) {
-        return pred(e1) ? a + 1 : a;
+    return _reduce(function(a, e) {
+        return pred(e) ? a + 1 : a;
     }, 0, list);
 });
 var XReduceBy = function() {
@@ -1425,8 +1425,8 @@ reduceBy(function(acc, elem) {
     return acc + 1;
 }, 0);
 add(-1);
-var defaultTo = _curry2(function defaultTo(d, v2) {
-    return v2 == null || v2 !== v2 ? d : v2;
+var defaultTo = _curry2(function defaultTo(d, v) {
+    return v == null || v !== v ? d : v;
 });
 _curry3(function descend(fn, a, b) {
     var aa = fn(a);
@@ -2851,8 +2851,8 @@ var sequence = _curry2(function sequence(of, traversable) {
         return ap(map(prepend, x), acc);
     }, of([]), traversable);
 });
-_curry3(function set(lens2, v3, x) {
-    return over(lens2, always(v3), x);
+_curry3(function set(lens2, v, x) {
+    return over(lens2, always(v), x);
 });
 _curry2(function sort(comparator, list) {
     return Array.prototype.slice.call(list, 0).sort(comparator);
@@ -3058,9 +3058,9 @@ _curry2(function _tryCatch(tryer, catcher) {
     return _arity(tryer.length, function() {
         try {
             return tryer.apply(this, arguments);
-        } catch (e2) {
+        } catch (e) {
             return catcher.apply(this, _concat([
-                e2
+                e
             ], arguments));
         }
     });
@@ -3267,19 +3267,6 @@ _curry1(function thunkify(fn) {
 const isFunction = (item)=>typeof item === 'function'
 ;
 complement(isNil);
-const createEnum = (...args)=>{
-    return Object.fromEntries(args.map((enumName, index)=>[
-            [
-                enumName,
-                index
-            ],
-            [
-                index,
-                enumName
-            ], 
-        ]
-    ).flat());
-};
 const State = (initialState)=>{
     let internalState = initialState;
     return (handler)=>{
@@ -3289,309 +3276,24 @@ const State = (initialState)=>{
         return internalState;
     };
 };
-State(0);
-State(0);
-State(0);
-State(0);
-State(0);
-const cns = Symbol('__Component_Symbol__');
-const Component = ()=>{
-    const returnMethod = (data)=>{
-        return {
-            [cns]: returnMethod,
-            ...data
-        };
-    };
-    return returnMethod;
-};
-const ComponentStateManager = (initialState)=>{
-    let internalState = initialState;
-    return (changes)=>{
-        if (changes) {
-            internalState = {
-                ...internalState,
-                ...changes
-            };
-        }
-        return internalState;
-    };
-};
-class ComponentEntityManager extends Map {
-    get(component) {
-        const list = super.get(component);
-        if (list) {
-            return list;
-        }
-        const newList = [];
-        super.set(component, newList);
-        return newList;
-    }
-    appendItem(component, item) {
-        this.get(component).push(item);
-    }
-    removeItem(component, item) {
-        const list = this.get(component);
-        this.set(component, list.filter((i)=>i !== item
-        ));
-    }
-}
-const Counter = ()=>{
-    let number = 0;
-    return ()=>number++
-    ;
-};
-const EntityId = Component();
-const EntityList = ()=>{
-    const entityIdCounter = Counter();
-    const entities = new Map();
-    const componentEntityMapping = new ComponentEntityManager();
-    const addEntity1 = (components)=>{
-        const id = entityIdCounter();
-        const entity = {
-            id,
-            components: new Map()
-        };
-        entities.set(entity.id, entity);
-        addComponentToEntity1(id, EntityId({
-            id
-        }));
-        for (const component of components){
-            addComponentToEntity1(id, component);
-        }
-        return entity;
-    };
-    const addComponentToEntity1 = (entityId, component)=>{
-        const componentName = component[cns];
-        const entity = entities.get(entityId);
-        if (!entity) return;
-        entity.components.set(componentName, ComponentStateManager(component));
-        componentEntityMapping.appendItem(componentName, entityId);
-    };
-    function removeEntity1(id) {
-        const entity = entities.get(id);
-        if (!entity) return;
-        const { components  } = entity;
-        entities.delete(id);
-        for (const [componentName] of components){
-            componentEntityMapping.removeItem(componentName, id);
-        }
-    }
-    function count1(componentFilter) {
-        const componentMapping = [];
-        for (const componentName of componentFilter){
-            const component = componentEntityMapping.get(componentName);
-            if (component.length === 0) {
-                return 0;
-            }
-            componentMapping.push(component);
-        }
-        const entityIds = intersectionBetweenOrderedIntegerLists(componentMapping);
-        return entityIds.length;
-    }
-    function* query1(componentFilter, filteredUserIds) {
-        let componentMapping = [];
-        if (filteredUserIds) {
-            componentMapping.push(filteredUserIds);
-        }
-        for (const [, componentName] of Object.entries(componentFilter)){
-            const component = componentEntityMapping.get(componentName) || [];
-            if (!component || component.length === 0) {
-                return;
-            }
-            componentMapping.push(component);
-        }
-        componentMapping = componentMapping.sort((a, b)=>a.length - b.length
-        );
-        const entityIds = intersectionBetweenOrderedIntegerLists(componentMapping);
-        for (const entityId of entityIds){
-            const entity = entities.get(entityId);
-            if (!entity) {
-                continue;
-            }
-            const components = {};
-            for (const [remappedName, componentName] of Object.entries(componentFilter)){
-                components[remappedName] = entity.components.get(componentName);
-            }
-            yield components;
-        }
-    }
-    return {
-        addEntity: addEntity1,
-        removeEntity: removeEntity1,
-        addComponentToEntity: addComponentToEntity1,
-        count: count1,
-        query: query1
-    };
-};
-const globalEntityList = EntityList();
-globalEntityList.addEntity;
-globalEntityList.removeEntity;
-globalEntityList.addComponentToEntity;
-globalEntityList.count;
-globalEntityList.query;
-const intersectionBetweenOrderedIntegerLists = (intLists)=>{
-    let last1 = intLists[0];
-    for(let i = 1; i < intLists.length; i++){
-        const current = intLists[i];
-        const matches = [];
-        const lastLength = last1.length;
-        const currentLength = current.length;
-        let currentIndexStartingPoint = 0;
-        for(let lastIndex = 0; lastIndex < lastLength; lastIndex++){
-            const lastId = last1[lastIndex];
-            for(let currentIndex = currentIndexStartingPoint; currentIndex < currentLength; currentIndex++){
-                const currentId = current[currentIndex];
-                if (lastId === currentId) {
-                    currentIndexStartingPoint = currentIndex + 1;
-                    matches.push(lastId);
-                    break;
-                } else if (lastId < currentId) {
-                    break;
-                } else if (lastId > currentId) {
-                    currentIndexStartingPoint = currentIndex;
-                }
-            }
-        }
-        if (matches.length === 0) {
-            return [];
-        }
-        last1 = matches;
-    }
-    return last1;
-};
-Component();
-function* it() {
-    yield this.x;
-    yield this.y;
-}
-const v = (x, y)=>{
-    return {
-        x,
-        y,
-        [0]: x,
-        [1]: x,
-        [Symbol.iterator]: it
-    };
-};
-curry(([x1, y1], [x2, y2])=>{
-    return v(x1 + x2, y1 + y2);
+const Canvas = State({
+    width: 1920,
+    height: 1080
 });
-Component();
-Component();
-Component();
-const immutable = (t)=>{
-    const obj = Object.freeze(t);
-    if (Array.isArray(obj)) {
-        obj.forEach((item)=>immutable(item)
-        );
-    } else if (typeof obj === 'object' && obj !== null) {
-        for (let value of Object.values(obj)){
-            immutable(value);
-        }
-    }
-    return obj;
+const createCanvas = ()=>{
+    const canvas = document.createElement('canvas');
+    const { width , height  } = Canvas();
+    Object.assign(canvas, {
+        width,
+        height
+    });
+    Object.assign(canvas.style, {
+        border: '1px solid #ccc',
+        maxWidth: '100%'
+    });
+    document.body.appendChild(canvas);
+    return canvas;
 };
-class EMap extends Map {
-    creator;
-    constructor(creator){
-        super();
-        this.creator = creator;
-    }
-    get(key) {
-        const value = super.get(key);
-        if (value) return value;
-        const created = this.creator();
-        super.set(key, created);
-        return created;
-    }
-    has() {
-        return true;
-    }
-}
-const NativeKeyCodes = immutable({
-    AltLeft: 'AltLeft',
-    AltRight: 'AltRight',
-    ArrowDown: 'ArrowDown',
-    ArrowLeft: 'ArrowLeft',
-    ArrowRight: 'ArrowRight',
-    ArrowUp: 'ArrowUp',
-    Backquote: 'Backquote',
-    Backslash: 'Backslash',
-    Backspace: 'Backspace',
-    BracketLeft: 'BracketLeft',
-    BracketRight: 'BracketRight',
-    CapsLock: 'CapsLock',
-    Comma: 'Comma',
-    ControlLeft: 'ControlLeft',
-    Digit0: 'Digit0',
-    Digit1: 'Digit1',
-    Digit2: 'Digit2',
-    Digit3: 'Digit3',
-    Digit4: 'Digit4',
-    Digit5: 'Digit5',
-    Digit6: 'Digit6',
-    Digit7: 'Digit7',
-    Digit8: 'Digit8',
-    Digit9: 'Digit9',
-    Enter: 'Enter',
-    Equal: 'Equal',
-    Escape: 'Escape',
-    KeyA: 'KeyA',
-    KeyB: 'KeyB',
-    KeyC: 'KeyC',
-    KeyD: 'KeyD',
-    KeyE: 'KeyE',
-    KeyF: 'KeyF',
-    KeyG: 'KeyG',
-    KeyH: 'KeyH',
-    KeyI: 'KeyI',
-    KeyJ: 'KeyJ',
-    KeyK: 'KeyK',
-    KeyL: 'KeyL',
-    KeyM: 'KeyM',
-    KeyN: 'KeyN',
-    KeyO: 'KeyO',
-    KeyP: 'KeyP',
-    KeyQ: 'KeyQ',
-    KeyR: 'KeyR',
-    KeyS: 'KeyS',
-    KeyT: 'KeyT',
-    KeyU: 'KeyU',
-    KeyV: 'KeyV',
-    KeyW: 'KeyW',
-    KeyX: 'KeyX',
-    KeyY: 'KeyY',
-    KeyZ: 'KeyZ',
-    MetaLeft: 'MetaLeft',
-    MetaRight: 'MetaRight',
-    Minus: 'Minus',
-    Period: 'Period',
-    Quote: 'Quote',
-    Semicolon: 'Semicolon',
-    ShiftLeft: 'ShiftLeft',
-    ShiftRight: 'ShiftRight',
-    Slash: 'Slash',
-    Space: 'Space',
-    Tab: 'Tab'
-});
-const AliasKeyCodes = immutable({
-    'Shift': [
-        'ShiftLeft',
-        'ShiftRight'
-    ],
-    'Meta': [
-        'MetaLeft',
-        'MetaRight'
-    ],
-    'Alt': [
-        'AltLeft',
-        'AltRight'
-    ]
-});
-immutable({
-    ...NativeKeyCodes,
-    ...AliasKeyCodes
-});
 const isWorkerContext = ()=>{
     if (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope) {
         return true;
@@ -3810,13 +3512,13 @@ function createProxy(ep, path5 = [], target = function() {}) {
         },
         apply (_target, _thisArg, rawArgumentList) {
             throwIfProxyReleased(isProxyReleased);
-            const last2 = path5[path5.length - 1];
-            if (last2 === createEndpoint) {
+            const last1 = path5[path5.length - 1];
+            if (last1 === createEndpoint) {
                 return requestResponseMessage(ep, {
                     type: "ENDPOINT"
                 }).then(fromWireValue);
             }
-            if (last2 === "bind") {
+            if (last1 === "bind") {
                 return createProxy(ep, path5.slice(0, -1));
             }
             const [argumentList, transferables] = processArguments(rawArgumentList);
@@ -3846,9 +3548,9 @@ function myFlat(arr) {
 function processArguments(argumentList) {
     const processed = argumentList.map(toWireValue);
     return [
-        processed.map((v4)=>v4[0]
+        processed.map((v)=>v[0]
         ),
-        myFlat(processed.map((v5)=>v5[1]
+        myFlat(processed.map((v)=>v[1]
         ))
     ];
 }
@@ -3921,35 +3623,138 @@ const transfer1 = (...args)=>{
     return transfer(...args);
 };
 new Map();
-const createComlinkWorker = (path6, options)=>{
-    const worker = new Worker(path6, options);
-    console.log('worker', worker);
-    const comlinkWorker = wrap1(worker);
-    return comlinkWorker;
+const Counter = ()=>{
+    let number = 0;
+    return ()=>number++
+    ;
 };
-const createComlinkSharedWorker = (path7, options)=>{
-    const worker1 = new SharedWorker(path7, options);
-    worker1.port.start();
-    const workerComlink = wrap1(worker1.port);
-    const base = {
-        get port () {
-            return worker1.port;
-        },
-        clonePort () {
-            const worker = new SharedWorker(path7, options);
-            worker.port.start();
-            return worker.port;
-        }
-    };
-    return new Proxy(base, {
-        get (obj, key) {
-            if (obj.hasOwnProperty(key)) {
-                return Reflect.get(obj, key);
-            }
-            return Reflect.get(workerComlink, key);
+Counter();
+const isEvent = (data)=>{
+    if (!data) return false;
+    if (typeof data !== 'object') return false;
+    if ('$$event_type$$' in data) return data;
+    return false;
+};
+const expose1 = (worker)=>{
+    worker.addEventListener('message', ({ data  })=>{
+        if (!isEvent(data)) return;
+        if (data.$$event_type$$ === 'createWorker') {
+            const sharedWorker = new SharedWorker(...data.args);
+            sharedWorker.port.start();
+            worker.postMessage({
+                $$event_type$$: 'createWorker',
+                $$event_state$$: 'in',
+                id: data.id,
+                result: sharedWorker.port
+            }, [
+                sharedWorker.port
+            ]);
         }
     });
+    return worker;
 };
+const createComlinkWorker = (path6, options)=>{
+    const worker = new Worker(path6, options);
+    const actionWorker = expose1(worker);
+    const comlinkWorker = wrap1(actionWorker);
+    return comlinkWorker;
+};
+const immutable = (t)=>{
+    const obj = Object.freeze(t);
+    if (Array.isArray(obj)) {
+        obj.forEach((item)=>immutable(item)
+        );
+    } else if (typeof obj === 'object' && obj !== null) {
+        for (let value of Object.values(obj)){
+            immutable(value);
+        }
+    }
+    return obj;
+};
+const NativeKeyCodes = immutable({
+    AltLeft: 'AltLeft',
+    AltRight: 'AltRight',
+    ArrowDown: 'ArrowDown',
+    ArrowLeft: 'ArrowLeft',
+    ArrowRight: 'ArrowRight',
+    ArrowUp: 'ArrowUp',
+    Backquote: 'Backquote',
+    Backslash: 'Backslash',
+    Backspace: 'Backspace',
+    BracketLeft: 'BracketLeft',
+    BracketRight: 'BracketRight',
+    CapsLock: 'CapsLock',
+    Comma: 'Comma',
+    ControlLeft: 'ControlLeft',
+    Digit0: 'Digit0',
+    Digit1: 'Digit1',
+    Digit2: 'Digit2',
+    Digit3: 'Digit3',
+    Digit4: 'Digit4',
+    Digit5: 'Digit5',
+    Digit6: 'Digit6',
+    Digit7: 'Digit7',
+    Digit8: 'Digit8',
+    Digit9: 'Digit9',
+    Enter: 'Enter',
+    Equal: 'Equal',
+    Escape: 'Escape',
+    KeyA: 'KeyA',
+    KeyB: 'KeyB',
+    KeyC: 'KeyC',
+    KeyD: 'KeyD',
+    KeyE: 'KeyE',
+    KeyF: 'KeyF',
+    KeyG: 'KeyG',
+    KeyH: 'KeyH',
+    KeyI: 'KeyI',
+    KeyJ: 'KeyJ',
+    KeyK: 'KeyK',
+    KeyL: 'KeyL',
+    KeyM: 'KeyM',
+    KeyN: 'KeyN',
+    KeyO: 'KeyO',
+    KeyP: 'KeyP',
+    KeyQ: 'KeyQ',
+    KeyR: 'KeyR',
+    KeyS: 'KeyS',
+    KeyT: 'KeyT',
+    KeyU: 'KeyU',
+    KeyV: 'KeyV',
+    KeyW: 'KeyW',
+    KeyX: 'KeyX',
+    KeyY: 'KeyY',
+    KeyZ: 'KeyZ',
+    MetaLeft: 'MetaLeft',
+    MetaRight: 'MetaRight',
+    Minus: 'Minus',
+    Period: 'Period',
+    Quote: 'Quote',
+    Semicolon: 'Semicolon',
+    ShiftLeft: 'ShiftLeft',
+    ShiftRight: 'ShiftRight',
+    Slash: 'Slash',
+    Space: 'Space',
+    Tab: 'Tab'
+});
+const AliasKeyCodes = immutable({
+    'Shift': [
+        'ShiftLeft',
+        'ShiftRight'
+    ],
+    'Meta': [
+        'MetaLeft',
+        'MetaRight'
+    ],
+    'Alt': [
+        'AltLeft',
+        'AltRight'
+    ]
+});
+immutable({
+    ...NativeKeyCodes,
+    ...AliasKeyCodes
+});
 const activeKeys = new Set();
 const justActivated = new Set();
 let activeKeysSnapshot = new Set();
@@ -3995,221 +3800,6 @@ const attachListeners = (worker)=>{
         'module:Keyboard:event:window:blur': clearKeys
     };
 };
-new Map();
-Component();
-const Canvas = State({
-    width: 1920,
-    height: 1080
-});
-let activeContext = null;
-Component();
-Component();
-Component();
-const createCanvas = ()=>{
-    const canvas = document.createElement('canvas');
-    const { width , height  } = Canvas();
-    Object.assign(canvas, {
-        width,
-        height
-    });
-    Object.assign(canvas.style, {
-        border: '1px solid #ccc',
-        maxWidth: '100%'
-    });
-    document.body.appendChild(canvas);
-    return canvas;
-};
-const sendToContext = (item)=>{
-    if (!activeContext) throw new Error('Outside of context');
-    activeContext.push(item);
-};
-const e = createEnum('markStart', 'markEnd', 'arcTo', 'beginPath', 'bezierCurveTo', 'clearRect', 'clip', 'closePath', 'createConicGradient', 'createImageData', 'createLinearGradient', 'createPattern', 'createRadialGradient', 'drawFocusIfNeeded', 'drawImage', 'ellipse', 'fill', 'fillRect', 'fillText', 'getContextAttributes', 'getImageData', 'getLineDash', 'getTransform', 'isContextLost', 'isPointInPath', 'isPointInStroke', 'lineTo', 'measureText', 'moveTo', 'putImageData', 'quadraticCurveTo', 'rect', 'reset', 'resetTransform', 'restore', 'rotate', 'roundRect', 'save', 'scale', 'setLineDash', 'setTransform', 'stroke', 'strokeRect', 'strokeText', 'transform', 'translate', 'direction', 'fillStyle', 'filter', 'font', 'fontKerning', 'fontStretch', 'fontVariantCaps', 'globalAlpha', 'globalCompositeOperation', 'imageSmoothingEnabled', 'imageSmoothingQuality', 'letterSpacing', 'lineCap', 'lineDashOffset', 'lineJoin', 'lineWidth', 'miterLimit', 'shadowBlur', 'shadowColor', 'shadowOffsetX', 'shadowOffsetY', 'strokeStyle', 'textAlign', 'textBaseline', 'textRendering', 'wordSpacing');
-const c = (e1)=>{
-    return (...args)=>sendToContext([
-            e1,
-            args
-        ])
-    ;
-};
-const hf = ()=>(ctx, enumber, args)=>{
-        ctx[e[enumber]](...args);
-    }
-;
-const hs = ()=>(ctx, enumber, [value])=>{
-        ctx[e[enumber]] = value;
-    }
-;
-const drawHandlers = new Map();
-c(e.markStart);
-c(e.markEnd);
-c(e.arcTo);
-c(e.beginPath);
-c(e.bezierCurveTo);
-c(e.clearRect);
-new Map();
-const markStart = (label)=>{
-    performance.mark(label, {
-        detail: [
-            'debug',
-            'start'
-        ]
-    });
-};
-const markEnd = (label)=>{
-    performance.mark(label, {
-        detail: [
-            'debug',
-            'end'
-        ]
-    });
-};
-c(e.clip);
-c(e.closePath);
-c(e.createConicGradient);
-c(e.createImageData);
-c(e.createLinearGradient);
-c(e.createPattern);
-c(e.createRadialGradient);
-c(e.drawFocusIfNeeded);
-c(e.drawImage);
-c(e.ellipse);
-c(e.fill);
-c(e.fillRect);
-c(e.fillText);
-c(e.getContextAttributes);
-c(e.getImageData);
-c(e.getLineDash);
-c(e.getTransform);
-c(e.isContextLost);
-c(e.isPointInPath);
-c(e.isPointInStroke);
-c(e.lineTo);
-c(e.measureText);
-c(e.moveTo);
-c(e.putImageData);
-c(e.quadraticCurveTo);
-c(e.rect);
-c(e.reset);
-c(e.resetTransform);
-c(e.restore);
-c(e.rotate);
-c(e.roundRect);
-c(e.save);
-c(e.scale);
-c(e.setLineDash);
-c(e.setTransform);
-c(e.stroke);
-c(e.strokeRect);
-c(e.strokeText);
-c(e.transform);
-c(e.translate);
-drawHandlers.set(e.arcTo, hf());
-drawHandlers.set(e.beginPath, hf());
-drawHandlers.set(e.bezierCurveTo, hf());
-drawHandlers.set(e.clearRect, hf());
-drawHandlers.set(e.clip, hf());
-drawHandlers.set(e.closePath, hf());
-drawHandlers.set(e.createConicGradient, hf());
-drawHandlers.set(e.createImageData, hf());
-drawHandlers.set(e.createLinearGradient, hf());
-drawHandlers.set(e.createPattern, hf());
-drawHandlers.set(e.createRadialGradient, hf());
-drawHandlers.set(e.drawFocusIfNeeded, hf());
-drawHandlers.set(e.drawImage, hf());
-drawHandlers.set(e.ellipse, hf());
-drawHandlers.set(e.fill, hf());
-drawHandlers.set(e.fillRect, hf());
-drawHandlers.set(e.fillText, hf());
-drawHandlers.set(e.getContextAttributes, hf());
-drawHandlers.set(e.getImageData, hf());
-drawHandlers.set(e.getLineDash, hf());
-drawHandlers.set(e.getTransform, hf());
-drawHandlers.set(e.isContextLost, hf());
-drawHandlers.set(e.isPointInPath, hf());
-drawHandlers.set(e.isPointInStroke, hf());
-drawHandlers.set(e.lineTo, hf());
-drawHandlers.set(e.measureText, hf());
-drawHandlers.set(e.moveTo, hf());
-drawHandlers.set(e.putImageData, hf());
-drawHandlers.set(e.quadraticCurveTo, hf());
-drawHandlers.set(e.rect, hf());
-drawHandlers.set(e.reset, hf());
-drawHandlers.set(e.resetTransform, hf());
-drawHandlers.set(e.restore, hf());
-drawHandlers.set(e.rotate, hf());
-drawHandlers.set(e.roundRect, hf());
-drawHandlers.set(e.save, hf());
-drawHandlers.set(e.scale, hf());
-drawHandlers.set(e.setLineDash, hf());
-drawHandlers.set(e.setTransform, hf());
-drawHandlers.set(e.stroke, hf());
-drawHandlers.set(e.strokeRect, hf());
-drawHandlers.set(e.strokeText, hf());
-drawHandlers.set(e.transform, hf());
-drawHandlers.set(e.translate, hf());
-c(e.direction);
-c(e.fillStyle);
-c(e.filter);
-c(e.font);
-c(e.fontKerning);
-c(e.fontStretch);
-c(e.fontVariantCaps);
-c(e.globalAlpha);
-c(e.globalCompositeOperation);
-c(e.imageSmoothingEnabled);
-c(e.imageSmoothingQuality);
-c(e.letterSpacing);
-c(e.lineCap);
-c(e.lineDashOffset);
-c(e.lineJoin);
-c(e.lineWidth);
-c(e.miterLimit);
-c(e.shadowBlur);
-c(e.shadowColor);
-c(e.shadowOffsetX);
-c(e.shadowOffsetY);
-c(e.strokeStyle);
-c(e.textAlign);
-c(e.textBaseline);
-c(e.textRendering);
-c(e.wordSpacing);
-drawHandlers.set(e.direction, hs());
-drawHandlers.set(e.fillStyle, hs());
-drawHandlers.set(e.filter, hs());
-drawHandlers.set(e.font, hs());
-drawHandlers.set(e.fontKerning, hs());
-drawHandlers.set(e.fontStretch, hs());
-drawHandlers.set(e.fontVariantCaps, hs());
-drawHandlers.set(e.globalAlpha, hs());
-drawHandlers.set(e.globalCompositeOperation, hs());
-drawHandlers.set(e.imageSmoothingEnabled, hs());
-drawHandlers.set(e.imageSmoothingQuality, hs());
-drawHandlers.set(e.letterSpacing, hs());
-drawHandlers.set(e.lineCap, hs());
-drawHandlers.set(e.lineDashOffset, hs());
-drawHandlers.set(e.lineJoin, hs());
-drawHandlers.set(e.lineWidth, hs());
-drawHandlers.set(e.miterLimit, hs());
-drawHandlers.set(e.shadowBlur, hs());
-drawHandlers.set(e.shadowColor, hs());
-drawHandlers.set(e.shadowOffsetX, hs());
-drawHandlers.set(e.shadowOffsetY, hs());
-drawHandlers.set(e.strokeStyle, hs());
-drawHandlers.set(e.textAlign, hs());
-drawHandlers.set(e.textBaseline, hs());
-drawHandlers.set(e.textRendering, hs());
-drawHandlers.set(e.wordSpacing, hs());
-drawHandlers.set(e.markStart, (ctx, en, args)=>{
-    markStart(...args);
-});
-drawHandlers.set(e.markEnd, (ctx, en, args)=>{
-    markEnd(...args);
-});
-new Map();
-new EMap(()=>[]
-);
-Component();
-Component();
 const loadApp = async ({ useWorker =false  })=>{
     if (useWorker === false) return await import('./app-worker.ts');
     const appWorker = createComlinkWorker('/src/app-worker.js', {
@@ -4220,21 +3810,13 @@ const loadApp = async ({ useWorker =false  })=>{
 const run = async ()=>{
     const canvas = createCanvas();
     const offscreenCanvas = canvas.transferControlToOffscreen();
-    const canvasWorker = createComlinkSharedWorker('/src/canvas-worker.js', {
-        type: 'module'
-    });
-    canvasWorker.setCanvas(transfer1(offscreenCanvas, [
-        offscreenCanvas
-    ]));
     const app = await loadApp({
         useWorker: true
     });
-    console.log('hello!');
-    await app.attachCanvasWorker(transfer1(canvasWorker.port, [
-        canvasWorker.port
-    ]));
     attachListeners(app);
-    await app.run();
+    await app.run(transfer1(offscreenCanvas, [
+        offscreenCanvas
+    ]));
 };
 if (document.readyState === "complete") {
     run();

@@ -1,5 +1,4 @@
 import { timeDiffS, timeMS } from './modules/loop/mod.ts'
-import { beginPath, fill, fillStyle, rect, restore, save } from './draw.ts'
 import { createHitBoxComponent, updateHitboxTransform, Hitbox } from './hitbox.ts'
 import { random } from './utilities/generic.ts'
 import { add, v, left, up } from './Vector.ts'
@@ -7,6 +6,7 @@ import { addEntity, Component, query } from './modules/ecs/mod.ts';
 import { DeleteQueueManager } from './components/DeleteQueueManager.ts';
 import { Position, Size } from './components/basic.ts';
 import { AppPlugin, System } from './modules/ecs/mod.ts'
+import { createMethod } from './modules/Sprite/mod.ts'
 
 export const Enemy = Component<{
   speed: number;
@@ -76,31 +76,39 @@ export const spawnEntityManagerSystem: System = () => {
   ])
 }
 
+const drawEnemy = createMethod((ctx, size, position, healthPercentage, hasTouchedBullet) => {
+  performance.mark('drawEnemy');
+  const healthBarPosition = add(position, up(50));
+  const healthbarSize = v(size.x, 20);
+  ctx.save()
+  ctx.beginPath()
+  ctx.fillStyle = 'red'
+  ctx.rect(healthBarPosition.x, healthBarPosition.y, healthbarSize.x, healthbarSize.y)
+  ctx.fill();
+  ctx.restore()
+
+  ctx.save()
+  ctx.beginPath()
+  ctx.fillStyle = 'green'
+  ctx.rect(healthBarPosition.x, healthBarPosition.y, healthbarSize.x * healthPercentage, healthbarSize.y)
+  ctx.fill();
+  ctx.restore()
+
+  ctx.save()
+  ctx.beginPath()
+  ctx.fillStyle = hasTouchedBullet ? 'blue' : 'green';
+  ctx.rect(position.x, position.y, size.x, size.y)
+  ctx.fill();
+  ctx.restore()
+  performance.mark('drawEnemy');
+})
+
 export const renderEnemiesSystem: System = () => {
   for (const { enemy, position, size } of query({ enemy: Enemy, position: Position, size: Size })) {
     const { health, originalHealth } = enemy();
     const healthPercentage = health / originalHealth;
     const hasTouchedBullet = false;
-    save()
-    beginPath()
-    fillStyle('red')
-    rect(...add(position(), up(50)), ...v(size().x, 20))
-    fill();
-    restore()
-
-    save()
-    beginPath()
-    fillStyle('green')
-    rect(...add(position(), up(50)), ...v(size().x * healthPercentage, 20))
-    fill();
-    restore()
-
-    save()
-    beginPath()
-    fillStyle(hasTouchedBullet ? 'blue' : 'green')
-    rect(...position(), ...size())
-    fill();
-    restore()
+    drawEnemy(size(), position(), healthPercentage, hasTouchedBullet)
   }
 }
 

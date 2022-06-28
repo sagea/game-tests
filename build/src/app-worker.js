@@ -327,6 +327,9 @@ function generateUUID() {
 const wrap1 = (...args)=>{
     return wrap(...args);
 };
+const transfer1 = (...args)=>{
+    return transfer(...args);
+};
 const exposedMethods = new Map();
 const expose1 = (a, b)=>{
     const event = new Event('message', {});
@@ -340,6 +343,42 @@ const expose1 = (a, b)=>{
     }
     const items = Object.fromEntries(exposedMethods);
     expose(items, b);
+};
+const Counter = ()=>{
+    let number = 0;
+    return ()=>number++
+    ;
+};
+const globalCounter = Counter();
+const isEvent = (data)=>{
+    if (!data) return false;
+    if (typeof data !== 'object') return false;
+    if ('$$event_type$$' in data) return data;
+    return false;
+};
+const wrap2 = (self)=>{
+    const idCounter = Counter();
+    const createWorker1 = (...args)=>{
+        return new Promise((resolve)=>{
+            const id = idCounter();
+            const handler = ({ data  })=>{
+                if (!isEvent(data)) return;
+                if (data.id !== id) return;
+                self.removeEventListener('message', handler);
+                resolve(data.result);
+            };
+            self.addEventListener('message', handler);
+            self.postMessage({
+                $$event_type$$: 'createWorker',
+                $$event_state$$: 'out',
+                id,
+                args: args
+            });
+        });
+    };
+    return {
+        createWorker: createWorker1
+    };
 };
 const immutable = (t)=>{
     const obj = Object.freeze(t);
@@ -563,11 +602,6 @@ class ComponentEntityManager extends Map {
         ));
     }
 }
-const Counter = ()=>{
-    let number = 0;
-    return ()=>number++
-    ;
-};
 const EntityId = Component();
 const EntityList = ()=>{
     const entityIdCounter = Counter();
@@ -1042,7 +1076,7 @@ _curry1(function addIndex(fn) {
     });
 });
 function _curry3(fn) {
-    return function f3(a, b, c1) {
+    return function f3(a, b, c) {
         switch(arguments.length){
             case 0:
                 return f3;
@@ -1059,19 +1093,19 @@ function _curry3(fn) {
                     return fn(a, b, _c);
                 });
             default:
-                return _isPlaceholder(a) && _isPlaceholder(b) && _isPlaceholder(c1) ? f3 : _isPlaceholder(a) && _isPlaceholder(b) ? _curry2(function(_a, _b) {
-                    return fn(_a, _b, c1);
-                }) : _isPlaceholder(a) && _isPlaceholder(c1) ? _curry2(function(_a, _c) {
+                return _isPlaceholder(a) && _isPlaceholder(b) && _isPlaceholder(c) ? f3 : _isPlaceholder(a) && _isPlaceholder(b) ? _curry2(function(_a, _b) {
+                    return fn(_a, _b, c);
+                }) : _isPlaceholder(a) && _isPlaceholder(c) ? _curry2(function(_a, _c) {
                     return fn(_a, b, _c);
-                }) : _isPlaceholder(b) && _isPlaceholder(c1) ? _curry2(function(_b, _c) {
+                }) : _isPlaceholder(b) && _isPlaceholder(c) ? _curry2(function(_b, _c) {
                     return fn(a, _b, _c);
                 }) : _isPlaceholder(a) ? _curry1(function(_a) {
-                    return fn(_a, b, c1);
+                    return fn(_a, b, c);
                 }) : _isPlaceholder(b) ? _curry1(function(_b) {
-                    return fn(a, _b, c1);
-                }) : _isPlaceholder(c1) ? _curry1(function(_c) {
+                    return fn(a, _b, c);
+                }) : _isPlaceholder(c) ? _curry1(function(_c) {
                     return fn(a, b, _c);
-                }) : fn(a, b, c1);
+                }) : fn(a, b, c);
         }
     };
 }
@@ -2260,8 +2294,8 @@ var converge = _curry2(function converge(after, fns) {
     });
 });
 curry(function(pred, list) {
-    return _reduce(function(a, e1) {
-        return pred(e1) ? a + 1 : a;
+    return _reduce(function(a, e) {
+        return pred(e) ? a + 1 : a;
     }, 0, list);
 });
 var XReduceBy = function() {
@@ -3949,9 +3983,9 @@ _curry2(function _tryCatch(tryer, catcher) {
     return _arity(tryer.length, function() {
         try {
             return tryer.apply(this, arguments);
-        } catch (e2) {
+        } catch (e) {
             return catcher.apply(this, _concat([
-                e2
+                e
             ], arguments));
         }
     });
@@ -4163,19 +4197,6 @@ const random = (from, to = 0)=>{
     const max2 = Math.max(from, to);
     return Math.random() * (max2 - min) + min;
 };
-const createEnum = (...args)=>{
-    return Object.fromEntries(args.map((enumName, index)=>[
-            [
-                enumName,
-                index
-            ],
-            [
-                index,
-                enumName
-            ], 
-        ]
-    ).flat());
-};
 const State = (initialState)=>{
     let internalState = initialState;
     return (handler)=>{
@@ -4185,6 +4206,10 @@ const State = (initialState)=>{
         return internalState;
     };
 };
+const Canvas = State({
+    width: 1920,
+    height: 1080
+});
 const timeMS = State(0);
 const timeDiffMS = State(0);
 const timeS = State(0);
@@ -4224,8 +4249,8 @@ const v = (x, y)=>{
 };
 const zero = ()=>v(0, 0)
 ;
-const add1 = curry(([x1, y1], [x2, y2])=>{
-    return v(x1 + x2, y1 + y2);
+const add1 = curry((a, b)=>{
+    return v(a.x + b.x, a.y + b.y);
 });
 const up = (value)=>v(0, value * -1)
 ;
@@ -4300,419 +4325,113 @@ const spritePoll = (sprite, deltaTime)=>{
 const getSpritePos = ({ matrix , activeCol , activeRow  })=>{
     return matrix[activeRow][activeCol];
 };
-const Canvas = State({
-    width: 1920,
-    height: 1080
-});
-let activeContext = null;
-const UserBullet = Component();
-const User = Component();
-const Enemy = Component();
-const startContext = ()=>{
-    activeContext = [];
-    return ()=>{
-        const response = activeContext;
-        activeContext = null;
-        return response;
-    };
-};
-const sendToContext = (item)=>{
-    if (!activeContext) throw new Error('Outside of context');
-    activeContext.push(item);
-};
-const e = createEnum('markStart', 'markEnd', 'arcTo', 'beginPath', 'bezierCurveTo', 'clearRect', 'clip', 'closePath', 'createConicGradient', 'createImageData', 'createLinearGradient', 'createPattern', 'createRadialGradient', 'drawFocusIfNeeded', 'drawImage', 'ellipse', 'fill', 'fillRect', 'fillText', 'getContextAttributes', 'getImageData', 'getLineDash', 'getTransform', 'isContextLost', 'isPointInPath', 'isPointInStroke', 'lineTo', 'measureText', 'moveTo', 'putImageData', 'quadraticCurveTo', 'rect', 'reset', 'resetTransform', 'restore', 'rotate', 'roundRect', 'save', 'scale', 'setLineDash', 'setTransform', 'stroke', 'strokeRect', 'strokeText', 'transform', 'translate', 'direction', 'fillStyle', 'filter', 'font', 'fontKerning', 'fontStretch', 'fontVariantCaps', 'globalAlpha', 'globalCompositeOperation', 'imageSmoothingEnabled', 'imageSmoothingQuality', 'letterSpacing', 'lineCap', 'lineDashOffset', 'lineJoin', 'lineWidth', 'miterLimit', 'shadowBlur', 'shadowColor', 'shadowOffsetX', 'shadowOffsetY', 'strokeStyle', 'textAlign', 'textBaseline', 'textRendering', 'wordSpacing');
-const c = (e1)=>{
-    return (...args)=>sendToContext([
-            e1,
-            args
-        ])
+const registeredMethods = new Map();
+const listeners = new Set();
+const addListener = (callback)=>{
+    listeners.add(callback);
+    return ()=>removeListener(callback)
     ;
 };
-const hf = ()=>(ctx, enumber, args)=>{
-        ctx[e[enumber]](...args);
-    }
-;
-const hs = ()=>(ctx, enumber, [value])=>{
-        ctx[e[enumber]] = value;
-    }
-;
-const drawHandlers = new Map();
-const markStart = c(e.markStart);
-const markEnd = c(e.markEnd);
-c(e.arcTo);
-const beginPath = c(e.beginPath);
-c(e.bezierCurveTo);
-const clearRect = c(e.clearRect);
-const clearCanvas = ()=>{
-    const { width , height  } = Canvas();
-    clearRect(...zero(), width, height);
+const removeListener = (callback)=>{
+    listeners.delete(callback);
 };
-let debugItems = new Map();
-const markStart1 = (label)=>{
-    performance.mark(label, {
-        detail: [
-            'debug',
-            'start'
-        ]
-    });
+const getRegisteredMethod = (id)=>{
+    return registeredMethods.get(id);
 };
-const markEnd1 = (label)=>{
-    performance.mark(label, {
-        detail: [
-            'debug',
-            'end'
-        ]
-    });
-};
-const canvasPlugin = (canvasWorker1)=>(app)=>{
-        let completeContext;
-        app.addListener('prerender', ()=>{
-            completeContext = startContext();
-        });
-        app.addRenderSystem(clearCanvas);
-        app.addFinalSystem(async ()=>{
-            markStart1('draw');
-            const results = completeContext();
-            const perf = await canvasWorker1.draw(Date.now(), performance.now(), results);
-            for (let [name, detail, startTime] of perf){
-                performance.mark(name, {
-                    detail,
-                    startTime
-                });
-            }
-            markEnd1('draw');
-        });
-    }
-;
-c(e.clip);
-const closePath = c(e.closePath);
-c(e.createConicGradient);
-c(e.createImageData);
-c(e.createLinearGradient);
-c(e.createPattern);
-c(e.createRadialGradient);
-c(e.drawFocusIfNeeded);
-const drawImage = c(e.drawImage);
-c(e.ellipse);
-const fill = c(e.fill);
-c(e.fillRect);
-const fillText = c(e.fillText);
-c(e.getContextAttributes);
-c(e.getImageData);
-c(e.getLineDash);
-c(e.getTransform);
-c(e.isContextLost);
-c(e.isPointInPath);
-c(e.isPointInStroke);
-const lineTo = c(e.lineTo);
-c(e.measureText);
-const moveTo = c(e.moveTo);
-c(e.putImageData);
-c(e.quadraticCurveTo);
-const rect = c(e.rect);
-c(e.reset);
-c(e.resetTransform);
-const restore = c(e.restore);
-c(e.rotate);
-c(e.roundRect);
-const save = c(e.save);
-c(e.scale);
-c(e.setLineDash);
-c(e.setTransform);
-const stroke = c(e.stroke);
-c(e.strokeRect);
-c(e.strokeText);
-c(e.transform);
-c(e.translate);
-drawHandlers.set(e.arcTo, hf());
-drawHandlers.set(e.beginPath, hf());
-drawHandlers.set(e.bezierCurveTo, hf());
-drawHandlers.set(e.clearRect, hf());
-drawHandlers.set(e.clip, hf());
-drawHandlers.set(e.closePath, hf());
-drawHandlers.set(e.createConicGradient, hf());
-drawHandlers.set(e.createImageData, hf());
-drawHandlers.set(e.createLinearGradient, hf());
-drawHandlers.set(e.createPattern, hf());
-drawHandlers.set(e.createRadialGradient, hf());
-drawHandlers.set(e.drawFocusIfNeeded, hf());
-drawHandlers.set(e.drawImage, hf());
-drawHandlers.set(e.ellipse, hf());
-drawHandlers.set(e.fill, hf());
-drawHandlers.set(e.fillRect, hf());
-drawHandlers.set(e.fillText, hf());
-drawHandlers.set(e.getContextAttributes, hf());
-drawHandlers.set(e.getImageData, hf());
-drawHandlers.set(e.getLineDash, hf());
-drawHandlers.set(e.getTransform, hf());
-drawHandlers.set(e.isContextLost, hf());
-drawHandlers.set(e.isPointInPath, hf());
-drawHandlers.set(e.isPointInStroke, hf());
-drawHandlers.set(e.lineTo, hf());
-drawHandlers.set(e.measureText, hf());
-drawHandlers.set(e.moveTo, hf());
-drawHandlers.set(e.putImageData, hf());
-drawHandlers.set(e.quadraticCurveTo, hf());
-drawHandlers.set(e.rect, hf());
-drawHandlers.set(e.reset, hf());
-drawHandlers.set(e.resetTransform, hf());
-drawHandlers.set(e.restore, hf());
-drawHandlers.set(e.rotate, hf());
-drawHandlers.set(e.roundRect, hf());
-drawHandlers.set(e.save, hf());
-drawHandlers.set(e.scale, hf());
-drawHandlers.set(e.setLineDash, hf());
-drawHandlers.set(e.setTransform, hf());
-drawHandlers.set(e.stroke, hf());
-drawHandlers.set(e.strokeRect, hf());
-drawHandlers.set(e.strokeText, hf());
-drawHandlers.set(e.transform, hf());
-drawHandlers.set(e.translate, hf());
-c(e.direction);
-const fillStyle = c(e.fillStyle);
-c(e.filter);
-const font = c(e.font);
-c(e.fontKerning);
-c(e.fontStretch);
-c(e.fontVariantCaps);
-c(e.globalAlpha);
-c(e.globalCompositeOperation);
-c(e.imageSmoothingEnabled);
-c(e.imageSmoothingQuality);
-c(e.letterSpacing);
-c(e.lineCap);
-c(e.lineDashOffset);
-c(e.lineJoin);
-const lineWidth = c(e.lineWidth);
-c(e.miterLimit);
-c(e.shadowBlur);
-c(e.shadowColor);
-c(e.shadowOffsetX);
-c(e.shadowOffsetY);
-const strokeStyle = c(e.strokeStyle);
-c(e.textAlign);
-c(e.textBaseline);
-c(e.textRendering);
-c(e.wordSpacing);
-drawHandlers.set(e.direction, hs());
-drawHandlers.set(e.fillStyle, hs());
-drawHandlers.set(e.filter, hs());
-drawHandlers.set(e.font, hs());
-drawHandlers.set(e.fontKerning, hs());
-drawHandlers.set(e.fontStretch, hs());
-drawHandlers.set(e.fontVariantCaps, hs());
-drawHandlers.set(e.globalAlpha, hs());
-drawHandlers.set(e.globalCompositeOperation, hs());
-drawHandlers.set(e.imageSmoothingEnabled, hs());
-drawHandlers.set(e.imageSmoothingQuality, hs());
-drawHandlers.set(e.letterSpacing, hs());
-drawHandlers.set(e.lineCap, hs());
-drawHandlers.set(e.lineDashOffset, hs());
-drawHandlers.set(e.lineJoin, hs());
-drawHandlers.set(e.lineWidth, hs());
-drawHandlers.set(e.miterLimit, hs());
-drawHandlers.set(e.shadowBlur, hs());
-drawHandlers.set(e.shadowColor, hs());
-drawHandlers.set(e.shadowOffsetX, hs());
-drawHandlers.set(e.shadowOffsetY, hs());
-drawHandlers.set(e.strokeStyle, hs());
-drawHandlers.set(e.textAlign, hs());
-drawHandlers.set(e.textBaseline, hs());
-drawHandlers.set(e.textRendering, hs());
-drawHandlers.set(e.wordSpacing, hs());
-drawHandlers.set(e.markStart, (ctx, en, args)=>{
-    markStart1(...args);
-});
-drawHandlers.set(e.markEnd, (ctx, en, args)=>{
-    markEnd1(...args);
-});
-new Map();
-const addToGroup = (group, label, value)=>{
-    let groupedItems = debugItems.get(group);
-    if (!groupedItems) {
-        const val = new Map();
-        debugItems.set(group, val);
-        debugItems = new Map([
-            ...debugItems.entries()
-        ].sort(([a], [b])=>a.localeCompare(b)
-        ));
-        groupedItems = val;
-    }
-    debugItems.set(group, groupedItems);
-    groupedItems.set(label, value);
-};
-const addDebug = (label, value, group = '')=>{
-    addToGroup(group, label, value);
-};
-new EMap(()=>[]
-);
-const debugRenderMenu = ()=>[
-        99999,
-        ()=>{
-            let renderIndex = -1;
-            const drawText = (label, textLog)=>{
-                renderIndex++;
-                save();
-                beginPath();
-                const count1 = `${label} ${textLog}`;
-                const pos = v(10, 40 + renderIndex * 40);
-                font(`${40}px serif`);
-                fillText(count1, ...pos);
-                restore();
-            };
-            addDebug('fps', fps());
-            addDebug('Entities', count([
-                EntityId
-            ]));
-            addDebug('bullets', count([
-                UserBullet
-            ]));
-            addDebug('enemies', count([
-                Enemy
-            ]));
-            addDebug('hitboxes', count([
-                Hitbox
-            ]));
-            for (let [groupName, groupitems] of debugItems){
-                if (groupName !== '') {
-                    drawText(groupName, '');
-                }
-                let prefix = groupName !== '' ? '  ' : '';
-                for (let [key, value] of groupitems){
-                    drawText(prefix + key, value.toString());
-                }
-            }
+const createMethod = (method)=>{
+    const id = globalCounter();
+    registeredMethods.set(id, method.toString());
+    return (...args)=>{
+        for (const listener of listeners){
+            listener(id, args);
         }
-    ]
-;
-const renderHitboxes = [
-    99999,
-    ()=>{
-        for (const { hitbox  } of query({
-            hitbox: Hitbox
-        })){
-            const { x , x2 , y , y2  } = hitbox();
-            save();
-            beginPath();
-            moveTo(x, y);
-            lineTo(x2, y);
-            lineTo(x2, y2);
-            lineTo(x, y2);
-            lineWidth(4);
-            strokeStyle('blue');
-            closePath();
-            stroke();
-            restore();
-        }
-    }
-];
-const debugPlugin = (app)=>{
-    app.addListener('prerun', ()=>{
-        markEnd1('cycle');
-        const entries = [
-            ...performance.getEntries()
-        ].filter((mark)=>Array.isArray(mark.detail)
-        ).filter((mark)=>mark.detail.includes('debug')
-        );
-        let started = {};
-        for (const mark1 of entries){
-            const isStart = mark1.detail.includes('start');
-            if (isStart) {
-                started[mark1.name] = mark1;
-            } else {
-                const startedMark = started[mark1.name];
-                if (startedMark) {
-                    performance.measure(mark1.name, {
-                        start: startedMark.startTime,
-                        end: mark1.startTime
-                    });
-                } else {
-                    console.warn(`mark not started ${mark1.name}`);
-                }
-            }
-        }
-        entries.forEach((mark)=>performance.clearMarks(mark.name)
-        );
-        performance.clearMarks();
-        performance.clearMeasures();
-        markStart1('cycle');
-        markStart1('frame');
-    });
-    app.addListener('postrun', ()=>markEnd1('frame')
-    );
-    app.addListener('presystem', ()=>markStart1('system')
-    );
-    app.addListener('postsystem', ()=>markEnd1('system')
-    );
-    app.addListener('prerender', ()=>markStart1('render')
-    );
-    app.addListener('postrender', ()=>markEnd1('render')
-    );
-    app.addListener('prefinal', ()=>markStart1('final')
-    );
-    app.addListener('postfinal', ()=>markEnd1('final')
-    );
-    app.addRenderSystem(renderHitboxes, debugRenderMenu());
+    };
 };
-const UserBulletManager = Component();
-const createBullet = (pos)=>{
-    const size = v(10, 10);
+const User = Component();
+const calculateSpeedForFrame = (speed)=>speed * timeDiffS()
+;
+const spawnUserSystem = ()=>{
     addEntity([
-        UserBullet({
-            speed: 700,
-            status: 'ACTIVE'
+        User({
+            speed: 400
         }),
-        Position(pos),
-        Size(size),
-        DeleteQueueManager({
-            markedForDeletion: false
-        }),
-        createHitBoxComponent('UserBullet', pos, size), 
+        Position(zero()),
+        Size(v(50, 50)),
+        Sprite({
+            active: false,
+            matrix: createSpriteMatrix(2, 4),
+            activeRow: 0,
+            activeCol: 0,
+            lastTime: 0,
+            interval: 300
+        })
     ]);
 };
-const calculateBulletSpeedForFrame = (speed)=>speed * timeDiffS()
-;
-const spawnBullet = ()=>{
-    for (const { userBulletManager  } of query({
-        userBulletManager: UserBulletManager
+const moveUserSystem = ()=>{
+    for (const { user , position , size  } of query({
+        user: User,
+        position: Position,
+        size: Size
     })){
-        if (!keyDown(KeyCodes.Space)) return;
-        if (timeMS() - userBulletManager().lastBulletFiredTime < 100) return;
-        userBulletManager({
-            lastBulletFiredTime: timeMS()
-        });
-        for (const { position  } of query({
-            user: User,
-            position: Position
-        })){
-            createBullet(position());
+        if (keyDown(KeyCodes.KeyW)) {
+            position(add1(position(), up(calculateSpeedForFrame(user().speed))));
         }
+        if (keyDown(KeyCodes.KeyS)) {
+            position(add1(position(), down(calculateSpeedForFrame(user().speed))));
+        }
+        if (keyDown(KeyCodes.KeyA)) {
+            position(add1(position(), left(calculateSpeedForFrame(user().speed))));
+        }
+        if (keyDown(KeyCodes.KeyD)) {
+            position(add1(position(), right(calculateSpeedForFrame(user().speed))));
+        }
+        const canvas = Canvas();
+        const [width, height] = size();
+        const [x, y] = position();
+        position(v(Math.max(0, Math.min(x, canvas.width - width)), Math.max(0, Math.min(y, canvas.height - height))));
     }
 };
-const moveBullet = ()=>{
-    for (const { userBullet , position , size , hitbox  } of query({
-        userBullet: UserBullet,
-        position: Position,
-        size: Size,
-        hitbox: Hitbox
+const userAnimationSystem = ()=>{
+    for (const { sprite  } of query({
+        user: User,
+        sprite: Sprite
     })){
-        const { speed  } = userBullet();
-        position(add1(position(), right(calculateBulletSpeedForFrame(speed))));
-        updateHitboxTransform(hitbox, position(), size());
+        const last3 = sprite();
+        if (!last3.active) {
+            sprite(spriteSetRow(sprite(), 0));
+        }
+        if (justPressed(KeyCodes.KeyW)) {
+            sprite(spriteSetRow(sprite(), 1));
+        }
+        if (justPressed(KeyCodes.KeyS)) {
+            sprite(spriteSetRow(sprite(), 0));
+        }
+        sprite(spritePoll(sprite(), timeDiffMS()));
     }
 };
-const removeBullet = ()=>{
-    for (const { position , deleteQueueManager  } of query({
-        userBullet: Size,
+const drawUser = createMethod((ctx, imageUrl, pos, spritePos)=>{
+    performance.mark('drawUser');
+    const col = spritePos.x;
+    const row = spritePos.y;
+    const { x , y  } = pos;
+    ctx.save();
+    ctx.drawImage(getResource(imageUrl), col * 32, row * 52, 32, 52, x, y, 32, 52);
+    ctx.restore();
+    performance.mark('drawUser');
+});
+const renderUserSystem = ()=>{
+    for (const { position , sprite  } of query({
+        user: User,
         position: Position,
-        deleteQueueManager: DeleteQueueManager
+        sprite: Sprite
     })){
-        if (position().x < 1920) return;
-        deleteQueueManager({
-            markedForDeletion: true
-        });
+        drawUser(resources.USER_IMAGE, position(), getSpritePos(sprite()));
     }
 };
+const userPlugin = (app)=>{
+    app.addInitSystem(spawnUserSystem).addSystem(moveUserSystem).addSystem(userAnimationSystem).addRenderSystem(renderUserSystem);
+};
+const Enemy = Component();
 const EnemyManager = Component();
 const createEnemy = (posX)=>{
     const startingPosition = v(1800, posX);
@@ -4783,6 +4502,111 @@ const damageEnemy = (entityId, amount)=>{
         }
     }
 };
+const spawnEntityManagerSystem = ()=>{
+    addEntity([
+        EnemyManager({
+            lastSpawnTime: 0
+        }), 
+    ]);
+};
+const drawEnemy = createMethod((ctx, size, position, healthPercentage, hasTouchedBullet)=>{
+    performance.mark('drawEnemy');
+    const healthBarPosition = add1(position, up(50));
+    const healthbarSize = v(size.x, 20);
+    ctx.save();
+    ctx.beginPath();
+    ctx.fillStyle = 'red';
+    ctx.rect(healthBarPosition.x, healthBarPosition.y, healthbarSize.x, healthbarSize.y);
+    ctx.fill();
+    ctx.restore();
+    ctx.save();
+    ctx.beginPath();
+    ctx.fillStyle = 'green';
+    ctx.rect(healthBarPosition.x, healthBarPosition.y, healthbarSize.x * healthPercentage, healthbarSize.y);
+    ctx.fill();
+    ctx.restore();
+    ctx.save();
+    ctx.beginPath();
+    ctx.fillStyle = hasTouchedBullet ? 'blue' : 'green';
+    ctx.rect(position.x, position.y, size.x, size.y);
+    ctx.fill();
+    ctx.restore();
+    performance.mark('drawEnemy');
+});
+const renderEnemiesSystem = ()=>{
+    for (const { enemy , position , size  } of query({
+        enemy: Enemy,
+        position: Position,
+        size: Size
+    })){
+        const { health , originalHealth  } = enemy();
+        const healthPercentage = health / originalHealth;
+        drawEnemy(size(), position(), healthPercentage, false);
+    }
+};
+const EnemyPlugin = (app)=>{
+    app.addInitSystem(spawnEntityManagerSystem).addSystem(spawnEnemies, moveEnemies, enemyRemover).addRenderSystem(renderEnemiesSystem);
+};
+const UserBullet = Component();
+const UserBulletManager = Component();
+const createBullet = (pos)=>{
+    const size = v(10, 10);
+    addEntity([
+        UserBullet({
+            speed: 700,
+            status: 'ACTIVE'
+        }),
+        Position(pos),
+        Size(size),
+        DeleteQueueManager({
+            markedForDeletion: false
+        }),
+        createHitBoxComponent('UserBullet', pos, size), 
+    ]);
+};
+const calculateBulletSpeedForFrame = (speed)=>speed * timeDiffS()
+;
+const spawnBullet = ()=>{
+    for (const { userBulletManager  } of query({
+        userBulletManager: UserBulletManager
+    })){
+        if (!keyDown(KeyCodes.Space)) return;
+        if (timeMS() - userBulletManager().lastBulletFiredTime < 100) return;
+        userBulletManager({
+            lastBulletFiredTime: timeMS()
+        });
+        for (const { position  } of query({
+            user: User,
+            position: Position
+        })){
+            createBullet(position());
+        }
+    }
+};
+const moveBullet = ()=>{
+    for (const { userBullet , position , size , hitbox  } of query({
+        userBullet: UserBullet,
+        position: Position,
+        size: Size,
+        hitbox: Hitbox
+    })){
+        const { speed  } = userBullet();
+        position(add1(position(), right(calculateBulletSpeedForFrame(speed))));
+        updateHitboxTransform(hitbox, position(), size());
+    }
+};
+const removeBullet = ()=>{
+    for (const { position , deleteQueueManager  } of query({
+        userBullet: Size,
+        position: Position,
+        deleteQueueManager: DeleteQueueManager
+    })){
+        if (position().x < 1920) return;
+        deleteQueueManager({
+            markedForDeletion: true
+        });
+    }
+};
 const bulletEnemyManager = ()=>{
     const enemies = [
         ...query({
@@ -4815,167 +4639,225 @@ const bulletManagerSystem = ()=>{
         }), 
     ]);
 };
+const drawBullet = createMethod((ctx, position, size)=>{
+    performance.mark('drawBullet');
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(position.x, position.y, size.x, size.y);
+    ctx.fillStyle = 'black';
+    ctx.fill();
+    ctx.restore();
+    performance.mark('drawBullet');
+});
 const bulletRenderSystem = ()=>{
     for (const { position , size  } of query({
         userBullet: UserBullet,
         position: Position,
         size: Size
     })){
-        save();
-        beginPath();
-        rect(...position(), ...size());
-        fillStyle('black');
-        fill();
-        restore();
+        drawBullet(position(), size());
     }
 };
 const bulletPlugin = (app)=>{
     app.addInitSystem(bulletManagerSystem).addSystem(spawnBullet, moveBullet, bulletEnemyManager, removeBullet).addRenderSystem(bulletRenderSystem);
 };
-const calculateSpeedForFrame = (speed)=>speed * timeDiffS()
+let debugItems = new Map();
+const addToGroup = (group, label, value)=>{
+    let groupedItems = debugItems.get(group);
+    if (!groupedItems) {
+        const val = new Map();
+        debugItems.set(group, val);
+        debugItems = new Map([
+            ...debugItems.entries()
+        ].sort(([a], [b])=>a.localeCompare(b)
+        ));
+        groupedItems = val;
+    }
+    debugItems.set(group, groupedItems);
+    groupedItems.set(label, value);
+};
+const addDebug = (label, value, group = '')=>{
+    addToGroup(group, label, value);
+};
+new EMap(()=>[]
+);
+const drawText = createMethod((ctx, renderIndex, label, textLog)=>{
+    performance.mark('drawText');
+    ctx.save();
+    ctx.beginPath();
+    const fontSize = 40;
+    const count1 = `${label} ${textLog}`;
+    const pos = v(10, 40 + renderIndex * 40);
+    ctx.font = `${fontSize}px serif`;
+    ctx.fillText(count1, ...pos);
+    ctx.restore();
+    performance.mark('drawText');
+});
+const drawHitbox = createMethod((ctx, x, y, x2, y2)=>{
+    const id = 'drawHitbox' + Math.random();
+    performance.mark(id);
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x2, y);
+    ctx.lineTo(x2, y2);
+    ctx.lineTo(x, y2);
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = 'blue';
+    ctx.closePath();
+    ctx.stroke();
+    ctx.restore();
+    performance.mark(id);
+});
+const debugRenderMenu = ()=>[
+        99999,
+        ()=>{
+            let renderIndex = 0;
+            addDebug('fps', fps());
+            addDebug('Entities', count([
+                EntityId
+            ]));
+            addDebug('bullets', count([
+                UserBullet
+            ]));
+            addDebug('enemies', count([
+                Enemy
+            ]));
+            addDebug('hitboxes', count([
+                Hitbox
+            ]));
+            for (let [groupName, groupitems] of debugItems){
+                if (groupName !== '') {
+                    drawText(renderIndex++, groupName, '');
+                }
+                let prefix = groupName !== '' ? '  ' : '';
+                for (let [key, value] of groupitems){
+                    drawText(renderIndex++, prefix + key, value.toString());
+                }
+            }
+        }
+    ]
 ;
-const spawnUserSystem = ()=>{
-    addEntity([
-        User({
-            speed: 400
-        }),
-        Position(zero()),
-        Size(v(50, 50)),
-        Sprite({
-            active: false,
-            matrix: createSpriteMatrix(2, 4),
-            activeRow: 0,
-            activeCol: 0,
-            lastTime: 0,
-            interval: 300
-        })
-    ]);
-};
-const moveUserSystem = ()=>{
-    for (const { user , position , size  } of query({
-        user: User,
-        position: Position,
-        size: Size
-    })){
-        if (keyDown(KeyCodes.KeyW)) {
-            position(add1(position(), up(calculateSpeedForFrame(user().speed))));
+const renderHitboxes = [
+    99999,
+    ()=>{
+        for (const { hitbox  } of query({
+            hitbox: Hitbox
+        })){
+            const { x , x2 , y , y2  } = hitbox();
+            drawHitbox(x, y, x2, y2);
         }
-        if (keyDown(KeyCodes.KeyS)) {
-            position(add1(position(), down(calculateSpeedForFrame(user().speed))));
-        }
-        if (keyDown(KeyCodes.KeyA)) {
-            position(add1(position(), left(calculateSpeedForFrame(user().speed))));
-        }
-        if (keyDown(KeyCodes.KeyD)) {
-            position(add1(position(), right(calculateSpeedForFrame(user().speed))));
-        }
-        const canvas = Canvas();
-        const [width, height] = size();
-        const [x, y] = position();
-        position(v(Math.max(0, Math.min(x, canvas.width - width)), Math.max(0, Math.min(y, canvas.height - height))));
     }
+];
+const debugPlugin = (app)=>{
+    app.addListener('prerun', ()=>{
+        performance.mark('cycle');
+        performance.clearMarks();
+        performance.clearMeasures();
+        performance.mark('cycle');
+        performance.mark('frame');
+    });
+    app.addListener('postrun', ()=>performance.mark('frame')
+    );
+    app.addListener('presystem', ()=>performance.mark('system')
+    );
+    app.addListener('postsystem', ()=>performance.mark('system')
+    );
+    app.addListener('prerender', ()=>performance.mark('render')
+    );
+    app.addListener('postrender', ()=>performance.mark('render')
+    );
+    app.addListener('prefinal', ()=>performance.mark('final')
+    );
+    app.addListener('postfinal', ()=>performance.mark('final')
+    );
+    app.addRenderSystem(renderHitboxes, debugRenderMenu());
 };
-const userAnimationSystem = ()=>{
-    for (const { sprite  } of query({
-        user: User,
-        sprite: Sprite
-    })){
-        const last3 = sprite();
-        if (!last3.active) {
-            sprite(spriteSetRow(sprite(), 0));
+const attachCanvasWorkerToPort = (port)=>{
+    const comlink = wrap1(port);
+    const registeredMethods1 = new Set();
+    const registering = new Map();
+    let drawQueue = [];
+    const registerMethod = async (id, methodString)=>{
+        if (registeredMethods1.has(id)) return;
+        if (registering.has(id)) return;
+        const promise = comlink.registerDrawMethod(id, methodString);
+        registering.set(id, promise);
+        await promise.then(()=>{
+            registering.delete(id);
+            registeredMethods1.add(id);
+        });
+    };
+    const draw = (id, args)=>{
+        drawQueue.push([
+            id,
+            args
+        ]);
+    };
+    const drawAllQueued = async ()=>{
+        if (registering.size) {
+            await Promise.all(Array.from(registering));
         }
-        if (justPressed(KeyCodes.KeyW)) {
-            sprite(spriteSetRow(sprite(), 1));
-        }
-        if (justPressed(KeyCodes.KeyS)) {
-            sprite(spriteSetRow(sprite(), 0));
-        }
-        sprite(spritePoll(sprite(), timeDiffMS()));
+        comlink.drawMany(drawQueue);
+        drawQueue = [];
+    };
+    return {
+        setCanvas: (canvas)=>{
+            comlink.setCanvas(transfer1(canvas, [
+                canvas
+            ]));
+        },
+        draw,
+        drawAllQueued,
+        registerMethod,
+        port: port,
+        loadResources: comlink.loadResources
+    };
+};
+const clearCanvas = createMethod((ctx)=>{
+    performance.mark('clearCanvas');
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    performance.mark('clearCanvas');
+});
+const OffscreenCanvasPlugin = (worker)=>(app)=>{
+        const renderMethodCaller = (id, args)=>{
+            worker.registerMethod(id, getRegisteredMethod(id));
+            worker.draw(id, args);
+        };
+        app.addListener('prerender', ()=>addListener(renderMethodCaller)
+        );
+        app.addListener('postrender', ()=>removeListener(renderMethodCaller)
+        );
+        app.addRenderSystem(()=>{
+            clearCanvas();
+        });
+        app.addFinalSystem(async ()=>{
+            worker.drawAllQueued();
+        });
     }
-};
-const renderUserSystem = ()=>{
-    for (const { position , sprite  } of query({
-        user: User,
-        position: Position,
-        sprite: Sprite
-    })){
-        markStart('render user');
-        save();
-        const [col, row] = getSpritePos(sprite());
-        const [x, y] = position();
-        drawImage(resources.USER_IMAGE, col * 32, row * 52, 32, 52, x, y, 32, 52);
-        restore();
-        markEnd('render user');
-    }
-};
-const userPlugin = (app)=>{
-    app.addInitSystem(spawnUserSystem).addSystem(moveUserSystem).addSystem(userAnimationSystem).addRenderSystem(renderUserSystem);
-};
-const spawnEntityManagerSystem = ()=>{
-    addEntity([
-        EnemyManager({
-            lastSpawnTime: 0
-        }), 
-    ]);
-};
-const renderEnemiesSystem = ()=>{
-    for (const { enemy , position , size  } of query({
-        enemy: Enemy,
-        position: Position,
-        size: Size
-    })){
-        const { health , originalHealth  } = enemy();
-        const healthPercentage = health / originalHealth;
-        save();
-        beginPath();
-        fillStyle('red');
-        rect(...add1(position(), up(50)), ...v(size().x, 20));
-        fill();
-        restore();
-        save();
-        beginPath();
-        fillStyle('green');
-        rect(...add1(position(), up(50)), ...v(size().x * healthPercentage, 20));
-        fill();
-        restore();
-        save();
-        beginPath();
-        fillStyle(false ? 'blue' : 'green');
-        rect(...position(), ...size());
-        fill();
-        restore();
-    }
-};
-const EnemyPlugin = (app)=>{
-    app.addInitSystem(spawnEntityManagerSystem).addSystem(spawnEnemies, moveEnemies, enemyRemover).addRenderSystem(renderEnemiesSystem);
-};
-const startApp = async (canvasWorker2)=>{
+;
+const startApp = async (canvasWorker)=>{
     const resourceUrls = Array.from(Object.values(resources));
-    await canvasWorker2.loadResources(resourceUrls);
-    return new App().addPlugin(LoopPlugin).addPlugin(canvasPlugin(canvasWorker2)).addPlugin((app)=>app.addSystem(applySnapshot)
+    await canvasWorker.loadResources(resourceUrls);
+    return new App().addPlugin(LoopPlugin).addPlugin(OffscreenCanvasPlugin(canvasWorker)).addPlugin((app)=>app.addSystem(applySnapshot)
     ).addPlugin(deleteQueuePlugin).addPlugin(hitboxPlugin).addPlugin(EnemyPlugin).addPlugin(bulletPlugin).addPlugin(userPlugin).addPlugin(debugPlugin).run();
 };
-let canvasWorker;
-const attachCanvasWorker = (transferredCanvasWorker)=>{
-    console.log('received canvas worker');
-    canvasWorker = wrap1(transferredCanvasWorker);
-    return true;
-};
-const run = async ()=>{
+const { createWorker  } = wrap2(self);
+const run = async (canvas)=>{
     console.log('run');
-    if (!canvasWorker) {
-        throw new Error('canvasWorker has not been setup yet');
-    }
+    const worker = await createWorker('/src/offthread-worker.js', {
+        type: 'module'
+    });
+    const canvasWorker = attachCanvasWorkerToPort(worker);
+    canvasWorker.setCanvas(canvas);
     await startApp(canvasWorker);
 };
 const methods = {
-    attachCanvasWorker,
     run
 };
 expose1({
     ...methods,
     ...attachListeners()
 });
-export { attachCanvasWorker as attachCanvasWorker };
 export { run as run };
 export { methods as default };

@@ -1,9 +1,10 @@
 import { wrap } from './comlink-wrapper.ts';
+import * as actionBind from './action-bind.ts';
 
 export const createComlinkWorker = (path, options) => {
   const worker = new Worker(path, options);
-  console.log('worker', worker);
-  const comlinkWorker = wrap(worker);
+  const actionWorker = actionBind.expose(worker);
+  const comlinkWorker = wrap(actionWorker);
   return comlinkWorker;
 }
 export const createComlinkSharedWorker = (path, options) => {

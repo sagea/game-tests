@@ -1,24 +1,19 @@
 import { expose, wrap } from './modules/Workers/mod.ts';
 import { attachListeners } from './modules/Keyboard/mod.ts'
 import { startApp } from './app.ts';
+import * as actionBind from './modules/Workers/action-bind.ts';
+import { attachCanvasWorkerToPort } from './modules/OffthreadCanvas/client.ts';
+const { createWorker } = actionBind.wrap(self);
 
-let canvasWorker;
-export const attachCanvasWorker = (transferredCanvasWorker) => {
-  console.log('received canvas worker');
-  canvasWorker = wrap(transferredCanvasWorker);
-  return true;
-}
-
-export const run = async () => {
-  console.log('run')
-  if (!canvasWorker) {
-    throw new Error('canvasWorker has not been setup yet')
-  };
+export const run = async (canvas: OffscreenCanvas) => {
+  console.log('run');
+  const worker = await createWorker('/src/offthread-worker.js', { type: 'module' });
+  const canvasWorker = attachCanvasWorkerToPort(worker);
+  canvasWorker.setCanvas(canvas);
   await startApp(canvasWorker);
 }
 
 const methods = {
-  attachCanvasWorker,
   run,
 }
 

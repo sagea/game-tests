@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "lib": ["dom", "esnext", "deno.ns"],
+    "types": [
+      "https://unpkg.com/@types/offscreencanvas@2019.7.0/index.d.ts"
+    ]
+  }
+}

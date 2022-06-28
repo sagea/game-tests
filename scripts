@@ -21,9 +21,9 @@ command('build') `
 echo "starting build"
 (
   trap 'kill 0' SIGINT;
-  deno bundle --import-map=import_maps.json --no-check src/loader.ts build/src/loader.js &
-  deno bundle --import-map=import_maps.json --no-check ./src/app-worker.ts build/src/app-worker.js &
-  deno bundle --import-map=import_maps.json --no-check ./src/canvas-worker.ts build/src/canvas-worker.js &
+  deno bundle --import-map=import_maps.json --config deno.json --no-check src/loader.ts build/src/loader.js &
+  deno bundle --import-map=import_maps.json --config deno.json --no-check ./src/app-worker.ts build/src/app-worker.js &
+  deno bundle --import-map=import_maps.json --config deno.json --no-check ./src/canvas-worker.ts build/src/canvas-worker.js &
   wait
 )
 `;
@@ -31,9 +31,10 @@ echo "starting build"
 command('build:watch') `
 (
   trap 'kill 0' SIGINT;
-  deno bundle --watch --import-map=import_maps.json --no-check src/loader.ts build/src/loader.js &
-  deno bundle --watch --import-map=import_maps.json --no-check ./src/app-worker.ts build/src/app-worker.js &
-  deno bundle --watch --import-map=import_maps.json --no-check ./src/canvas-worker.ts build/src/canvas-worker.js &
+  deno bundle --watch --import-map=import_maps.json --config deno.json --no-check src/loader.ts build/src/loader.js &
+  deno bundle --watch --import-map=import_maps.json --config deno.json --no-check ./src/app-worker.ts build/src/app-worker.js &
+  deno bundle --watch --import-map=import_maps.json --config deno.json --no-check ./src/canvas-worker.ts build/src/canvas-worker.js &
+  deno bundle --watch --import-map=import_maps.json --config deno.json --no-check ./src/modules/OffthreadCanvas/worker.ts build/src/offthread-worker.js &
   wait
 )
 `;

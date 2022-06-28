@@ -9,8 +9,6 @@ export const isOrderedSystem = (item: System): item is OrderedSystem => {
   return Array.isArray(item)
 }
 
-
-
 export class App {
   #runCount = 0;
   #systems: Record<SystemTypes, OrderedSystem[]> = {

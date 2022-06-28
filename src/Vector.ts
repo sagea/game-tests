@@ -24,11 +24,11 @@ export const v = (x: number, y: number): Vector => {
 
 export const zero = () => v(0, 0);
 
-export const add = curry(([x1, y1], [x2, y2]) => {
-  return v(x1 + x2, y1 + y2)
+export const add = curry((a: Vector, b: Vector) => {
+  return v(a.x + b.x, a.y + b.y);
 })
 
-export const up = (value) => v(0, value * -1)
-export const down = (value) => v(0, value)
-export const left = (value) => v(value * -1, 0)
-export const right = (value) => v(value, 0)
+export const up = (value: number) => v(0, value * -1)
+export const down = (value: number) => v(0, value)
+export const left = (value: number) => v(value * -1, 0)
+export const right = (value: number) => v(value, 0)

@@ -1,12 +1,12 @@
 import { Canvas } from './canvas.ts';
 import { timeDiffS, timeDiffMS } from './modules/loop/mod.ts'
 import { keyDown, KeyCodes, justPressed } from './modules/Keyboard/mod.ts'
-import { add, down, v, left, right, up, zero } from './Vector.ts'
-import * as d from './draw.ts'
+import { add, down, v, left, right, up, zero, Vector } from './Vector.ts'
 import { query, Component, addEntity, AppPlugin } from './modules/ecs/mod.ts';
 import { Position, Size } from './components/basic.ts'
 import {resources} from './resources.ts';
 import { Sprite, spritePoll, spriteSetRow, createSpriteMatrix, getSpritePos } from './modules/Sprite/mod.ts';
+import { createMethod } from './modules/Sprite/mod.ts'
 
 export const User = Component<{ speed: number }>();
 
@@ -71,18 +71,32 @@ export const userAnimationSystem = () => {
   }
 }
 
+const drawUser = createMethod((ctx, imageUrl: string, pos: Vector, spritePos: Vector) => {
+  performance.mark('drawUser')
+  const width = 32;
+  const height = 52;
+  const col = spritePos.x;
+  const row = spritePos.y;
+  // const s = sprite();
+  const { x, y } = pos;
+  ctx.save()
+  ctx.drawImage(getResource(imageUrl), col * width, row * height, width, height, x, y, width, height);
+  ctx.restore()
+  performance.mark('drawUser')
+})
 export const renderUserSystem = () => {
   for (const { position, sprite } of query({ user: User, position: Position, sprite: Sprite })) {
-    d.markStart('render user')
-    d.save()
-    const width = 32;
-    const height = 52;
-    // const s = sprite();
-    const [col, row] = getSpritePos(sprite())
-    const [ x, y ] = position();
-    d.drawImage(resources.USER_IMAGE, col * width, row * height, width, height, x, y, width, height);
-    d.restore()
-    d.markEnd('render user')
+    drawUser(resources.USER_IMAGE, position(), getSpritePos(sprite()))
+    // d.markStart('render user')
+    // d.save()
+    // const width = 32;
+    // const height = 52;
+    // // const s = sprite();
+    // const [col, row] = getSpritePos(sprite())
+    // const [ x, y ] = position();
+    // d.drawImage(resources.USER_IMAGE, col * width, row * height, width, height, x, y, width, height);
+    // d.restore()
+    // d.markEnd('render user')
   }
 }
 

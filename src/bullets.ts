@@ -3,11 +3,11 @@ import { createHitBoxComponent, updateHitboxTransform, Hitbox } from './hitbox.t
 import { keyDown, KeyCodes } from './modules/Keyboard/mod.ts'
 import { add, v, right, Vector } from './Vector.ts'
 import { damageEnemy } from './enemy.ts'
-import { fill, fillStyle, restore, save, rect, beginPath } from './draw.ts'
 import { DeleteQueueManager } from './components/DeleteQueueManager.ts';
 import { Position, Size } from './components/basic.ts';
 import { User } from './user.ts';
 import { Enemy } from './enemy.ts';
+import { createMethod } from './modules/Sprite/mod.ts'
 
 import { AppPlugin, addEntity, Component, EntityId, query } from './modules/ecs/mod.ts';
 
@@ -82,15 +82,20 @@ const bulletManagerSystem = () => {
     }),
   ])
 }
+const drawBullet = createMethod((ctx, position: Vector, size: Vector) => {
+  performance.mark('drawBullet')
+  ctx.save()
+  ctx.beginPath()
+  ctx.rect(position.x, position.y, size.x, size.y)
+  ctx.fillStyle = 'black'
+  ctx.fill()
+  ctx.restore()
+  performance.mark('drawBullet')
+})
 
 export const bulletRenderSystem = () => {
   for (const { position, size } of query({ userBullet: UserBullet, position: Position, size: Size })) {
-    save()
-    beginPath()
-    rect(...position(), ...size())
-    fillStyle('black')
-    fill()
-    restore()
+    drawBullet(position(), size());
   }
 }
 
