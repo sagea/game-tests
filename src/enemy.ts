@@ -113,13 +113,13 @@ export const renderEnemiesSystem: System = () => {
 }
 
 
-export const EnemyPlugin: AppPlugin = (app) => {
+export const EnemyPlugin: AppPlugin<any> = (app) => {
   app
-    .addInitSystem(spawnEntityManagerSystem)
-    .addSystem(
+    .stage('init').once.addSystem(spawnEntityManagerSystem)
+    .stage().addSystem(
       spawnEnemies,
       moveEnemies,
       enemyRemover,
     )
-    .addRenderSystem(renderEnemiesSystem);
+    .stage('render').addSystem(renderEnemiesSystem);
 }

@@ -100,10 +100,12 @@ export const renderUserSystem = () => {
   }
 }
 
-export const userPlugin: AppPlugin = (app) => {
+export const userPlugin: AppPlugin<any> = (app) => {
   app
-    .addInitSystem(spawnUserSystem)
-    .addSystem(moveUserSystem)
-    .addSystem(userAnimationSystem)
-    .addRenderSystem(renderUserSystem);
+    .stage('init').once.addSystem(spawnUserSystem)
+    .stage().addSystem(
+      moveUserSystem,
+      userAnimationSystem,
+    )
+    .stage('render').addSystem(renderUserSystem);
 }

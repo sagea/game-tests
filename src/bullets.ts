@@ -99,14 +99,14 @@ export const bulletRenderSystem = () => {
   }
 }
 
-export const bulletPlugin: AppPlugin = (app) => {
+export const bulletPlugin: AppPlugin<any> = (app) => {
   app
-    .addInitSystem(bulletManagerSystem)
-    .addSystem(
+    .stage('init').once.addSystem(bulletManagerSystem)
+    .stage().addSystem(
       spawnBullet,
       moveBullet,
       bulletEnemyManager,
       removeBullet,
     )
-    .addRenderSystem(bulletRenderSystem)
+    .stage('render').addSystem(bulletRenderSystem);
 }

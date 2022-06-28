@@ -64,17 +64,15 @@ const clearCanvas = createMethod((ctx) => {
   performance.mark('clearCanvas')
 })
 
-export const OffscreenCanvasPlugin = (worker: ReturnType<typeof createCanvasWorker>): AppPlugin => (app) => {
+export const OffscreenCanvasPlugin = (worker: ReturnType<typeof createCanvasWorker>): AppPlugin<any> => (app) => {
   const renderMethodCaller: Listener = (id, args) => {
     worker.registerMethod(id, getRegisteredMethod(id));
     worker.draw(id, args);
   }
-  app.addListener('prerender', () => addListener(renderMethodCaller));
-  app.addListener('postrender', () => removeListener(renderMethodCaller));
-  app.addRenderSystem(() => {
-    clearCanvas();
-  });
-  app.addFinalSystem(async () => {
-    worker.drawAllQueued();
-  })
+  app
+    .addStageAfter('render', 'main')
+    .stage('render').pre.addSystem(() => addListener(renderMethodCaller))
+    .stage('render').post.addSystem(() => removeListener(renderMethodCaller))
+    .stage('render').post.addSystem(() => worker.drawAllQueued())
+    .stage('render').addSystem(() => clearCanvas());
 }

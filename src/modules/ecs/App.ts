@@ -1,128 +1,137 @@
-export type AppPlugin = (app: App) => any | Promise<any>;
-export type BasicSystem = (app: App) => any | Promise<any>;
-export type OrderedSystem = [number, BasicSystem];
-export type System = BasicSystem | OrderedSystem;
-export type AppEventHandler = () => any;
-type SystemTypes = 'init' | 'system' | 'render' | 'final';
-type AppEvents = `pre${SystemTypes | 'run'}` | `post${SystemTypes | 'run'}`;
-export const isOrderedSystem = (item: System): item is OrderedSystem => {
-  return Array.isArray(item)
+export const baseStages = ['start', 'init', 'main', 'end'] as const;
+const errors = {
+    stageAlreadyExists: (stageName: string) => new Error(`Stage with the name "${stageName}" already exists.`),
+    stageDoesNotExist: (stageName: AppStage) => new Error(`Stage with the name "${stageName}" does not exist.`),
+    cantAddStageBeforeStart: () => new Error(`Not allowed. Can't add any stages before start stage`),
+    cantAddStageAfterEnd: () => new Error(`Not allowed. Can't add any stages after end stage`),
+} as const;
+
+export type AppPlugin<T,> = (app: App<T>) => any | Promise<any>;
+export type System<T, > = (app: App<T>) => any | Promise<any>;
+export type BaseStage = typeof baseStages[number];
+export type AppStage = BaseStage | Omit<string, BaseStage>;
+
+export type AppSystemStage = 'pre' | 'main' | 'post';
+
+export interface AppSystem {
+    order: number;
+    appStage: AppStage;
+    system: System<any>;
+    runOnce: boolean;
+    appSystemStage: AppSystemStage;
 }
 
-export class App {
-  #runCount = 0;
-  #systems: Record<SystemTypes, OrderedSystem[]> = {
-    init: [],
-    system: [],
-    render: [],
-    final: [],
-  }
-  #plugins: AppPlugin[] = [];
-  #events: Record<AppEvents, Set<AppEventHandler>> = {
-    prerun: new Set(),
-    preinit: new Set(),
-    postinit: new Set(),
-    presystem: new Set(),
-    postsystem: new Set(),
-    prerender: new Set(),
-    postrender: new Set(),
-    prefinal: new Set(),
-    postfinal: new Set(),
-    postrun: new Set(),
-  };
-  addListener(event: AppEvents, handler: AppEventHandler) {
-    this.#events[event].add(handler);
-    return () => this.removeListener(event, handler);
-  }
-
-  removeListener(event: AppEvents, handler: AppEventHandler) {
-    this.#events[event].delete(handler);
-  }
-
-  #dispatchEvent(event: AppEvents) {
-    this.#events[event].forEach(handler => handler());
-  }
-
-  #toOrderedSystem(system: System): OrderedSystem {
-    if (isOrderedSystem(system)) return system;
-    return [0, system];
-  }
-
-  #runSystem<T extends SystemTypes>(systemType: T) {
-    this.#dispatchEvent(`pre${systemType}`)
-    this.#systems[systemType].forEach(([, system ]) => system(this));
-    this.#dispatchEvent(`post${systemType}`)
-  }
-  addPlugin(plugin: AppPlugin) {
-    this.#plugins.push(plugin);
-    return this;
-  }
-  addSystemByType(systemType: SystemTypes, ...manySystems: System[]) {
-    const orderedSystems = manySystems.map(system => this.#toOrderedSystem(system));
-    this.#systems[systemType] = [
-      ...this.#systems[systemType],
-      ...orderedSystems,
-    ].sort((a, b) => a[0] - b[0]);
-    return this;
-  }
-
-  addInitSystem(...manySystems: System[]) {
-    return this.addSystemByType('init', ...manySystems);
-  }
-
-  addSystem(...manySystems: System[]) {
-    return this.addSystemByType('system', ...manySystems);
-  }
-
-  addRenderSystem(...manySystems: System[]) {
-    return this.addSystemByType('render', ...manySystems);
-  }
-  
-  addFinalSystem(...manySystems: System[]) {
-    return this.addSystemByType('final', ...manySystems);
-  }
-
-
-  async run() {
-    const firstRun = this.#runCount === 0;
-    this.#runCount++;
-    if (firstRun) {
-      for (const plugin of this.#plugins) {
-        await plugin(this);
-      }
+const SystemBuilder = <T>(appStage: AppStage, app: App<T>) => {
+    const appSystem: AppSystem = {
+        appStage,
+        runOnce: false,
+        order: 0,
+        system: () => {},
+        appSystemStage: 'main',
+    };
+    const main = {
+        index(order: number) {
+            appSystem.order = order;
+            return main;
+        },
+        get pre() {
+            appSystem.appSystemStage = 'pre'
+            return main;
+        },
+        get post() {
+            appSystem.appSystemStage = 'post'
+            return main;
+        },
+        get once() {
+            appSystem.runOnce = true;
+            return main;
+        },
+        addSystem: <T, >(...systems: System<T>[]) => {
+            for (const system of systems) {
+                app.addAppSystem({ ...appSystem, system });
+            }
+            return app;
+        }
     }
-    this.#runCount++;
-    this.#dispatchEvent('prerun')
-    if (firstRun) {
-      this.#dispatchEvent(`preinit`)
-      for (let [,s] of this.#systems.init) {
-        const a = s(this);
-        if (a && a instanceof Promise) await a;
-      }
-      this.#dispatchEvent(`postinit`)
+    return main
+}
+export class App<State extends Record<string, any>> {
+    state = {} as State;
+    #runcount = 0;
+    #stages = new Map<AppStage, Set<AppSystem>>(baseStages.map(stage => [stage, new Set()]));
+    #plugins: AppPlugin<any>[] = []
+    stage(stageName: AppStage = 'main') {
+        if (!this.hasStage) throw errors.stageDoesNotExist(stageName);
+        return SystemBuilder<State>(stageName, this);
+    }
+    hasStage(stageName: AppStage) {
+      return this.#stages.has(stageName);
+    }
+    addStage(stageName: string) {
+        return this.addStageBefore(stageName, 'end');
+    }
+    addStageBefore(stageName: string, otherStageName: string) {
+        if (this.hasStage(stageName)) throw errors.stageAlreadyExists(stageName)
+        if (!this.hasStage(otherStageName)) throw errors.stageDoesNotExist(otherStageName)
+        if (otherStageName === 'start') throw errors.cantAddStageBeforeStart()
+
+        const entries = [...this.#stages];
+        const index = entries.findIndex((item) => item[0] === otherStageName);
+        entries.splice(index - 1, 0, [stageName, new Set()]);
+        this.#stages = new Map(entries);
+        return this;
+    }
+
+    addStageAfter(stageName: string, otherStageName: AppStage) {
+        if (this.hasStage(stageName)) throw errors.stageAlreadyExists(stageName);
+        if (!this.hasStage(otherStageName)) throw errors.stageDoesNotExist(otherStageName)
+        if (otherStageName === 'end') throw errors.cantAddStageAfterEnd()
+
+        const entries = [...this.#stages];
+        const index = entries.findIndex((item) => item[0] === otherStageName);
+        entries.splice(index, 0, [stageName, new Set()]);
+        this.#stages = new Map(entries);
+        return this;
+    }
+
+    addAppSystem(appSystem: AppSystem) {
+        const stages = this.#stages.get(appSystem.appStage) || new Set()
+        const list = [...stages, appSystem]
+            .sort((a, b) => {
+                const ass = a.appSystemStage;
+                const bss = b.appSystemStage
+                if (ass === bss) return a.order - b.order
+                if (ass === 'pre') return -1
+                if (ass === 'post') return 1
+                if (bss === 'pre') return 1
+                if (bss === 'post') return -1
+                return 0
+            });
+        this.#stages.set(appSystem.appStage, new Set(list));
+        return this;
     }
     
-    this.#dispatchEvent('presystem')
-    for (let [,s] of this.#systems.system) {
-      const a = s(this);
-      if (a && a instanceof Promise) await a;
+    addPlugin(appPlugin: AppPlugin<any>) {
+        this.#plugins.push(appPlugin)
+        return this;
     }
-    this.#dispatchEvent('postsystem')
 
-    this.#dispatchEvent('prerender')
-    for (let [,s] of this.#systems.render) {
-      const a = s(this);
-      if (a && a instanceof Promise) await a;
+    async run() {
+        if (this.#runcount === 0) {
+            await Promise.all(this.#plugins.map(plugin => plugin(this)));
+        }
+        this.#runcount += 1;
+        for (const [stageName, appSystems] of this.#stages) {
+            for (const appSystem of appSystems) {
+                const res = appSystem.system(this)
+                if (appSystem.runOnce) {
+                  this.#stages.get(stageName)!.delete(appSystem);
+                }
+                if (res instanceof Promise) {
+                    await res;
+                }
+            }
+        }
+        return this;
     }
-    this.#dispatchEvent('postrender')
-
-    this.#dispatchEvent('prefinal')
-    for (let [,s] of this.#systems.final) {
-      const a = s(this);
-      if (a && a instanceof Promise) await a;
-    }
-    this.#dispatchEvent('postfinal')
-
-    this.#dispatchEvent('postrun')
-  }
 }

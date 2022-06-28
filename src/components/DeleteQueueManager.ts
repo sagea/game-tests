@@ -10,6 +10,6 @@ export const removeMarkedEntities = () => {
   }
 }
 
-export const deleteQueuePlugin: AppPlugin = (app) => {
-  app.addSystem(removeMarkedEntities);
+export const deleteQueuePlugin: AppPlugin<any> = (app) => {
+  app.stage().addSystem(removeMarkedEntities);
 }

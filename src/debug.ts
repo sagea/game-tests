@@ -7,6 +7,7 @@ import { Hitbox } from './hitbox.ts';
 import { EntityId } from './modules/ecs/mod.ts'
 import { EMap } from './modules/generics/mod.ts'
 import { createMethod } from './modules/Sprite/mod.ts'
+import * as perf from './perf.ts';
 
 const debugEnabled = true;
 export const debugRenderIndex = 99999;
@@ -94,89 +95,43 @@ const drawHitbox = createMethod((ctx, x, y, x2, y2) => {
   performance.mark(id)
 });
 
-export const debugRenderMenu = (): System => [
-  debugRenderIndex,
-  () => {
-    let renderIndex = 0;
-    addDebug('fps', fps());
-    addDebug('Entities', count([EntityId]));
-    addDebug('bullets', count([UserBullet]));
-    addDebug('enemies', count([Enemy]));
-    addDebug('hitboxes', count([Hitbox]));
-    for (let [groupName, groupitems] of debugItems) {
-      if (groupName !== '') {
-        drawText(renderIndex++, groupName, '');
-      }
-      let prefix = groupName !== '' ? '  ' : '';
-      for (let [key, value] of groupitems) {
-        drawText(renderIndex++, prefix + key, value.toString());
-      }
+export const debugRenderMenu: System<any> = () => {
+  let renderIndex = 0;
+  addDebug('fps', fps());
+  addDebug('Entities', count([EntityId]));
+  addDebug('bullets', count([UserBullet]));
+  addDebug('enemies', count([Enemy]));
+  addDebug('hitboxes', count([Hitbox]));
+  for (let [groupName, groupitems] of debugItems) {
+    if (groupName !== '') {
+      drawText(renderIndex++, groupName, '');
+    }
+    let prefix = groupName !== '' ? '  ' : '';
+    for (let [key, value] of groupitems) {
+      drawText(renderIndex++, prefix + key, value.toString());
     }
   }
-]
+};
 
-export const renderHitboxes: System = [
-  debugRenderIndex,
-  () => {
-    for (const { hitbox } of query({ hitbox: Hitbox})) {
-      const { x, x2, y, y2 } = hitbox();
-      drawHitbox(x, y, x2, y2);
-    }
+export const renderHitboxes: System<any> = () => {
+  for (const { hitbox } of query({ hitbox: Hitbox})) {
+    const { x, x2, y, y2 } = hitbox();
+    drawHitbox(x, y, x2, y2);
   }
-]
+}
 
-// export const debugPlugin: AppPlugin = (app) => {
-
-//   app.addListener('prerun', () => {
-//     markEnd('cycle');
-//     const entries = [...performance.getEntries()]
-//       .filter(mark => Array.isArray(mark.detail))
-//       .filter(mark => mark.detail.includes('debug'));
-//     let started: Record<string, PerformanceEntry> = {};
-//     for (const mark of entries) {
-//       const isStart = mark.detail.includes('start');
-//       if (isStart) {
-//         started[mark.name] = mark;
-//       } else {
-//         const startedMark = started[mark.name];
-//         if (startedMark) {
-//           performance.measure(mark.name, { start: startedMark.startTime, end: mark.startTime });
-//         } else {
-//           console.warn(`mark not started ${mark.name}`);
-//         }
-//       }
-//     }
-//     entries.forEach(mark => performance.clearMarks(mark.name));
-//     performance.clearMarks();
-//     performance.clearMeasures();
-//     markStart('cycle');
-//     markStart('frame')
-//   })
-//   app.addListener('postrun', () => markEnd('frame'))
-//   app.addListener('presystem', () => markStart('system'))
-//   app.addListener('postsystem', () => markEnd('system'))
-//   app.addListener('prerender', () => markStart('render'))
-//   app.addListener('postrender', () => markEnd('render'))
-//   app.addListener('prefinal', () => markStart('final'))
-//   app.addListener('postfinal', () => markEnd('final'))
-//   app.addRenderSystem(renderHitboxes, debugRenderMenu())
-// }
-
-export const debugPlugin: AppPlugin = (app) => {
-
-  app.addListener('prerun', () => {
-    performance.mark('cycle')
-    performance.clearMarks();
-    performance.clearMeasures();
-    performance.mark('cycle');
-    performance.mark('frame')
-  })
-  app.addListener('postrun', () => performance.mark('frame'))
-  app.addListener('presystem', () => performance.mark('system'))
-  app.addListener('postsystem', () => performance.mark('system'))
-  app.addListener('prerender', () => performance.mark('render'))
-  app.addListener('postrender', () => performance.mark('render'))
-  app.addListener('prefinal', () => performance.mark('final'))
-  app.addListener('postfinal', () => performance.mark('final'))
-  app.addRenderSystem(renderHitboxes, debugRenderMenu())
+export const debugPlugin: AppPlugin<any> = (app) => {
+  app
+    .stage('start').pre.addSystem(() => {
+      perf.reset();
+      perf.start('frame')
+    })
+    .stage('end').post.addSystem(() => perf.end('frame'))
+    .stage('init').pre.addSystem(() => perf.start('init'))
+    .stage('init').post.addSystem(() => perf.end('init'))
+    .stage().pre.addSystem(() => perf.start('main'))
+    .stage().post.addSystem(() => perf.end('main'))
+    .stage('render').pre.index(-Infinity).addSystem(() => perf.start('render'))
+    .stage('render').post.index(Infinity).addSystem(() => perf.end('render'))
+    .stage('render').index(debugRenderIndex).addSystem(renderHitboxes, debugRenderMenu);
 }

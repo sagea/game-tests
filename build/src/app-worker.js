@@ -396,10 +396,10 @@ const isNumber = (item)=>typeof item === 'number' && isNaN(item) === false
 ;
 function* range(a, b) {
     const hasB = isNumber(b);
-    const start = hasB ? a : 0;
-    const end = hasB ? b : a;
-    if (start > end) throw new Error('range start is larger than end');
-    for(let i = start; i < end; i++){
+    const start1 = hasB ? a : 0;
+    const end1 = hasB ? b : a;
+    if (start1 > end1) throw new Error('range start is larger than end');
+    for(let i = start1; i < end1; i++){
         yield i;
     }
 }
@@ -721,118 +721,149 @@ const intersectionBetweenOrderedIntegerLists = (intLists)=>{
     }
     return last2;
 };
-const isOrderedSystem = (item)=>{
-    return Array.isArray(item);
+const baseStages = [
+    'start',
+    'init',
+    'main',
+    'end'
+];
+const errors = {
+    stageAlreadyExists: (stageName)=>new Error(`Stage with the name "${stageName}" already exists.`)
+    ,
+    stageDoesNotExist: (stageName)=>new Error(`Stage with the name "${stageName}" does not exist.`)
+    ,
+    cantAddStageBeforeStart: ()=>new Error(`Not allowed. Can't add any stages before start stage`)
+    ,
+    cantAddStageAfterEnd: ()=>new Error(`Not allowed. Can't add any stages after end stage`)
+};
+const SystemBuilder = (appStage, app)=>{
+    const appSystem = {
+        appStage,
+        runOnce: false,
+        order: 0,
+        system: ()=>{},
+        appSystemStage: 'main'
+    };
+    const main = {
+        index (order) {
+            appSystem.order = order;
+            return main;
+        },
+        get pre () {
+            appSystem.appSystemStage = 'pre';
+            return main;
+        },
+        get post () {
+            appSystem.appSystemStage = 'post';
+            return main;
+        },
+        get once () {
+            appSystem.runOnce = true;
+            return main;
+        },
+        addSystem: (...systems)=>{
+            for (const system of systems){
+                app.addAppSystem({
+                    ...appSystem,
+                    system
+                });
+            }
+            return app;
+        }
+    };
+    return main;
 };
 class App {
-    #runCount = 0;
-    #systems = {
-        init: [],
-        system: [],
-        render: [],
-        final: []
-    };
+    state = {};
+    #runcount = 0;
+    #stages = new Map(baseStages.map((stage)=>[
+            stage,
+            new Set()
+        ]
+    ));
     #plugins = [];
-    #events = {
-        prerun: new Set(),
-        preinit: new Set(),
-        postinit: new Set(),
-        presystem: new Set(),
-        postsystem: new Set(),
-        prerender: new Set(),
-        postrender: new Set(),
-        prefinal: new Set(),
-        postfinal: new Set(),
-        postrun: new Set()
-    };
-    addListener(event, handler) {
-        this.#events[event].add(handler);
-        return ()=>this.removeListener(event, handler)
-        ;
+    stage(stageName = 'main') {
+        if (!this.hasStage) throw errors.stageDoesNotExist(stageName);
+        return SystemBuilder(stageName, this);
     }
-    removeListener(event, handler) {
-        this.#events[event].delete(handler);
+    hasStage(stageName) {
+        return this.#stages.has(stageName);
     }
-     #dispatchEvent(event) {
-        this.#events[event].forEach((handler)=>handler()
-        );
+    addStage(stageName) {
+        return this.addStageBefore(stageName, 'end');
     }
-     #toOrderedSystem(system) {
-        if (isOrderedSystem(system)) return system;
-        return [
-            0,
-            system
+    addStageBefore(stageName, otherStageName) {
+        if (this.hasStage(stageName)) throw errors.stageAlreadyExists(stageName);
+        if (!this.hasStage(otherStageName)) throw errors.stageDoesNotExist(otherStageName);
+        if (otherStageName === 'start') throw errors.cantAddStageBeforeStart();
+        const entries = [
+            ...this.#stages
         ];
-    }
-     #runSystem(systemType) {
-        this.#dispatchEvent(`pre${systemType}`);
-        this.#systems[systemType].forEach(([, system1])=>system1(this)
+        const index = entries.findIndex((item)=>item[0] === otherStageName
         );
-        this.#dispatchEvent(`post${systemType}`);
-    }
-    addPlugin(plugin) {
-        this.#plugins.push(plugin);
+        entries.splice(index - 1, 0, [
+            stageName,
+            new Set()
+        ]);
+        this.#stages = new Map(entries);
         return this;
     }
-    addSystemByType(systemType1, ...manySystems) {
-        const orderedSystems = manySystems.map((system2)=>this.#toOrderedSystem(system2)
+    addStageAfter(stageName, otherStageName) {
+        if (this.hasStage(stageName)) throw errors.stageAlreadyExists(stageName);
+        if (!this.hasStage(otherStageName)) throw errors.stageDoesNotExist(otherStageName);
+        if (otherStageName === 'end') throw errors.cantAddStageAfterEnd();
+        const entries = [
+            ...this.#stages
+        ];
+        const index = entries.findIndex((item)=>item[0] === otherStageName
         );
-        this.#systems[systemType1] = [
-            ...this.#systems[systemType1],
-            ...orderedSystems, 
-        ].sort((a, b)=>a[0] - b[0]
-        );
+        entries.splice(index, 0, [
+            stageName,
+            new Set()
+        ]);
+        this.#stages = new Map(entries);
         return this;
     }
-    addInitSystem(...manySystems) {
-        return this.addSystemByType('init', ...manySystems);
+    addAppSystem(appSystem) {
+        const stages = this.#stages.get(appSystem.appStage) || new Set();
+        const list = [
+            ...stages,
+            appSystem
+        ].sort((a, b)=>{
+            const ass = a.appSystemStage;
+            const bss = b.appSystemStage;
+            if (ass === bss) return a.order - b.order;
+            if (ass === 'pre') return -1;
+            if (ass === 'post') return 1;
+            if (bss === 'pre') return 1;
+            if (bss === 'post') return -1;
+            return 0;
+        });
+        this.#stages.set(appSystem.appStage, new Set(list));
+        return this;
     }
-    addSystem(...manySystems) {
-        return this.addSystemByType('system', ...manySystems);
-    }
-    addRenderSystem(...manySystems) {
-        return this.addSystemByType('render', ...manySystems);
-    }
-    addFinalSystem(...manySystems) {
-        return this.addSystemByType('final', ...manySystems);
+    addPlugin(appPlugin) {
+        this.#plugins.push(appPlugin);
+        return this;
     }
     async run() {
-        const firstRun = this.#runCount === 0;
-        this.#runCount++;
-        if (firstRun) {
-            for (const plugin of this.#plugins){
-                await plugin(this);
+        if (this.#runcount === 0) {
+            await Promise.all(this.#plugins.map((plugin)=>plugin(this)
+            ));
+        }
+        this.#runcount += 1;
+        for (const [stageName, appSystems] of this.#stages){
+            for (const appSystem of appSystems){
+                const res = appSystem.system(this);
+                if (appSystem.runOnce) {
+                    this.#stages.get(stageName).delete(appSystem);
+                }
+                if (res instanceof Promise) {
+                    await res;
+                }
             }
         }
-        this.#runCount++;
-        this.#dispatchEvent('prerun');
-        if (firstRun) {
-            this.#dispatchEvent(`preinit`);
-            for (let [, s] of this.#systems.init){
-                const a = s(this);
-                if (a && a instanceof Promise) await a;
-            }
-            this.#dispatchEvent(`postinit`);
-        }
-        this.#dispatchEvent('presystem');
-        for (let [, s] of this.#systems.system){
-            const a = s(this);
-            if (a && a instanceof Promise) await a;
-        }
-        this.#dispatchEvent('postsystem');
-        this.#dispatchEvent('prerender');
-        for (let [, s1] of this.#systems.render){
-            const a = s1(this);
-            if (a && a instanceof Promise) await a;
-        }
-        this.#dispatchEvent('postrender');
-        this.#dispatchEvent('prefinal');
-        for (let [, s2] of this.#systems.final){
-            const a = s2(this);
-            if (a && a instanceof Promise) await a;
-        }
-        this.#dispatchEvent('postfinal');
-        this.#dispatchEvent('postrun');
+        return this;
     }
 }
 const DeleteQueueManager = Component();
@@ -848,7 +879,7 @@ const removeMarkedEntities = ()=>{
     }
 };
 const deleteQueuePlugin = (app)=>{
-    app.addSystem(removeMarkedEntities);
+    app.stage().addSystem(removeMarkedEntities);
 };
 const Hitbox = Component();
 const createHitBoxComponent = (label, [x, y], [width, height])=>{
@@ -925,7 +956,7 @@ const clearHitboxInteractions = ()=>{
     }
 };
 const hitboxPlugin = (app)=>{
-    app.addSystem(clearHitboxInteractions).addSystem(checkHitboxes);
+    app.stage().addSystem(clearHitboxInteractions).stage().addSystem(checkHitboxes);
 };
 function _isPlaceholder(a) {
     return a != null && typeof a === 'object' && a['@@functional/placeholder'] === true;
@@ -2529,9 +2560,9 @@ var differenceWith = _curry3(function differenceWith(pred, first, second) {
     }
     return out;
 });
-var remove = _curry3(function remove(start, count2, list) {
+var remove = _curry3(function remove(start2, count2, list) {
     var result = Array.prototype.slice.call(list, 0);
-    result.splice(start, count2);
+    result.splice(start2, count2);
     return result;
 });
 function _dissoc(prop9, obj) {
@@ -4227,7 +4258,7 @@ const attachTimes = (animateTimeMs)=>{
     fps(calculateFpsFromDiff(timeDiffS()));
 };
 const LoopPlugin = (app)=>{
-    app.addListener('postrun', ()=>{
+    app.stage('end').post.index(Infinity).addSystem(()=>{
         requestAnimationFrame((time)=>{
             attachTimes(time);
             app.run();
@@ -4297,8 +4328,8 @@ const spriteSetRow = (sprite, row)=>{
     };
 };
 const spritePoll = (sprite, deltaTime)=>{
-    const { lastTime , interval , matrix , activeRow , activeCol , active  } = sprite;
-    if (active === false) {
+    const { lastTime , interval , matrix , activeRow , activeCol , active: active1  } = sprite;
+    if (active1 === false) {
         return sprite;
     }
     const l = lastTime + deltaTime;
@@ -4429,7 +4460,7 @@ const renderUserSystem = ()=>{
     }
 };
 const userPlugin = (app)=>{
-    app.addInitSystem(spawnUserSystem).addSystem(moveUserSystem).addSystem(userAnimationSystem).addRenderSystem(renderUserSystem);
+    app.stage('init').once.addSystem(spawnUserSystem).stage().addSystem(moveUserSystem, userAnimationSystem).stage('render').addSystem(renderUserSystem);
 };
 const Enemy = Component();
 const EnemyManager = Component();
@@ -4545,7 +4576,7 @@ const renderEnemiesSystem = ()=>{
     }
 };
 const EnemyPlugin = (app)=>{
-    app.addInitSystem(spawnEntityManagerSystem).addSystem(spawnEnemies, moveEnemies, enemyRemover).addRenderSystem(renderEnemiesSystem);
+    app.stage('init').once.addSystem(spawnEntityManagerSystem).stage().addSystem(spawnEnemies, moveEnemies, enemyRemover).stage('render').addSystem(renderEnemiesSystem);
 };
 const UserBullet = Component();
 const UserBulletManager = Component();
@@ -4659,7 +4690,28 @@ const bulletRenderSystem = ()=>{
     }
 };
 const bulletPlugin = (app)=>{
-    app.addInitSystem(bulletManagerSystem).addSystem(spawnBullet, moveBullet, bulletEnemyManager, removeBullet).addRenderSystem(bulletRenderSystem);
+    app.stage('init').once.addSystem(bulletManagerSystem).stage().addSystem(spawnBullet, moveBullet, bulletEnemyManager, removeBullet).stage('render').addSystem(bulletRenderSystem);
+};
+const active = new Set();
+const reset = ()=>{
+    active.clear();
+    performance.clearMarks();
+    performance.clearMeasures();
+};
+const start = (item)=>{
+    active.add(item);
+    performance.mark(`${item}:start`, {
+        detail: 'perf.ts'
+    });
+};
+const end = (item)=>{
+    if (active.has(item)) {
+        performance.mark(`${item}:end`, {
+            detail: 'perf.ts'
+        });
+        performance.measure(item, `${item}:start`, `${item}:end`);
+        active.delete(item);
+    }
 };
 let debugItems = new Map();
 const addToGroup = (group, label, value)=>{
@@ -4709,69 +4761,51 @@ const drawHitbox = createMethod((ctx, x, y, x2, y2)=>{
     ctx.restore();
     performance.mark(id);
 });
-const debugRenderMenu = ()=>[
-        99999,
-        ()=>{
-            let renderIndex = 0;
-            addDebug('fps', fps());
-            addDebug('Entities', count([
-                EntityId
-            ]));
-            addDebug('bullets', count([
-                UserBullet
-            ]));
-            addDebug('enemies', count([
-                Enemy
-            ]));
-            addDebug('hitboxes', count([
-                Hitbox
-            ]));
-            for (let [groupName, groupitems] of debugItems){
-                if (groupName !== '') {
-                    drawText(renderIndex++, groupName, '');
-                }
-                let prefix = groupName !== '' ? '  ' : '';
-                for (let [key, value] of groupitems){
-                    drawText(renderIndex++, prefix + key, value.toString());
-                }
-            }
+const debugRenderMenu = ()=>{
+    let renderIndex = 0;
+    addDebug('fps', fps());
+    addDebug('Entities', count([
+        EntityId
+    ]));
+    addDebug('bullets', count([
+        UserBullet
+    ]));
+    addDebug('enemies', count([
+        Enemy
+    ]));
+    addDebug('hitboxes', count([
+        Hitbox
+    ]));
+    for (let [groupName, groupitems] of debugItems){
+        if (groupName !== '') {
+            drawText(renderIndex++, groupName, '');
         }
-    ]
-;
-const renderHitboxes = [
-    99999,
-    ()=>{
-        for (const { hitbox  } of query({
-            hitbox: Hitbox
-        })){
-            const { x , x2 , y , y2  } = hitbox();
-            drawHitbox(x, y, x2, y2);
+        let prefix = groupName !== '' ? '  ' : '';
+        for (let [key, value] of groupitems){
+            drawText(renderIndex++, prefix + key, value.toString());
         }
     }
-];
+};
+const renderHitboxes = ()=>{
+    for (const { hitbox  } of query({
+        hitbox: Hitbox
+    })){
+        const { x , x2 , y , y2  } = hitbox();
+        drawHitbox(x, y, x2, y2);
+    }
+};
 const debugPlugin = (app)=>{
-    app.addListener('prerun', ()=>{
-        performance.mark('cycle');
-        performance.clearMarks();
-        performance.clearMeasures();
-        performance.mark('cycle');
-        performance.mark('frame');
-    });
-    app.addListener('postrun', ()=>performance.mark('frame')
-    );
-    app.addListener('presystem', ()=>performance.mark('system')
-    );
-    app.addListener('postsystem', ()=>performance.mark('system')
-    );
-    app.addListener('prerender', ()=>performance.mark('render')
-    );
-    app.addListener('postrender', ()=>performance.mark('render')
-    );
-    app.addListener('prefinal', ()=>performance.mark('final')
-    );
-    app.addListener('postfinal', ()=>performance.mark('final')
-    );
-    app.addRenderSystem(renderHitboxes, debugRenderMenu());
+    app.stage('start').pre.addSystem(()=>{
+        reset();
+        start('frame');
+    }).stage('end').post.addSystem(()=>end('frame')
+    ).stage('init').pre.addSystem(()=>start('init')
+    ).stage('init').post.addSystem(()=>end('init')
+    ).stage().pre.addSystem(()=>start('main')
+    ).stage().post.addSystem(()=>end('main')
+    ).stage('render').pre.index(-Infinity).addSystem(()=>start('render')
+    ).stage('render').post.index(Infinity).addSystem(()=>end('render')
+    ).stage('render').index(99999).addSystem(renderHitboxes, debugRenderMenu);
 };
 const attachCanvasWorkerToPort = (port)=>{
     const comlink = wrap1(port);
@@ -4824,22 +4858,17 @@ const OffscreenCanvasPlugin = (worker)=>(app)=>{
             worker.registerMethod(id, getRegisteredMethod(id));
             worker.draw(id, args);
         };
-        app.addListener('prerender', ()=>addListener(renderMethodCaller)
+        app.addStageAfter('render', 'main').stage('render').pre.addSystem(()=>addListener(renderMethodCaller)
+        ).stage('render').post.addSystem(()=>removeListener(renderMethodCaller)
+        ).stage('render').post.addSystem(()=>worker.drawAllQueued()
+        ).stage('render').addSystem(()=>clearCanvas()
         );
-        app.addListener('postrender', ()=>removeListener(renderMethodCaller)
-        );
-        app.addRenderSystem(()=>{
-            clearCanvas();
-        });
-        app.addFinalSystem(async ()=>{
-            worker.drawAllQueued();
-        });
     }
 ;
 const startApp = async (canvasWorker)=>{
     const resourceUrls = Array.from(Object.values(resources));
     await canvasWorker.loadResources(resourceUrls);
-    return new App().addPlugin(LoopPlugin).addPlugin(OffscreenCanvasPlugin(canvasWorker)).addPlugin((app)=>app.addSystem(applySnapshot)
+    return new App().addPlugin(LoopPlugin).addPlugin(OffscreenCanvasPlugin(canvasWorker)).addPlugin((app)=>app.stage().addSystem(applySnapshot)
     ).addPlugin(deleteQueuePlugin).addPlugin(hitboxPlugin).addPlugin(EnemyPlugin).addPlugin(bulletPlugin).addPlugin(userPlugin).addPlugin(debugPlugin).run();
 };
 const { createWorker  } = wrap2(self);

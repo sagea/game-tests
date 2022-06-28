@@ -18,7 +18,7 @@ export const startApp = async (canvasWorker: any) => {
   return new App()
     .addPlugin(LoopPlugin)
     .addPlugin(OffscreenCanvasPlugin(canvasWorker))
-    .addPlugin(app => app.addSystem(applySnapshot))
+    .addPlugin(app => app.stage().addSystem(applySnapshot))
     .addPlugin(deleteQueuePlugin)
     .addPlugin(hitboxPlugin)
     .addPlugin(EnemyPlugin)

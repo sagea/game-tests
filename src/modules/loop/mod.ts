@@ -19,11 +19,12 @@ const attachTimes = (animateTimeMs: number) => {
 }
 
 
-export const LoopPlugin: AppPlugin = (app) => {
-  app.addListener('postrun', () => {
-    requestAnimationFrame(time => {
-      attachTimes(time);
-      app.run();
+export const LoopPlugin: AppPlugin<any> = (app) => {
+  app.stage('end').post.index(Infinity)
+    .addSystem(() => {
+      requestAnimationFrame(time => {
+        attachTimes(time);
+        app.run();
+      })
     })
-  })
 }
