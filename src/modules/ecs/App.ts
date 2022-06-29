@@ -55,6 +55,36 @@ const SystemBuilder = <T>(appStage: AppStage, app: App<T>) => {
     }
     return main
 }
+type AddSystemOptions = {
+  stage?: 'pre' | 'post',
+  order?: number,
+  once?: boolean,
+}
+
+type AddSystemSystems = [System<any>, System<any>?, System<any>?, System<any>?, System<any>?, System<any>?, System<any>?, System<any>?, System<any>?, System<any>?, System<any>?, System<any>?, System<any>?, System<any>?, System<any>?, System<any>?, System<any>?, System<any>?, System<any>?, System<any>?, System<any>?, System<any>?, System<any>?, System<any>?, System<any>?];
+type AddSystemArguments = [string, AddSystemOptions, ...AddSystemSystems]
+  | [string, ...AddSystemSystems]
+  | [AddSystemOptions, ...AddSystemSystems]
+  | [...AddSystemSystems];
+  
+// const addSystem = (...args: AddSystemArguments) => {
+//   const appStage = args.find(item => typeof item === 'string') as (string | undefined);
+//   const systems = args.filter(item => typeof item === 'function') as System<any>[];
+//   const options = args.find(item => typeof item === 'object') as (AddSystemOptions | undefined);
+//   if (systems.length) {
+//     throw new Error(`Missing system`);
+//   }
+//   for (const system of systems) {
+//     const appSystem: AppSystem = {
+//       appStage: appStage || 'main',
+//       runOnce: options?.once || false,
+//       order: options?.order || 0,
+//       system,
+//       appSystemStage: options?.stage || 'main',
+//     };
+//   }
+// }
+
 export class App<State extends Record<string, any>> {
     state = {} as State;
     #runcount = 0;
@@ -110,7 +140,25 @@ export class App<State extends Record<string, any>> {
         this.#stages.set(appSystem.appStage, new Set(list));
         return this;
     }
-    
+
+    addSystem(...args: AddSystemArguments) {
+      const appStage = args.find(item => typeof item === 'string') as (string | undefined);
+      const systems = args.filter(item => typeof item === 'function') as System<any>[];
+      const options = args.find(item => typeof item === 'object') as (AddSystemOptions | undefined);
+      if (systems.length) {
+        throw new Error(`Missing system`);
+      }
+      for (const system of systems) {
+        const appSystem: AppSystem = {
+          appStage: appStage || 'main',
+          runOnce: options?.once || false,
+          order: options?.order || 0,
+          system,
+          appSystemStage: options?.stage || 'main',
+        };
+        this.addAppSystem(appSystem)
+      }
+    }
     addPlugin(appPlugin: AppPlugin<any>) {
         this.#plugins.push(appPlugin)
         return this;
