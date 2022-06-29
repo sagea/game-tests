@@ -122,16 +122,16 @@ export const renderHitboxes: System<any> = () => {
 
 export const debugPlugin: AppPlugin<any> = (app) => {
   app
-    .stage('start').pre.addSystem(() => {
+    .addSystem('start', { stage: 'pre' }, () => {
       perf.reset();
       perf.start('frame')
     })
-    .stage('end').post.addSystem(() => perf.end('frame'))
-    .stage('init').pre.addSystem(() => perf.start('init'))
-    .stage('init').post.addSystem(() => perf.end('init'))
-    .stage().pre.addSystem(() => perf.start('main'))
-    .stage().post.addSystem(() => perf.end('main'))
-    .stage('render').pre.index(-Infinity).addSystem(() => perf.start('render'))
-    .stage('render').post.index(Infinity).addSystem(() => perf.end('render'))
-    .stage('render').index(debugRenderIndex).addSystem(renderHitboxes, debugRenderMenu);
+    .addSystem('end', { stage: 'post' }, () => perf.end('frame'))
+    .addSystem('init', { stage: 'pre' }, () => perf.start('init'))
+    .addSystem('init', { stage: 'post' }, () => perf.end('init'))
+    .addSystem({ stage: 'pre' }, () => perf.start('main'))
+    .addSystem({ stage: 'post' }, () => perf.end('main'))
+    .addSystem('render', { stage: 'pre', order: -Infinity }, () => perf.start('render'))
+    .addSystem('render', { stage: 'post', order: Infinity }, () => perf.end('render'))
+    .addSystem('render', { order: debugRenderIndex }, renderHitboxes, debugRenderMenu);
 }

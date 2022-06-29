@@ -102,10 +102,7 @@ export const renderUserSystem = () => {
 
 export const userPlugin: AppPlugin<any> = (app) => {
   app
-    .stage('init').once.addSystem(spawnUserSystem)
-    .stage().addSystem(
-      moveUserSystem,
-      userAnimationSystem,
-    )
-    .stage('render').addSystem(renderUserSystem);
+    .addSystem('init', { once: true }, spawnUserSystem)
+    .addSystem(moveUserSystem, userAnimationSystem)
+    .addSystem('render', renderUserSystem);
 }

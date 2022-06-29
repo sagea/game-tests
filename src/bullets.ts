@@ -101,12 +101,12 @@ export const bulletRenderSystem = () => {
 
 export const bulletPlugin: AppPlugin<any> = (app) => {
   app
-    .stage('init').once.addSystem(bulletManagerSystem)
-    .stage().addSystem(
+    .addSystem('init', { once: true }, bulletManagerSystem)
+    .addSystem(
       spawnBullet,
       moveBullet,
       bulletEnemyManager,
       removeBullet,
     )
-    .stage('render').addSystem(bulletRenderSystem);
+    .addSystem('render', bulletRenderSystem);
 }

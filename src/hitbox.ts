@@ -78,6 +78,5 @@ export const clearHitboxInteractions = () => {
 
 export const hitboxPlugin: AppPlugin<any> = (app) => {
   app
-    .stage().addSystem(clearHitboxInteractions)
-    .stage().addSystem(checkHitboxes);
+    .addSystem(clearHitboxInteractions, checkHitboxes)
 }

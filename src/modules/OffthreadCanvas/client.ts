@@ -71,8 +71,11 @@ export const OffscreenCanvasPlugin = (worker: ReturnType<typeof createCanvasWork
   }
   app
     .addStageAfter('render', 'main')
-    .stage('render').pre.addSystem(() => addListener(renderMethodCaller))
-    .stage('render').post.addSystem(() => removeListener(renderMethodCaller))
-    .stage('render').post.addSystem(() => worker.drawAllQueued())
-    .stage('render').addSystem(() => clearCanvas());
+    .addSystem('render', { stage: 'pre' }, () => addListener(renderMethodCaller))
+    .addSystem('render', { stage: 'post' },
+      () => removeListener(renderMethodCaller),
+      () => worker.drawAllQueued()
+    )
+    .addSystem('render', clearCanvas)
+    
 }

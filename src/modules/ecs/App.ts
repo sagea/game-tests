@@ -21,40 +21,6 @@ export interface AppSystem {
     appSystemStage: AppSystemStage;
 }
 
-const SystemBuilder = <T>(appStage: AppStage, app: App<T>) => {
-    const appSystem: AppSystem = {
-        appStage,
-        runOnce: false,
-        order: 0,
-        system: () => {},
-        appSystemStage: 'main',
-    };
-    const main = {
-        index(order: number) {
-            appSystem.order = order;
-            return main;
-        },
-        get pre() {
-            appSystem.appSystemStage = 'pre'
-            return main;
-        },
-        get post() {
-            appSystem.appSystemStage = 'post'
-            return main;
-        },
-        get once() {
-            appSystem.runOnce = true;
-            return main;
-        },
-        addSystem: <T, >(...systems: System<T>[]) => {
-            for (const system of systems) {
-                app.addAppSystem({ ...appSystem, system });
-            }
-            return app;
-        }
-    }
-    return main
-}
 type AddSystemOptions = {
   stage?: 'pre' | 'post',
   order?: number,
@@ -66,34 +32,11 @@ type AddSystemArguments = [string, AddSystemOptions, ...AddSystemSystems]
   | [string, ...AddSystemSystems]
   | [AddSystemOptions, ...AddSystemSystems]
   | [...AddSystemSystems];
-  
-// const addSystem = (...args: AddSystemArguments) => {
-//   const appStage = args.find(item => typeof item === 'string') as (string | undefined);
-//   const systems = args.filter(item => typeof item === 'function') as System<any>[];
-//   const options = args.find(item => typeof item === 'object') as (AddSystemOptions | undefined);
-//   if (systems.length) {
-//     throw new Error(`Missing system`);
-//   }
-//   for (const system of systems) {
-//     const appSystem: AppSystem = {
-//       appStage: appStage || 'main',
-//       runOnce: options?.once || false,
-//       order: options?.order || 0,
-//       system,
-//       appSystemStage: options?.stage || 'main',
-//     };
-//   }
-// }
-
 export class App<State extends Record<string, any>> {
     state = {} as State;
     #runcount = 0;
     #stages = new Map<AppStage, Set<AppSystem>>(baseStages.map(stage => [stage, new Set()]));
     #plugins: AppPlugin<any>[] = []
-    stage(stageName: AppStage = 'main') {
-        if (!this.hasStage) throw errors.stageDoesNotExist(stageName);
-        return SystemBuilder<State>(stageName, this);
-    }
     hasStage(stageName: AppStage) {
       return this.#stages.has(stageName);
     }
@@ -145,7 +88,7 @@ export class App<State extends Record<string, any>> {
       const appStage = args.find(item => typeof item === 'string') as (string | undefined);
       const systems = args.filter(item => typeof item === 'function') as System<any>[];
       const options = args.find(item => typeof item === 'object') as (AddSystemOptions | undefined);
-      if (systems.length) {
+      if (systems.length === 0) {
         throw new Error(`Missing system`);
       }
       for (const system of systems) {
@@ -158,7 +101,9 @@ export class App<State extends Record<string, any>> {
         };
         this.addAppSystem(appSystem)
       }
+      return this
     }
+
     addPlugin(appPlugin: AppPlugin<any>) {
         this.#plugins.push(appPlugin)
         return this;

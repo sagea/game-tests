@@ -20,8 +20,8 @@ const attachTimes = (animateTimeMs: number) => {
 
 
 export const LoopPlugin: AppPlugin<any> = (app) => {
-  app.stage('end').post.index(Infinity)
-    .addSystem(() => {
+  app
+    .addSystem('end', { stage: 'post', order: Infinity }, () => {
       requestAnimationFrame(time => {
         attachTimes(time);
         app.run();

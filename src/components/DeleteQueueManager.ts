@@ -11,5 +11,5 @@ export const removeMarkedEntities = () => {
 }
 
 export const deleteQueuePlugin: AppPlugin<any> = (app) => {
-  app.stage().addSystem(removeMarkedEntities);
+  app.addSystem(removeMarkedEntities);
 }
